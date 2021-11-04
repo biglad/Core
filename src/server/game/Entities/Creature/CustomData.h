@@ -20,31 +20,31 @@
 
 struct CreatureCustomData
 {
-    explicit CreatureCustomData(uint32 count = 0, float dmg = 0.f, float hpRate = 0.f, float manaRate = 0.f, float armorRate = 0.f, uint8 selLevel = 0) :
-            instancePlayerCount(count), selectedLevel(selLevel), damageMultiplier(dmg), healthMultiplier(hpRate), manaMultiplier(manaRate),
-            armorMultiplier(armorRate) {}
+    uint32 instancePlayerCount = 0;
+    uint8 selectedLevel = 0;
+    uint32 entry = 0;
+    float damageMultiplier = 1.0f;
+    float healthMultiplier = 1.0f;
+    float manaMultiplier = 1.0f;
+    float armorMultiplier = 1.0f;
 
-    uint32 instancePlayerCount;
-    uint8 selectedLevel;
-    uint32 entry;
-    float damageMultiplier;
-    float healthMultiplier;
-    float manaMultiplier;
-    float armorMultiplier;
-
-private:
-    CreatureCustomData(CreatureCustomData const&);
+    CreatureCustomData() = default;
+    CreatureCustomData(CreatureCustomData const&) = delete;
+    CreatureCustomData(CreatureCustomData&&) = delete;
+    CreatureCustomData& operator=(CreatureCustomData const&) = delete;
+    CreatureCustomData& operator=(CreatureCustomData&&) = delete;
 };
 
 struct MapCustomData
 {
-    explicit MapCustomData(uint32 count = 0, uint8 selLevel = 0) : playerCount(count), mapLevel(selLevel) {}
+    uint32 playerCount = 0;
+    uint8 mapLevel = 0;
 
-    uint32 playerCount;
-    uint8 mapLevel;
-
-private:
-    MapCustomData(MapCustomData const&);
+    MapCustomData() = default;
+    MapCustomData(MapCustomData const&) = delete;
+    MapCustomData(MapCustomData&&) = delete;
+    MapCustomData& operator=(MapCustomData const&) = delete;
+    MapCustomData& operator=(MapCustomData&&) = delete;
 };
 
 #endif

@@ -290,7 +290,7 @@ private:
         if (!Is_AB_enabled)
             return;
 
-        if (!source || source->GetTypeId() != TYPEID_UNIT || !source->IsInWorld() || source->IsControlledByPlayer())
+        if (!source || !value || source->GetTypeId() != TYPEID_UNIT || !source->IsInWorld() || source->IsControlledByPlayer())
             return;
 
         if (DungeonsOnly && !source->GetMap()->Instanceable())
@@ -300,7 +300,7 @@ private:
         if (damageMultiplier == 1.0f)
             return;
 
-        value *= damageMultiplier;
+        value = std::max<uint32>(value * damageMultiplier, 1);
     }
 };
 
@@ -461,7 +461,7 @@ public:
 
     void OnPlayerEnterAll(Map* map, Player* player) override
     {
-        recalcTimers[map->GetId()] = PLAYERS_COUNT_RECALC_TIMER;
+        recalcTimers[map->GetId()] = 0;
 
         if (player->IsGameMaster())
             return;
@@ -491,7 +491,7 @@ public:
 
     void OnPlayerLeaveAll(Map* map, Player* player) override
     {
-        recalcTimers[map->GetId()] = PLAYERS_COUNT_RECALC_TIMER;
+        recalcTimers[map->GetId()] = 0;
 
         if (player->IsGameMaster())
             return;
@@ -860,7 +860,7 @@ private:
         // GetPlayerClassList(creature, playerClassList);
 
         float manaStatsRate = 1.0f;
-        if (!useDefStats && LevelScaling && !skipLevel)
+        if (!useDefStats && baseMana > 0 && LevelScaling && !skipLevel)
         {
             float newMana = creatureStats->GenerateMana(creatureTemplate);
             manaStatsRate = newMana / float(baseMana);
