@@ -297,7 +297,7 @@ private:
             return;
 
         float damageMultiplier = source->ToCreature()->CustomData.damageMultiplier;
-        if (damageMultiplier == 1.0f)
+        if (damageMultiplier >= 1.0f)
             return;
 
         value = std::max<uint32>(value * damageMultiplier, 1);
@@ -810,7 +810,7 @@ private:
             TC_LOG_ERROR("scripts", "AB: hpmult: %.3f origlvl %u areaminlvl %u areamaxlvl %u",
             creatureABInfo->healthMultiplier, originalLevel, areaMinLvl, areaMaxLvl);
 
-        if (creatureABInfo->healthMultiplier <= MinHPModifier)
+        if (creatureABInfo->healthMultiplier < MinHPModifier)
             creatureABInfo->healthMultiplier = MinHPModifier;
 
         float hpStatsRate = 1.0f;
@@ -867,13 +867,13 @@ private:
         }
 
         creatureABInfo->manaMultiplier = manaStatsRate * ManaMultiplier * defaultMultiplier * GlobalRate;
-        if (creatureABInfo->manaMultiplier <= MinManaModifier)
+        if (creatureABInfo->manaMultiplier < MinManaModifier)
             creatureABInfo->manaMultiplier = MinManaModifier;
 
         scaledMana = baseMana * creatureABInfo->manaMultiplier + 0.5f;
         float damageMul = defaultMultiplier * GlobalRate * DamageMultiplier;
         // Can not be less then Min_D_Mod
-        if (damageMul <= MinDamageModifier)
+        if (damageMul < MinDamageModifier)
             damageMul = MinDamageModifier;
 
         if (!useDefStats && LevelScaling && !skipLevel)
