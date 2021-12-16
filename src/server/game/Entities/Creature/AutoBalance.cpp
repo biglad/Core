@@ -833,7 +833,7 @@ private:
         if (creatureABInfo->healthMultiplier < MinHPModifier)
             creatureABInfo->healthMultiplier = MinHPModifier;
 
-        float hpStatsRate = 1.0f * GetCreatureHealthMod(creatureTemplate->rank);
+        float hpStatsRate = GetCreatureHealthMod(creatureTemplate->rank);
         if (!useDefStats && LevelScaling && !skipLevel)
         {
             float newBaseHealth = 0.f;
@@ -862,7 +862,7 @@ private:
                 if (reduction > 0 && reduction < newHealth)
                     newHealth -= reduction;
             }
-            hpStatsRate = newHealth / float(baseHealth);
+            hpStatsRate *= newHealth / float(baseHealth);
         }
 
         if (creature->GetGUIDLow() == DEBUG_CREATURE)
