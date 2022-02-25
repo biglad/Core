@@ -44,6 +44,12 @@ enum BotAttackRange
     BOT_ATTACK_RANGE_EXACT              = 3
 };
 
+enum BotAttackAngle
+{
+    BOT_ATTACK_ANGLE_NORMAL             = 1,
+    BOT_ATTACK_ANGLE_AVOID_FRONTAL_AOE  = 2
+};
+
 typedef std::unordered_map<ObjectGuid /*guid*/, Creature* /*bot*/> BotMap;
 
 class BotMgr
@@ -99,6 +105,7 @@ class BotMgr
         static void OnBotPartyEngage(Player const* owner);
         //mod hooks
         static void ApplyBotEffectMods(Unit const* caster, Unit const* target, SpellInfo const* spellInfo, uint8 effIndex, float& value);
+        static void ApplyBotThreatMods(Unit const* attacker, SpellInfo const* spellInfo, float& threat);
         static float GetBotDamageTakenMod(Creature const* bot, bool magic);
         static float GetBotDamageModPhysical();
         static float GetBotDamageModSpell();
@@ -154,6 +161,9 @@ class BotMgr
         uint8 GetBotAttackRangeMode() const { return _attackRangeMode; }
         void SetBotAttackRangeMode(uint8 mode, uint8 exactRange = 0) { _attackRangeMode = mode; _setBotExactAttackRange(exactRange); }
 
+        uint8 GetBotAttackAngleMode() const { return _attackAngleMode; }
+        void SetBotAttackAngleMode(uint8 mode) { _attackAngleMode = mode; }
+
         uint32 GetEngageDelayDPS() const { return _npcBotEngageDelayDPS; }
         uint32 GetEngageDelayHeal() const { return _npcBotEngageDelayHeal; }
         void SetEngageDelayDPS(uint32 delay) { _npcBotEngageDelayDPS = delay; }
@@ -193,6 +203,7 @@ class BotMgr
         uint8 _followdist;
         uint8 _exactAttackRange;
         uint8 _attackRangeMode;
+        uint8 _attackAngleMode;
         uint32 _npcBotEngageDelayDPS;
         uint32 _npcBotEngageDelayHeal;
 
