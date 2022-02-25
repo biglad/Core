@@ -588,7 +588,7 @@ public:
                                 {
                                     ChatHandler(player->GetSession()).PSendSysMessage(
                                         "|cffFF0000[AutoBalance]|r|cffff8000 Number of players has changed in %s. New player count: %u (Player Difficulty Offset = %u)|r",
-                                        GetAreaEntryById(zoneId)->area_name[0], newpmap[zoneId] + PlayerCountDifficultyOffset, PlayerCountDifficultyOffset);
+                                        zoneId ? GetAreaEntryById(zoneId)->area_name[0] : "Unknown", newpmap[zoneId] + PlayerCountDifficultyOffset, PlayerCountDifficultyOffset);
                                 }
                             }
                         }
