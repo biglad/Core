@@ -29,7 +29,7 @@ class dreadlord_pet_bot : public CreatureScript
 public:
     dreadlord_pet_bot() : CreatureScript("dreadlord_pet_bot") { }
 
-    CreatureAI* GetAI(Creature* creature) const
+    CreatureAI* GetAI(Creature* creature) const override
     {
         return new dreadlord_botpetAI(creature);
     }
@@ -88,7 +88,7 @@ public:
             StartAttack(opponent, IsPetMelee());
         }
 
-        void ApplyClassDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* spellInfo, WeaponAttackType /*attackType*/, bool /*crit*/) const override
+        void ApplyClassDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* spellInfo, WeaponAttackType /*attackType*/, bool /*iscrit*/) const override
         {
             uint32 baseId = spellInfo->GetFirstRankSpell()->Id;
             float fdamage = float(damage);

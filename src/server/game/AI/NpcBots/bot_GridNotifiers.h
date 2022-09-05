@@ -1,19 +1,20 @@
 #ifndef _BOT_GRIDNOTIFIERS_H
 #define _BOT_GRIDNOTIFIERS_H
 
-#include "DynamicObject.h"
+#include "bot_ai.h"
+#include "botspell.h"
 #include "Corpse.h"
 #include "Creature.h"
 #include "DBCStores.h"
+#include "DynamicObject.h"
 #include "GameObject.h"
 #include "Group.h"
 #include "ObjectAccessor.h"
 #include "Player.h"
 #include "Spell.h"
 #include "SpellAuras.h"
-#include "Vehicle.h"
 #include "SpellMgr.h"
-#include "bot_ai.h"
+#include "Vehicle.h"
 /*
 Name: bot_GridNotifiers
 %Complete: 99+
@@ -242,7 +243,7 @@ class AffectedTargetCheck
         {
             if (!u->IsAlive())
                 return false;
-            if (caster && u->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNINTERACTIBLE))
+            if (caster && u->HasUnitFlag(UNIT_FLAG_UNINTERACTIBLE))
                 return false;
             if (!checker->IsWithinDistInMap(u, m_range))
                 return false;
@@ -588,7 +589,7 @@ class CastingUnitCheck
                 return false;
             if (!u->isTargetableForAttack(false))
                 return false;
-            //if (!m_friend && u->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED))//prevent double silence
+            //if (!m_friend && u->HasUnitFlag(UNIT_FLAG_SILENCED))//prevent double silence
             //    return false;
             if (!u->IsNonMeleeSpellCast(false,false,true))
                 return false;
@@ -1079,7 +1080,7 @@ public:
     bool operator()(GameObject* go)
     {
         if (go->GetGOInfo()->GetLockId() &&
-            !go->HasFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE) &&
+            !go->HasFlag(GO_FLAG_IN_USE) &&
             //go->getLootState() == GO_READY &&
             _unit->IsWithinDistInMap(go, _range))
         {
@@ -1149,7 +1150,7 @@ public:
         }
         else if (Creature const* cre = ob->ToCreature())
         {
-            if (cre->IsVisible() && cre->getDeathState() == CORPSE && cre->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE) && cre->loot.isLooted() &&
+            if (cre->IsVisible() && cre->getDeathState() == CORPSE && cre->HasUnitFlag(UNIT_FLAG_SKINNABLE) && cre->loot.isLooted() &&
                 cre->isTappedBy(_checker->ToPlayer()) && CheckSkill(cre->GetCreatureTemplate()->GetRequiredLootSkill()))
             {
                 if (int32(cre->GetLevel() < 20 ? (cre->GetLevel() - 10) * 10 : cre->GetLevel() * 5) <= int32(MaxSkillForLevel(_checker->ToUnit()->GetLevel())))
@@ -1206,7 +1207,7 @@ public:
         if (Creature const* cre = unit->ToCreature())
             if (_checker->IsWithinDistInMap(cre, _range))
                 return cre->IsVisible() && cre->getDeathState() == CORPSE &&
-                    cre->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE) &&
+                    cre->HasDynamicFlag(UNIT_DYNFLAG_LOOTABLE) &&
                     _checker->ToPlayer()->isAllowedToLoot(cre);
         return false;
     }

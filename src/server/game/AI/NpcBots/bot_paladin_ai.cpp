@@ -231,7 +231,7 @@ class paladin_bot : public CreatureScript
 public:
     paladin_bot() : CreatureScript("paladin_bot") { }
 
-    CreatureAI* GetAI(Creature* creature) const
+    CreatureAI* GetAI(Creature* creature) const override
     {
         return new paladin_botAI(creature);
     }
@@ -301,14 +301,14 @@ public:
                     continue;
 
                 BotMap const* map = player->GetBotMgr()->GetBotMap();
-                for (BotMap::const_iterator itr = map->begin(); itr != map->end(); ++itr)
+                for (BotMap::const_iterator bitr = map->begin(); bitr != map->end(); ++bitr)
                 {
-                    if (itr->second == me)
+                    if (bitr->second == me)
                         continue;
-                    if (!gr->IsMember(itr->second->GetGUID()))
+                    if (!gr->IsMember(bitr->second->GetGUID()))
                         continue;
 
-                    Unit* u = itr->second;
+                    Unit* u = bitr->second;
                     if (u->IsInWorld() && u->IsAlive() && u->IsInCombat() && IsTank(u) &&
                         (!u->getAttackers().empty() || GetHealthPCT(u) < 90) &&
                         !u->GetAuraEffect(SPELL_AURA_PERIODIC_TRIGGER_SPELL, SPELLFAMILY_PALADIN, 0x0, 0x1000000, 0x0, me->GetGUID()))
@@ -446,7 +446,7 @@ public:
 
             checkShieldTimer = 1500;
 
-            Unit* u;
+            Unit* u = nullptr;
             if (IAmFree())
             {
                 u = me;
@@ -547,13 +547,13 @@ public:
                     if (pl->HaveBot())
                     {
                         BotMap const* map = pl->GetBotMgr()->GetBotMap();
-                        for (BotMap::const_iterator it = map->begin(); it != map->end(); ++it)
+                        for (BotMap::const_iterator bitr = map->begin(); bitr != map->end(); ++bitr)
                         {
-                            u = it->second;
+                            u = bitr->second;
                             if (u != me && IsTank())
                                 continue;
                             if (!u || !u->IsInWorld() || me->GetMap() != u->FindMap() || !u->IsAlive() || !u->IsInCombat() ||
-                                it->second->IsTempBot() || !IsTank(u) || me->GetDistance(u) > 30 ||
+                                bitr->second->IsTempBot() || !IsTank(u) || me->GetDistance(u) > 30 ||
                                 u->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_PALADIN, 0x0, 0x80000, 0x0))
                                 continue;
 
@@ -563,9 +563,9 @@ public:
                     }
                     if (!foundTank)
                     {
-                        for (Unit::ControlList::const_iterator itr = master->m_Controlled.begin(); itr != master->m_Controlled.end(); ++itr)
+                        for (Unit::ControlList::const_iterator citr = master->m_Controlled.begin(); citr != master->m_Controlled.end(); ++citr)
                         {
-                            u = *itr;
+                            u = *citr;
                             if (!u || !u->IsPet() || me->GetMap() != u->FindMap() || !u->IsAlive() || !u->IsInCombat() ||
                                 !IsTank(u) || me->GetDistance(u) > 30 ||
                                 u->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_PALADIN, 0x0, 0x80000, 0x0))
@@ -616,7 +616,7 @@ public:
                 }
             }
 
-            if (foundTank && doCast(u, GetSpell(SACRED_SHIELD_1)))
+            if (foundTank && u && doCast(u, GetSpell(SACRED_SHIELD_1)))
                 return;
         }
 
@@ -775,7 +775,7 @@ public:
 
         bool HOFTarget(Unit* target, uint32 /*diff*/)
         {
-            bool canUnstun = me->GetLevel() >= 35 && _spec == BOT_SPEC_PALADIN_PROTECTION;
+            bool canUnstun = me->GetLevel() >= 35 && _spec == BOT_SPEC_PALADIN_RETRIBUTION;
             if (target->HasAuraType(SPELL_AURA_MECHANIC_IMMUNITY))
             {
                 if (target->HasAuraTypeWithMiscvalue(SPELL_AURA_MECHANIC_IMMUNITY, 11) &&
@@ -994,7 +994,7 @@ public:
 
         void BreakCC(uint32 diff) override
         {
-            if (me->GetLevel() >= 35 && IsSpellReady(HAND_OF_FREEDOM_1, diff) && Rand() < 30 && me->HasAuraWithMechanic(1<<MECHANIC_STUN))
+            if (me->GetLevel() >= 35 && _spec == SPEC_PALADIN_RETRIBUTION && IsSpellReady(HAND_OF_FREEDOM_1, diff) && Rand() < 30 && me->HasAuraWithMechanic(1<<MECHANIC_STUN))
             {
                 if (me->IsMounted())
                     me->RemoveAurasByType(SPELL_AURA_MOUNTED);
@@ -1282,6 +1282,7 @@ public:
                 case BOT_CLASS_SPELLBREAKER:
                 case BOT_CLASS_DARK_RANGER:
                 case BOT_CLASS_NECROMANCER:
+                case BOT_CLASS_SEA_WITCH:
                     if (BLESSING_OF_KINGS && !kings && doCast(target, BLESSING_OF_KINGS))
                         return true;
                     else if (BLESSING_OF_MIGHT && !might && doCast(target, BLESSING_OF_MIGHT))
@@ -1711,7 +1712,7 @@ public:
             }
         }
 
-        void ApplyClassDamageMultiplierMeleeSpell(int32& damage, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* spellInfo, WeaponAttackType /*attackType*/, bool /*crit*/) const override
+        void ApplyClassDamageMultiplierMeleeSpell(int32& damage, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* spellInfo, WeaponAttackType /*attackType*/, bool /*iscrit*/) const override
         {
             uint32 baseId = spellInfo->GetFirstRankSpell()->Id;
             uint8 lvl = me->GetLevel();
@@ -1719,7 +1720,7 @@ public:
 
             //apply bonus damage mods
             float pctbonus = 0.0f;
-            //if (crit)
+            //if (iscrit)
             //{
             //}
             //Sanctity of Battle: 15% bonus damage for Exorcism and Crusader Strike
@@ -1742,7 +1743,7 @@ public:
             damage = int32(fdamage * (1.0f + pctbonus));
         }
 
-        void ApplyClassDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* spellInfo, WeaponAttackType /*attackType*/, bool /*crit*/) const override
+        void ApplyClassDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* spellInfo, WeaponAttackType /*attackType*/, bool /*iscrit*/) const override
         {
             uint32 spellId = spellInfo->Id;
             uint8 lvl = me->GetLevel();
@@ -1750,7 +1751,7 @@ public:
 
             //apply bonus damage mods
             float pctbonus = 0.0f;
-            //if (crit)
+            //if (iscrit)
             //{
             //}
 

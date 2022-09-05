@@ -1,6 +1,7 @@
 #include "bot_ai.h"
 #include "bot_GridNotifiers.h"
 #include "botmgr.h"
+#include "botspell.h"
 #include "CellImpl.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
@@ -61,7 +62,7 @@ enum NecromancerSpecial
 };
 
 static const uint32 Necromancer_spells_damage_arr[] =
-{ MAIN_ATTACK_1, CORPSE_EXPLOSION_1/*, ATTRACT_1*/ };
+{ /*MAIN_ATTACK_1, */CORPSE_EXPLOSION_1/*, ATTRACT_1*/ };
 
 static const uint32 Necromancer_spells_support_arr[] =
 { RAISE_DEAD_1, UNHOLY_FRENZY_1, CRIPPLE_1/*, ATTRACT_1*/ };
@@ -74,7 +75,7 @@ class necromancer_bot : public CreatureScript
 public:
     necromancer_bot() : CreatureScript("necromancer_bot") { }
 
-    CreatureAI* GetAI(Creature* creature) const
+    CreatureAI* GetAI(Creature* creature) const override
     {
         return new necromancer_botAI(creature);
     }
@@ -366,7 +367,7 @@ public:
             //Cripple
             if (IsSpellReady(CRIPPLE_1, diff) && me->GetDistance(opponent) < 30 &&
                 me->GetLevel() >= 50 && me->GetPower(POWER_MANA) >= CRIPPLE_COST &&
-                opponent->GetMaxNegativeAuraModifier(SPELL_AURA_MOD_DECREASE_SPEED) >= 0 &&
+                opponent->GetMaxNegativeAuraModifier(SPELL_AURA_MOD_MELEE_HASTE) >= 0 &&
                 (opponent->GetTypeId() == TYPEID_PLAYER || opponent->GetHealth() > me->GetMaxHealth() * 3))
             {
                 if (doCast(opponent, GetSpell(CRIPPLE_1)))
@@ -380,7 +381,7 @@ public:
             }
         }
 
-        void ApplyClassDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* spellInfo, WeaponAttackType /*attackType*/, bool crit) const override
+        void ApplyClassDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* spellInfo, WeaponAttackType /*attackType*/, bool iscrit) const override
         {
             uint32 baseId = spellInfo->GetFirstRankSpell()->Id;
             //uint8 lvl = me->GetLevel();
@@ -388,7 +389,7 @@ public:
 
             //apply bonus damage mods
             float pctbonus = 1.0f;
-            if (crit)
+            if (iscrit)
                 pctbonus *= 1.333f;
 
             if (baseId == MAIN_ATTACK_1)
@@ -444,7 +445,7 @@ public:
 
             if (baseId == MAIN_ATTACK_1 || baseId == RAISE_DEAD_1 || baseId == UNHOLY_FRENZY_1 ||
                 baseId == CRIPPLE_1 || baseId == CORPSE_EXPLOSION_1/* || baseId == ATTRACT_1*/)
-                GC_Timer = me->GetAttackTime(BASE_ATTACK);
+                GC_Timer = uint32(me->GetAttackTime(BASE_ATTACK) * me->m_modAttackSpeedPct[BASE_ATTACK]);
 
             if (baseId == MAIN_ATTACK_1 || baseId == RAISE_DEAD_1 || baseId == UNHOLY_FRENZY_1 ||
                 baseId == CRIPPLE_1/* || baseId == CORPSE_EXPLOSION_1*//* || baseId == ATTRACT_1*/)
@@ -463,6 +464,7 @@ public:
             {
                 if (baseId == CORPSE_EXPLOSION_1)
                 {
+                    ASSERT(!IsInBotParty(target));
                     target->CastSpell(target, CORPSE_EXPLOSION_VISUAL, true);
                     target->CastSpell(target, SPELL_BLOODY_EXPLOSION, true);
                     target->SetDisplayId(MODEL_BLOODY_BONES);
@@ -478,6 +480,7 @@ public:
 
                 if (baseId == RAISE_DEAD_1)
                 {
+                    ASSERT(!IsInBotParty(target));
                     //Two skeletons
                     for (uint8 i = 0; i < 2; ++i)
                         SummonBotPet(target);
@@ -591,7 +594,7 @@ public:
             myPet->SetFaction(master->GetFaction());
             myPet->SetControlledByPlayer(!IAmFree());
             myPet->SetPvP(me->IsPvP());
-            myPet->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
+            myPet->SetUnitFlag(UNIT_FLAG_PLAYER_CONTROLLED);
             myPet->SetByteValue(UNIT_FIELD_BYTES_2, 1, master->GetByteValue(UNIT_FIELD_BYTES_2, 1));
             myPet->SetUInt32Value(UNIT_CREATED_BY_SPELL, RAISE_DEAD_1);
 

@@ -1,4 +1,5 @@
 #include "bot_ai.h"
+#include "botspell.h"
 #include "bpet_ai.h"
 #include "Creature.h"
 #include "ScriptMgr.h"
@@ -22,7 +23,7 @@ class archmage_pet_bot : public CreatureScript
 public:
     archmage_pet_bot() : CreatureScript("archmage_pet_bot") { }
 
-    CreatureAI* GetAI(Creature* creature) const
+    CreatureAI* GetAI(Creature* creature) const override
     {
         return new awater_elemental_botpetAI(creature);
     }

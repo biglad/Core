@@ -1,5 +1,6 @@
 #include "bot_ai.h"
 #include "bot_GridNotifiers.h"
+#include "botspell.h"
 #include "ScriptMgr.h"
 #include "SpellAuraEffects.h"
 #include "TemporarySummon.h"
@@ -61,32 +62,18 @@ class dark_ranger_bot : public CreatureScript
 public:
     dark_ranger_bot() : CreatureScript("dark_ranger_bot") { }
 
-    CreatureAI* GetAI(Creature* creature) const
+    CreatureAI* GetAI(Creature* creature) const override
     {
         return new dark_ranger_botAI(creature);
     }
 
     struct dark_ranger_botAI : public bot_ai
     {
-/*
-        bool GossipHello(Player* player) override
-        {
-            return OnGossipHello(player, 0);
-        }
-
-        bool GossipSelect(Player* player, uint32 sender, uint32 action) override
-        {
-            return OnGossipSelect(player, me, sender, action);
-        }
-
-        bool GossipSelectCode(Player* player, uint32 sender, uint32 action, char const* code) override
-        {
-            return OnGossipSelectCode(player, me, sender, action, code);
-        }
-*/
         dark_ranger_botAI(Creature* creature) : bot_ai(creature)
         {
             _botclass = BOT_CLASS_DARK_RANGER;
+
+            InitUnitFlags();
 
             //dark ranger immunities
             me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_POSSESS, true);
@@ -266,7 +253,7 @@ public:
         {
         }
 
-        void ApplyClassDamageMultiplierMeleeSpell(int32& damage, SpellNonMeleeDamage& damageinfo, SpellInfo const* spellInfo, WeaponAttackType /*attackType*/, bool /*crit*/) const override
+        void ApplyClassDamageMultiplierMeleeSpell(int32& damage, SpellNonMeleeDamage& damageinfo, SpellInfo const* spellInfo, WeaponAttackType /*attackType*/, bool /*iscrit*/) const override
         {
             uint32 baseId = spellInfo->GetFirstRankSpell()->Id;
             float flat_mod = 0.f;
@@ -280,7 +267,7 @@ public:
             damage = int32(damage * pctbonus + flat_mod);
         }
 
-        void ApplyClassDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* /*spellInfo*/, WeaponAttackType /*attackType*/, bool /*crit*/) const override
+        void ApplyClassDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* /*spellInfo*/, WeaponAttackType /*attackType*/, bool /*iscrit*/) const override
         {
             //uint32 baseId = spellInfo->GetFirstRankSpell()->Id;
             //uint8 lvl = me->GetLevel();
@@ -289,7 +276,7 @@ public:
 
             //2) apply bonus damage mods
             float pctbonus = 1.0f;
-            //if (crit)
+            //if (iscrit)
             //{
             //    //!!!spell damage is not yet critical and will be multiplied by 1.5
             //    //so we should put here bonus damage mult /1.5
@@ -479,7 +466,7 @@ public:
             myPet->SetFaction(master->GetFaction());
             myPet->SetControlledByPlayer(!IAmFree());
             myPet->SetPvP(me->IsPvP());
-            myPet->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
+            myPet->SetUnitFlag(UNIT_FLAG_PLAYER_CONTROLLED);
             myPet->SetByteValue(UNIT_FIELD_BYTES_2, 1, master->GetByteValue(UNIT_FIELD_BYTES_2, 1));
             myPet->SetUInt32Value(UNIT_CREATED_BY_SPELL, BLACK_ARROW_1);
 

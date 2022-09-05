@@ -1,5 +1,6 @@
 #include "bot_ai.h"
 #include "botmgr.h"
+#include "botspell.h"
 #include "GameEventMgr.h"
 #include "Group.h"
 #include "Item.h"
@@ -166,7 +167,7 @@ class mage_bot : public CreatureScript
 public:
     mage_bot() : CreatureScript("mage_bot") { }
 
-    CreatureAI* GetAI(Creature* creature) const
+    CreatureAI* GetAI(Creature* creature) const override
     {
         return new mage_botAI(creature);
     }
@@ -516,7 +517,7 @@ public:
                     return;
             }
             //Scorch
-            if (IsSpellReady(SCORCH_1, diff) && GetSpec() == BOT_SPEC_MAGE_FIRE && dist < CalcSpellMaxRange(SCORCH_1) &&
+            if (IsSpellReady(SCORCH_1, diff) && GetSpec() == BOT_SPEC_MAGE_FIRE && dist < CalcSpellMaxRange(SCORCH_1) && me->GetLevel() >= 25 &&
                 !opponent->GetAuraEffect(SPELL_AURA_MOD_ATTACKER_SPELL_CRIT_CHANCE, SPELLFAMILY_MAGE, 0x0, 0x2000, 0x0))
             {
                 if (doCast(opponent, GetSpell(SCORCH_1)))
@@ -595,7 +596,8 @@ public:
                 if (doCast(opponent, GetSpell(ARCANE_BLAST_1)))
                     return;
             }
-            if (IsSpellReady(FROSTFIREBOLT, diff) && (_spec == BOT_SPEC_MAGE_FIRE || !GetSpell(ARCANE_BLAST_1)) &&
+            if (IsSpellReady(FROSTFIREBOLT, diff) && (_spec == BOT_SPEC_MAGE_FIRE ||
+                (_spec == BOT_SPEC_MAGE_FROST && (FROSTFIREBOLT == FROSTFIRE_BOLT_1 || !GetSpell(FROSTBOLT_1)))) &&
                 dist < CalcSpellMaxRange(FROSTFIREBOLT))
             {
                 if (doCast(opponent, GetSpell(FROSTFIREBOLT)))
@@ -767,7 +769,8 @@ public:
                                 if (!cre || !cre->IsInWorld() || cre == me || !cre->IsAlive() ||
                                     cre->GetPowerType() != POWER_MANA || cre->GetBotAI()->HasRole(BOT_ROLE_TANK) ||
                                     cre->GetBotClass() == BOT_CLASS_BM || cre->GetBotClass() == BOT_CLASS_HUNTER ||
-                                    cre->GetBotClass() == BOT_CLASS_SPELLBREAKER || cre->GetBotClass() == BOT_CLASS_DARK_RANGER)
+                                    cre->GetBotClass() == BOT_CLASS_SPELLBREAKER || cre->GetBotClass() == BOT_CLASS_DARK_RANGER ||
+                                    cre->GetBotClass() == BOT_CLASS_SEA_WITCH)
                                     continue;
                                 if (cre->GetBotAI()->HasRole(BOT_ROLE_DPS) && me->GetExactDist(cre) < 30 &&
                                     !cre->HasAura(FOCUSMAGIC))
@@ -793,7 +796,8 @@ public:
                                 if (!cre || !cre->IsInWorld() || cre == me || !cre->IsAlive() ||
                                     cre->GetPowerType() != POWER_MANA || cre->GetBotAI()->HasRole(BOT_ROLE_TANK) ||
                                     cre->GetBotClass() == BOT_CLASS_BM || cre->GetBotClass() == BOT_CLASS_HUNTER ||
-                                    cre->GetBotClass() == BOT_CLASS_SPELLBREAKER || cre->GetBotClass() == BOT_CLASS_DARK_RANGER)
+                                    cre->GetBotClass() == BOT_CLASS_SPELLBREAKER || cre->GetBotClass() == BOT_CLASS_DARK_RANGER ||
+                                    cre->GetBotClass() == BOT_CLASS_SEA_WITCH)
                                     continue;
                                 if (me->GetExactDist(cre) < 30 &&
                                     !cre->HasAura(FOCUSMAGIC))
@@ -958,7 +962,7 @@ public:
                 crit_chance += 2.f;
         }
 
-        void ApplyClassDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& damageinfo, SpellInfo const* spellInfo, WeaponAttackType /*attackType*/, bool crit) const override
+        void ApplyClassDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& damageinfo, SpellInfo const* spellInfo, WeaponAttackType /*attackType*/, bool iscrit) const override
         {
             uint32 baseId = spellInfo->GetFirstRankSpell()->Id;
             uint8 lvl = me->GetLevel();
@@ -966,7 +970,7 @@ public:
 
             //apply bonus damage mods
             float pctbonus = 0.0f;
-            if (crit)
+            if (iscrit)
             {
                 //!!!spell damage is not yet critical and will be multiplied by 1.5
                 //so we should put here bonus damage mult /1.5
@@ -1568,7 +1572,7 @@ public:
             myPet->SetFaction(master->GetFaction());
             myPet->SetControlledByPlayer(!IAmFree());
             myPet->SetPvP(me->IsPvP());
-            myPet->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
+            myPet->SetUnitFlag(UNIT_FLAG_PLAYER_CONTROLLED);
             myPet->SetByteValue(UNIT_FIELD_BYTES_2, 1, master->GetByteValue(UNIT_FIELD_BYTES_2, 1));
             myPet->SetUInt32Value(UNIT_CREATED_BY_SPELL, SUMMON_WATER_ELEMENTAL_1);
 

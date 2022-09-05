@@ -1,4 +1,5 @@
 #include "bot_ai.h"
+#include "botspell.h"
 #include "bpet_ai.h"
 #include "Player.h"
 #include "ScriptMgr.h"
@@ -32,7 +33,7 @@ class dark_ranger_pet_bot : public CreatureScript
 public:
     dark_ranger_pet_bot() : CreatureScript("dark_ranger_pet_bot") { }
 
-    CreatureAI* GetAI(Creature* creature) const
+    CreatureAI* GetAI(Creature* creature) const override
     {
         return new dark_ranger_botpetAI(creature);
     }

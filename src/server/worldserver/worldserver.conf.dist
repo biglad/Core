@@ -335,6 +335,13 @@ SessionAddDelay = 10000
 GridCleanUpDelay = 300000
 
 #
+#    MinWorldUpdateTime
+#        Description: Minimum time (milliseconds) between world update ticks (for mostly idle servers).
+#        Default:     1 - (0.001 second)
+
+MinWorldUpdateTime = 1
+
+#
 #    MapUpdateInterval
 #        Description: Time (milliseconds) for map update interval.
 #        Default:     10 - (0.01 second)
@@ -1987,8 +1994,23 @@ ChatFlood.MessageCount = 10
 ChatFlood.MessageDelay = 1
 
 #
+#    ChatFlood.AddonMessageCount
+#        Description: Chat flood protection, number of addon messages before player gets muted.
+#        Default:     100 - (Enabled)
+#                     0  - (Disabled)
+
+ChatFlood.AddonMessageCount = 100
+
+#
+#    ChatFlood.AddonMessageDelay
+#        Description: Time (in seconds) between addon messages to be counted into ChatFlood.AddonMessageCount.
+#        Default:     1
+
+ChatFlood.AddonMessageDelay = 1
+
+#
 #    ChatFlood.MuteTime
-#        Description: Time (in seconds) characters get muted for violating ChatFlood.MessageCount.
+#        Description: Time (in seconds) characters get muted for violating ChatFlood.MessageCount / ChatFlood.AddonMessageCount.
 #        Default:     10
 
 ChatFlood.MuteTime = 10
@@ -4091,7 +4113,7 @@ Metric.Enable = 0
 #        Default:     10 seconds
 #
 
-Metric.Interval = 10
+Metric.Interval = 1
 
 #
 #    Metric.ConnectionInfo
@@ -4178,13 +4200,14 @@ NpcBot.BaseFollowDistance = 30
 NpcBot.XpReduction = 0
 
 #
-#    NpcBot.HealTargetIconsMask
+#    NpcBot.HealTargetIconMask
+#    NpcBot.TankTargetIconMask
 #    NpcBot.OffTankTargetIconMask
 #    NpcBot.DPSTargetIconMask
 #    NpcBot.RangedDPSTargetIconMask
 #    NpcBot.NoDPSTargetIconMask
 #        Description: Icon number bitmask which bots use to search for primary attack
-#                     target, off-tanking target, target to heal and protect (out of party),
+#                     target, (off-)tanking target, target to heal and protect (out of party),
 #                     or target to try to not damage.
 #        Note:        Many creatures cannot accept heal.
 #        Note2:       While icon is active NPCBot ddealers/tanks will ignore any other targets
@@ -4201,7 +4224,8 @@ NpcBot.XpReduction = 0
 #                     64 - Cross
 #                     128 - Skull
 
-NpcBot.HealTargetIconsMask = 0
+NpcBot.HealTargetIconMask = 0
+NpcBot.TankTargetIconMask = 0
 NpcBot.OffTankTargetIconMask = 0
 NpcBot.DPSTargetIconMask = 0
 NpcBot.RangedDPSTargetIconMask = 0
@@ -4344,6 +4368,7 @@ NpcBot.Gossip.ShowEquipmentListItems = 0
 #                     1 - (NpcBot.NewClasses.SpellBreaker.Enable)
 #                     1 - (NpcBot.NewClasses.DarkRanger.Enable)
 #                     1 - (NpcBot.NewClasses.Necromancer.Enable)
+#                     1 - (NpcBot.NewClasses.SeaWitch.Enable)
 
 NpcBot.NewClasses.Blademaster.Enable       = 1
 NpcBot.NewClasses.ObsidianDestroyer.Enable = 1
@@ -4352,6 +4377,7 @@ NpcBot.NewClasses.Dreadlord.Enable         = 1
 NpcBot.NewClasses.SpellBreaker.Enable      = 1
 NpcBot.NewClasses.DarkRanger.Enable        = 1
 NpcBot.NewClasses.Necromancer.Enable       = 1
+NpcBot.NewClasses.SeaWitch.Enable          = 1
 
 #
 #    NpcBot.Stats.Limits.Enable
@@ -4395,6 +4421,14 @@ NpcBot.InfoPacketsLimit = -1
 #                     604800 - (7 Days)
 
 NpcBot.OwnershipExpireTime = 0
+
+#
+#    NpcBot.EnrageOnDismiss
+#        Description: Enable Berserk buff when bot is dismissed and related hostile reaction.
+#        Default:     1 - (Enabled)
+#                     0 - (Disabled)
+
+NpcBot.EnrageOnDismiss = 1
 
 #
 ###################################################################################################

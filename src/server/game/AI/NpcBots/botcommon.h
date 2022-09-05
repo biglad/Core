@@ -23,51 +23,12 @@ enum BotCommonValues
     BOT_GIVER_ENTRY                     = 70000,
     BOT_ENTRY_BEGIN                     = 70001,
     BOT_ENTRY_END                       = 71000,
-    BOT_PET_ENTRY_BEGIN                 = 70501,
-    BOT_PET_ENTRY_END                   = 70550,
+    BOT_ENTRY_CREATE_BEGIN              = 70800, // 70800 - 71000 reserved for bot creation
+    //BOT_PET_ENTRY_BEGIN                 = 70501,
+    //BOT_PET_ENTRY_END                   = 70550,
     BOT_ENTRY_MIRROR_IMAGE_BM           = 70552,
-    BOT_ICON_ON                         = 9,    //GOSSIP_ICON_BATTLE,
-    BOT_ICON_OFF                        = 0,    //GOSSIP_ICON_CHAT,
     BOT_MAX_CHASE_RANGE                 = 120,  //yds
     //BOT_EVADE_TIME                      = 3000, //ms
-//COMMON SPELLS
-    PVPTRINKET                          = 42292,//PvP Trinket no CD
-    BERSERK                             = 46587,//68378,//900%/150%
-    MODEL_TRANSITION                    = 24753,//"Trick" cannot cast or attack
-    SUMMONING_DISORIENTATION            = 32752,
-    ACTIVATE_SPEC                       = 63645,//Activate Primary Spec
-    SHOOT_WAND                          = 5019,
-///Passives
-    DAMAGE_REDUCTION                    = 68066,//Vigilance, Blessing of Sanctuary, etc.
-///Passives for Pets
-    DAMAGEDONE_PASSIVE                  = 30147,//for custom value, Tamed Pet Passive (DND) physical at 0, magic at 1
-    DAMAGETAKEN_PASSIVE                 = 35697,//for custom value, Pet Passive (DND), single effect (aura 87 at 0)
-    SPELLDAMAGE_PASSIVE                 = 43922,//for custom value, Increase Spell Dam 473, single effect (aura 13 at 0)
-    SPELLPENETRATION_PASSIVE            = 25975,//for custom value, Spell Penetration 10, single effect (aura 123 at 0)
-    SPELLHASTE_PASSIVE                  = 44400,//for custom value, Netherwind Presence rank 1, single effect (aura 65 at 0)
-    CRITBONUS_PASSIVE                   = 35695,//for custom value, Pet Passive (DND), spell at 0, physical at 1
-///Racials
-    RACIAL_EVERY_MAN_FOR_HIMSELF        = 59752,//pvp trinket effect, instant, 2 min cd
-    RACIAL_BLOOD_FURY_WARLOCK           = 33702,//effect varies, 15 sec, 2 min cd
-    RACIAL_BLOOD_FURY_SHAMAN            = 33697,
-    RACIAL_BLOOD_FURY_OTHERS            = 20572,
-    RACIAL_STONEFORM                    = 20594,//dispell disease, poison, bleed, instant, 2 min cd
-    //RACIAL_FIND_TREASURE                = 2481,
-    RACIAL_SHADOWMELD                   = 58984,//stealth, -threat, instant, 2 min cd
-    RACIAL_WILL_OF_THE_FORSAKEN         = 7744,//dispel charm/fear/sleep, instant, 2 min cd, 45 sec category cd
-    RACIAL_WARSTOMP                     = 20549,//2sec stun, casttime 500, 8yd, 2 min cd
-    RACIAL_ESCAPE_ARTIST                = 20589,//dispel snare/root, instant, 1 min 45 sec cd
-    RACIAL_BERSERKING                   = 26297,//haste all 20%, isntant, 3 min cd
-    RACIAL_ARCANE_TORRENT_DEATHKNIGHT   = 50613,//2sec AoE silence + energize, instant, 2 min cd
-    RACIAL_ARCANE_TORRENT_ROGUE         = 25046,
-    RACIAL_ARCANE_TORRENT_OTHERS        = 28730,
-    RACIAL_GIFT_OF_NAARU_WARRIOR        = 28880,//Hot over 15 sec, instant, 2 min cd
-    RACIAL_GIFT_OF_NAARU_PALADIN        = 59542,
-    RACIAL_GIFT_OF_NAARU_HUNTER         = 59543,
-    RACIAL_GIFT_OF_NAARU_PRIEST         = 59544,
-    RACIAL_GIFT_OF_NAARU_DEATHKNIGHT    = 59545,
-    RACIAL_GIFT_OF_NAARU_SHAMAN         = 59547,
-    RACIAL_GIFT_OF_NAARU_MAGE           = 59548,
 //COMMON GAMEOBJECTS
     GO_REFRESHMENT_TABLE_1              = 186812,//lvl 65 req70
     GO_REFRESHMENT_TABLE_2              = 193061,//lvl 80 req80
@@ -88,7 +49,9 @@ enum BotCommonValues
     GOSSIP_NORMAL_CUSTOM_DREADLORD      = 70007,
     GOSSIP_GREET_CUSTOM_DARKRANGER      = 70008,
     GOSSIP_NORMAL_CUSTOM_DARKRANGER     = 70009,
-    //70010-70100 reserved for bot gossip texts (not selectable)
+    GOSSIP_GREET_CUSTOM_SEAWITCH        = 70010,
+    GOSSIP_NORMAL_CUSTOM_SEAWITCH       = 70011,
+    //70012-70100 reserved for bot gossip texts (not selectable)
     GOSSIP_CLASSDESC_BM                 = 70101,
     GOSSIP_CLASSDESC_SPHYNX             = 70102,
     GOSSIP_CLASSDESC_ARCHMAGE           = 70103,
@@ -96,7 +59,8 @@ enum BotCommonValues
     GOSSIP_CLASSDESC_SPELLBREAKER       = 70105,
     GOSSIP_CLASSDESC_DARKRANGER         = 70106,
     GOSSIP_CLASSDESC_NECROMANCER        = 70107,
-    //70108-70200 reserved for bot class descriptions gossip texts (not selectable)
+    GOSSIP_CLASSDESC_SEAWITCH           = 70108,
+    //70109-70200 reserved for bot class descriptions gossip texts (not selectable)
     GOSSIP_BOTGIVER_GREET               = 70201,
     GOSSIP_BOTGIVER_HIRE                = 70202,
     GOSSIP_BOTGIVER_HIRE_CLASS          = 70203,
@@ -558,7 +522,14 @@ enum BotCommonValues
     BOT_TEXT_ATTACK_ANGLE               = 70648, //"Attack angle"
     BOT_TEXT_NORMAL                     = 70649, //"Normal"
     BOT_TEXT_AVOID_FRONTAL_AOE          = 70650, //"Avoid frontal AOE"
-    //70651-70799 reserved for custom localization strings
+    BOT_TEXT_HIREDENY_SEAWITCH          = 70651, //NIY
+    BOT_TEXT_HIREWARN_SEAWITCH          = 70652, //"Are you sure this is gonna work? It's better be the best water in the world..."
+    BOT_TEXT_HIREOPTION_SEAWITCH        = 70653, //"Seems like you could really use a drink of fresh water."
+    BOT_TEXT_CLASS_SEAWITCH_PLU         = 70654, //"Sea Witches"
+    BOT_TEXT_CLASS_SEAWITCH             = 70655, //"Sea Witch"
+    BOT_TEXT_MANA_PER_DAMAGE            = 70656, //"Mana per damage"
+    BOT_TEXT_DAMAGE_PER_MANA            = 70657, //"Damage per mana"
+    //70658-70799 reserved for custom localization strings
 //VEHICLE CREATURES
     CREATURE_NEXUS_SKYTALON_1           = 32535, // [Q] Aces High
     CREATURE_EOE_SKYTALON_N             = 30161, // Eye of Eternity
@@ -584,12 +555,42 @@ enum BotCommonValues
     CREATURE_ULDUAR_SIEGE_ENGINE        = 33060,
     CREATURE_ULDUAR_CHOPPER             = 33062,
     CREATURE_ULDUAR_CHOPPER1            = 34045,
-    CREATURE_ICC_BONE_SPIKE1            = 36619,
+    CREATURE_ICC_BONE_SPIKE1            = 36619, // Icecrown Citadel
     CREATURE_ICC_BONE_SPIKE2            = 38712,
     CREATURE_ICC_BONE_SPIKE3            = 38711,
+    CREATURE_ICC_GUNSHIPCANNON_ALLIANCE = 36838,
+    CREATURE_ICC_GUNSHIPCANNON_HORDE    = 36839,
+    CREATURE_ICC_MUTATED_ABOMINATION1   = 38285,
+    CREATURE_ICC_MUTATED_ABOMINATION2   = 38788,
+    CREATURE_ICC_MUTATED_ABOMINATION3   = 38789,
+    CREATURE_ICC_MUTATED_ABOMINATION4   = 38790,
+    CREATURE_ICC_MUTATED_ABOMINATION5   = 37672,
+    CREATURE_ICC_MUTATED_ABOMINATION6   = 38605,
+    CREATURE_ICC_MUTATED_ABOMINATION7   = 38786,
+    CREATURE_ICC_MUTATED_ABOMINATION8   = 38787,
+//COMMON AOE TRIGGERS
+    CREATURE_ZA_FIRE_BOMB               = 23920,
+    CREATURE_EOE_STATIC_FIELD           = 30592,
+    CREATURE_ICC_OOZE_PUDDLE            = 37690,
 //COMMON ENEMY CREATURES
     CREATURE_BOSS_EREGOS_N              = 27656,
     CREATURE_BOSS_EREGOS_H              = 31561,
+    CREATURE_ICC_SINDRAGOSA1            = 36853,
+    CREATURE_ICC_SINDRAGOSA2            = 38265,
+    CREATURE_ICC_SINDRAGOSA3            = 38266,
+    CREATURE_ICC_SINDRAGOSA4            = 38267,
+    CREATURE_ICC_ICE_TOMB1              = 36980,
+    CREATURE_ICC_ICE_TOMB2              = 38320,
+    CREATURE_ICC_ICE_TOMB3              = 38321,
+    CREATURE_ICC_ICE_TOMB4              = 38322,
+    CREATURE_ICC_VALKYR_LK1             = 36609,
+    CREATURE_ICC_VALKYR_LK2             = 39120,
+    CREATURE_ICC_VALKYR_LK3             = 39121,
+    CREATURE_ICC_VALKYR_LK4             = 39122,
+    CREATURE_ICC_ICE_SPHERE1            = 36633,
+    CREATURE_ICC_ICE_SPHERE2            = 39305,
+    CREATURE_ICC_ICE_SPHERE3            = 39306,
+    CREATURE_ICC_ICE_SPHERE4            = 39307,
 //COMMON NPCS
     SHAMAN_EARTH_ELEMENTAL              = 15352,
     SHAMAN_FIRE_ELEMENTAL               = 15438,
@@ -601,9 +602,6 @@ enum BotCommonValues
     GAME_EVENT_WINTER_VEIL              = 2,
 //COMMON FACTIONS
     FACTION_TEMPLATE_HATES_EVERYTHING_1 = 2150, //faction 966 - Monster spar buddy
-//COMMON MOUNTS SPELLS
-    REINDEER                            = 25859,
-    REINDEER_FLY                        = 44827,
 //COMMON AI MISC VALUES
     BOTAI_MISC_COMBO_POINTS             = 1,
     BOTAI_MISC_DAGGER_MAINHAND,
@@ -635,90 +633,6 @@ enum BotCommonValues
     BOTAI_MISC_WEAPON_SPEC,
     BOTPETAI_MISC_DURATION,
     BOTPETAI_MISC_MAXLEVEL,
-//ADVANCED
-    //HONORLESS_TARGET                    = 2479,
-    COSMETIC_TELEPORT_EFFECT            = 52096,//visual instant cast omni
-    COSMETIC_RESURRECTION               = 58854,//visual instant cast self (castable while dead, hidden)
-    SUMMON_DEMON_VISUAL                 = 6657,//SUMMON_SERPENT_MESSENGER
-    CALL_PET_VISUAL                     = 30416,//QUEST_WOOD_CLEANSE_EFFECT
-    SPELL_VERTEX_COLOR_BLACK            = 39662,//black color model full
-    SPELL_VERTEX_COLOR_GREY             = 43355,//grey color model full
-////CUSTOM SPELLS - UNUSED IN CODE AND DB
-  //common
-  //modify
-    SPELL_TRIGGERED_HEAL                = 25155,//hidden
-  //unmodify
-    SPELL_ATTACK_MELEE_1H               = 42880,
-    SPELL_TRIGGERED_ENERGIZE            = 60628,//hidden
-//BLADEMASTER
-  //SPELLS
-  //unmodify
-    //SPELL_DEATH_GRIP_JUMP               = 49575,
-/**/SPELL_CRITICAL_STRIKE               = 1132,
-    SPELL_BURNING_BLADE_BLADEMASTER     = 32281,//horde flag visual
-    SPELL_STUN_FREEZE_ANIM              = 59123,//stun forever, full stop
-  //modify
-    SPELL_TRANSPARENCY_50               = 44816,
-/**/SPELL_NETHERWALK                    = 31599,
-/**/SPELL_MIRROR_IMAGE_BM               = 69936,//blank spell
-    SPELL_COMBAT_SPECIAL_2H_ATTACK      = 44079,//animation only
-//SPHYNX
-  //modify
-    SPELL_SHADOW_BOLT1                  = 16408,
-    SPELL_SHADOW_BLAST                  = 38085,
-    //SPELL_SHADOW_BLAST_SPLASH           = 38205,
-    SPELL_ATTACK_MELEE_RANDOM           = 42902,
-    SHADOWFURY_VISUAL                   = 47444,//59912,
-    SPELL_DEVOUR_MAGIC                  = 17012,//used by Spellmaw but no matter (this spell does not work as intended)
-    SPELL_DRAIN_MANA                    = 25755,
-    SPELL_REPLENISH_MANA                = 33394,//5406,
-    SPELL_REPLENISH_HEALTH              = 34756,//regenerating aura
-  //unmodify
-    SPELL_DEVOUR_MAGIC_CASTER_IMPACT    = 50527,
-    SPELL_DEVOUR_MAGIC_BEAM             = 54393,
-//ARCHMAGE
-  //modify
-    SPELL_BRILLIANCE_AURA               = 1234,
-    SPELL_FIREBALL                      = 9488,
-    SPELL_BLIZZARD                      = 15783,
-    SPELL_SUMMON_WATER_ELEMENTAL        = 35593,
-    SPELL_WATERBOLT                     = 72898,
-  //unmodify
-//DREADLORD
-  //modify
-    SPELL_VAMPIRIC_AURA                 = 20810,
-    SPELL_SLEEP                         = 20663,
-    SPELL_CARRION_SWARM                 = 34240,
-    SPELL_INFERNO                       = 12740, //summon infernal servant
-    SPELL_INFERNO_METEOR_VISUAL         = 5739, //meteor strike infernal
-  //unmodify
-    SPELL_INFERNO_EFFECT                = 22703, //stun, damage (warlock spell)
-    //SPELL_INFERNO_IMPACT_EXPLOSION      = 00000, //visual
-//SPELLBREAKER
-  //modify
-    SPELL_STEAL_MAGIC                   = 30036, //used by Ethereal Spellfilcher
-    SPELL_FEEDBACK                      = 32897,
-  //unmodify
-//DARK RANGER
-  //modify
-    SPELL_BLACK_ARROW                   = 20733, //supposed to be used by Dark Ranger Clea
-    SPELL_DRAIN_LIFE                    = 17238, //used by Maleki the Palid, supposed to be by Shadow Adept (31145)
-    SPELL_SILENCE                       = 29943,
-    //SPELL_CHARM                         = 11111, //
-  //unmodify
-//NECROMANCER
-  //modify
-    SPELL_SHADOW_BOLT2                  = 17509,
-    SPELL_RAISE_DEAD                    = 34011,
-    SPELL_UNHOLY_FRENZY                 = 52499,
-    SPELL_CRIPPLE                       = 50379,
-    SPELL_CORPSE_EXPLOSION              = 61614,
-    //SPELL_BONE_SHIELD                   = 0,//27688, //NIY //NO VIABLE SPELLS
-    //for Attract faction reaction must be adjusted at Object.cpp::GetFactionReactionTo(L2831)
-    //SPELL_BLOOD_CURSE                   = 29933, //NIY for Attract //NO VIABLE SPELLS
-  //unmodify
-    CORPSE_EXPLOSION_VISUAL             = 60081, //explosion
-
   //SOUNDS
     SOUND_FREEZE_IMPACT_WINDWALK        = 29,
     SOUND_AXE_2H_IMPACT_FLESH_CRIT      = 158,
@@ -737,11 +651,14 @@ enum BotCommonValues
     BASE_MANA_10_ARCHMAGE               = 705 * 5,
     BASE_MANA_10_DREADLORD              = 600 * 5,
     BASE_MANA_10_DARK_RANGER            = 570 * 5,
+    BASE_MANA_10_SEA_WITCH              = 735 * 5,
     //base mana at 1
     BASE_MANA_1_BM                      = 240 * 5,
     BASE_MANA_1_ARCHMAGE                = 285 * 5,
     BASE_MANA_1_DREADLORD               = 270 * 5,
     BASE_MANA_1_DARK_RANGER             = 225 * 5,
+    BASE_MANA_1_SEA_WITCH               = 330 * 5,
+
     //MAX_LOOT_ITEMS                      = 18 // Client limitation 3.3.5 code confirmed
 };
 
@@ -766,10 +683,12 @@ enum BotClasses : uint8
     BOT_CLASS_SPELLBREAKER,
     BOT_CLASS_DARK_RANGER,
     BOT_CLASS_NECROMANCER,
-    BOT_CLASS_END
-};
+    BOT_CLASS_SEA_WITCH,
 
-#define BOT_CLASS_EX_START BOT_CLASS_BM
+    BOT_CLASS_END,
+
+    BOT_CLASS_EX_START                  = BOT_CLASS_BM
+};
 
 enum BotStances
 {
@@ -961,6 +880,8 @@ enum BotPetTypes
     //Necromancer
     BOT_PET_NECROSKELETON               = 70580,
 
+    BOT_PET_TORNADO                     = 70586,
+
     BOT_PET_INVALID                     = 99999
 };
 
@@ -1091,6 +1012,7 @@ enum BotCommandStates
     BOT_COMMAND_COMBATRESET             = 0x08,
     BOT_COMMAND_FULLSTOP                = 0x10,
     BOT_COMMAND_ISSUED_ORDER            = 0x20,
+    BOT_COMMAND_WALK                    = 0x40,
 
     BOT_COMMAND_MASK_UNCHASE            = BOT_COMMAND_STAY | BOT_COMMAND_FOLLOW | BOT_COMMAND_FULLSTOP,
     BOT_COMMAND_MASK_UNMOVING           = BOT_COMMAND_STAY | BOT_COMMAND_FULLSTOP | BOT_COMMAND_ISSUED_ORDER

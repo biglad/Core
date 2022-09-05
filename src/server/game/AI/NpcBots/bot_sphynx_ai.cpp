@@ -1,6 +1,7 @@
 #include "bot_ai.h"
 #include "bot_GridNotifiers.h"
 #include "botmgr.h"
+#include "botspell.h"
 #include "Creature.h"
 #include "ScriptMgr.h"
 /*
@@ -63,7 +64,7 @@ class sphynx_bot : public CreatureScript
 public:
     sphynx_bot() : CreatureScript("sphynx_bot") { }
 
-    CreatureAI* GetAI(Creature* creature) const
+    CreatureAI* GetAI(Creature* creature) const override
     {
         return new sphynx_botAI(creature);
     }
@@ -92,6 +93,8 @@ public:
         sphynx_botAI(Creature* creature) : bot_ai(creature)
         {
             _botclass = BOT_CLASS_SPHYNX;
+
+            InitUnitFlags();
 
             //sphynx immunities
             me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_POSSESS, true);
@@ -348,7 +351,7 @@ public:
                 return;
         }
 
-        void ApplyClassDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* /*spellInfo*/, WeaponAttackType /*attackType*/, bool crit) const override
+        void ApplyClassDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* /*spellInfo*/, WeaponAttackType /*attackType*/, bool iscrit) const override
         {
             //uint32 baseId = spellInfo->GetFirstRankSpell()->Id;
             //uint8 lvl = me->getLevel();
@@ -356,7 +359,7 @@ public:
 
             //apply bonus damage mods
             float pctbonus = 1.0f;
-            if (crit)
+            if (iscrit)
                 pctbonus *= 1.333f;
 
             damage = int32(fdamage * pctbonus);
@@ -368,7 +371,7 @@ public:
 
             if (baseId == MAIN_ATTACK_1 || baseId == SPLASH_ATTACK_1 || baseId == DEVOUR_MAGIC_1 ||
                 baseId == DRAIN_MANA_1 || baseId == REPLENISH_MANA_1 || baseId == REPLENISH_HEALTH_1)
-                GC_Timer = me->GetAttackTime(BASE_ATTACK);
+                GC_Timer = uint32(me->GetAttackTime(BASE_ATTACK) * me->m_modAttackSpeedPct[BASE_ATTACK]);
 
             if (baseId == SPLASH_ATTACK_1)
                 me->CastSpell(me, MH_ATTACK_ANIM, true);

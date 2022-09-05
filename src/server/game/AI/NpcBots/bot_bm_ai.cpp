@@ -1,5 +1,6 @@
 #include "bot_ai.h"
 #include "botmgr.h"
+#include "botspell.h"
 #include "Log.h"
 #include "MotionMaster.h"
 #include "ObjectAccessor.h"
@@ -48,29 +49,13 @@ class blademaster_bot : public CreatureScript
 public:
     blademaster_bot() : CreatureScript("blademaster_bot") { }
 
-    CreatureAI* GetAI(Creature* creature) const
+    CreatureAI* GetAI(Creature* creature) const override
     {
         return new blademaster_botAI(creature);
     }
 
     struct blademaster_botAI : public bot_ai
     {
-/*
-        bool GossipHello(Player* player) override
-        {
-            return OnGossipHello(player, 0);
-        }
-
-        bool GossipSelect(Player* player, uint32 sender, uint32 action) override
-        {
-            return OnGossipSelect(player, me, sender, action);
-        }
-
-        bool GossipSelectCode(Player* player, uint32 sender, uint32 action, char const* code) override
-        {
-            return OnGossipSelectCode(player, me, sender, action, code);
-        }
-*/
     private:
         //DelayedMeleeDamageEvent - Blademaster
         //deals critical damage, resets attack timer and sends fake log
@@ -203,6 +188,9 @@ public:
         blademaster_botAI(Creature* creature) : bot_ai(creature)
         {
             _botclass = BOT_CLASS_BM;
+
+            InitUnitFlags();
+
             //Blademaster cannot be disarmed
             me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_DISARM, true);
         }

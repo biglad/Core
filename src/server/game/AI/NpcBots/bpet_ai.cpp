@@ -6,28 +6,29 @@
 #include "MotionMaster.h"
 #include "ObjectMgr.h"
 #include "SpellAuraEffects.h"
+#include "Transport.h"
 #include "World.h"
 /*
 NpcBot Pet System by Trickerer (https://github.com/trickerer/Trinity-Bots; onlysuffering@gmail.com)
 */
 
-#define SHAMAN_MAX_PET_POSITIONS 2
-#define DRUID_MAX_PET_POSITIONS 3
-#define DK_MAX_PET_POSITIONS 10
-#define DARK_RANGER_MAX_PET_POSITIONS 5
-#define NECROMANCER_MAX_PET_POSITIONS 6
-float const ShamanPetPositionAnglesByPosNumber[SHAMAN_MAX_PET_POSITIONS] =
+static constexpr uint32 SHAMAN_MAX_PET_POSITIONS = 2;
+static constexpr uint32 DRUID_MAX_PET_POSITIONS = 3;
+static constexpr uint32 DK_MAX_PET_POSITIONS = 10;
+static constexpr uint32 DARK_RANGER_MAX_PET_POSITIONS = 5;
+static constexpr uint32 NECROMANCER_MAX_PET_POSITIONS = 6;
+float constexpr ShamanPetPositionAnglesByPosNumber[SHAMAN_MAX_PET_POSITIONS] =
 {
     0.f,//left
     float(M_PI)//right
 };
-float const DruidPetPositionAnglesByPosNumber[DRUID_MAX_PET_POSITIONS] =
+float constexpr DruidPetPositionAnglesByPosNumber[DRUID_MAX_PET_POSITIONS] =
 {
     0.f,//left
     float(M_PI)/2,//back
     float(M_PI)//right
 };
-float const DKPetPositionAnglesByPosNumber[DK_MAX_PET_POSITIONS] =
+float constexpr DKPetPositionAnglesByPosNumber[DK_MAX_PET_POSITIONS] =
 {
     0.f,
     float(M_PI),
@@ -40,7 +41,7 @@ float const DKPetPositionAnglesByPosNumber[DK_MAX_PET_POSITIONS] =
     2.4434609f,//7*M_PI/9
     2.7925268f //8*M_PI/9
 };
-float const DarkRangerPetPositionAnglesByPosNumber[DARK_RANGER_MAX_PET_POSITIONS] =
+float constexpr DarkRangerPetPositionAnglesByPosNumber[DARK_RANGER_MAX_PET_POSITIONS] =
 {
     0.f,
     float(M_PI),
@@ -48,7 +49,7 @@ float const DarkRangerPetPositionAnglesByPosNumber[DARK_RANGER_MAX_PET_POSITIONS
     1.5707963f,//2*M_PI/4
     2.3561944f //3*M_PI/4
 };
-float const NecromancerPetPositionAnglesByPosNumber[NECROMANCER_MAX_PET_POSITIONS] =
+float constexpr NecromancerPetPositionAnglesByPosNumber[NECROMANCER_MAX_PET_POSITIONS] =
 {
     0.f,
     float(M_PI),
@@ -110,7 +111,7 @@ void bot_pet_ai::_calculatePos(Position& pos) const
 {
     float x,y,z;
     //destination
-    if (!petOwner->GetMotionMaster()->GetDestination(x, y, z))
+    if (petOwner->GetTransport() || !petOwner->GetMotionMaster()->GetDestination(x, y, z))
         petOwner->GetPosition(x, y, z);
     //relative angle
     float o = petOwner->GetOrientation() + PET_FOLLOW_ANGLE;
@@ -130,7 +131,8 @@ void bot_pet_ai::_calculatePos(Position& pos) const
     //distance
     x += (PET_FOLLOW_DIST + me->GetCombatReach()) * std::cos(o);
     y += (PET_FOLLOW_DIST + me->GetCombatReach()) * std::sin(o);
-    me->UpdateGroundPositionZ(x, y, z);
+    if (!petOwner->GetTransport())
+        me->UpdateGroundPositionZ(x, y, z);
     if (me->GetPositionZ() < z)
         z += 0.5f; //prevent going underground
 
@@ -161,14 +163,14 @@ void bot_pet_ai::SetBotCommandState(uint8 st, bool force, Position* newpos)
         else
         {
             if (!newpos)
-                _calculatePos(pos);
+                _calculatePos(movepos);
             else
             {
-                pos.m_positionX = newpos->m_positionX;
-                pos.m_positionY = newpos->m_positionY;
-                pos.m_positionZ = newpos->m_positionZ;
+                movepos.m_positionX = newpos->m_positionX;
+                movepos.m_positionY = newpos->m_positionY;
+                movepos.m_positionZ = newpos->m_positionZ;
             }
-            me->GetMotionMaster()->MovePoint(petOwner->GetMapId(), pos);
+            me->GetMotionMaster()->MovePoint(petOwner->GetMapId(), movepos);
         }
         RemoveBotCommandState(BOT_COMMAND_STAY | BOT_COMMAND_FULLSTOP | BOT_COMMAND_ATTACK | BOT_COMMAND_COMBATRESET);
     }
@@ -247,7 +249,7 @@ void bot_pet_ai::CureGroup(uint32 cureSpell, uint32 diff)
 
         for (Unit::ControlList::const_iterator itr = petOwner->GetBotOwner()->m_Controlled.begin(); itr != petOwner->GetBotOwner()->m_Controlled.end(); ++itr)
         {
-            Unit* u = *itr;
+            u = *itr;
             if (!u || !u->IsPet() || !u->IsAlive() || me->GetDistance(u) > 30) continue;
 
             if (_canCureTarget(u, cureSpell))
@@ -279,18 +281,18 @@ void bot_pet_ai::CureGroup(uint32 cureSpell, uint32 diff)
             if (tPlayer->HaveBot())
             {
                 map = tPlayer->GetBotMgr()->GetBotMap();
-                for (BotMap::const_iterator itr = map->begin(); itr != map->end(); ++itr)
+                for (BotMap::const_iterator bitr = map->begin(); bitr != map->end(); ++bitr)
                 {
-                    u = itr->second;
+                    u = bitr->second;
                     if (!u || !u->IsInWorld() || me->GetMap() != u->FindMap() || !u->IsAlive()) continue;
                     if (_canCureTarget(u, cureSpell))
                         targets.push_back(u);
                 }
             }
 
-            for (Unit::ControlList::const_iterator itr = tPlayer->m_Controlled.begin(); itr != tPlayer->m_Controlled.end(); ++itr)
+            for (Unit::ControlList::const_iterator citr = tPlayer->m_Controlled.begin(); citr != tPlayer->m_Controlled.end(); ++citr)
             {
-                Unit* u = *itr;
+                u = *citr;
                 if (!u || !u->IsPet() || !u->IsAlive() || me->GetDistance(u) > 30) continue;
 
                 if (_canCureTarget(u, cureSpell))
@@ -451,6 +453,8 @@ void bot_pet_ai::SetPetStats(bool force)
         case BOT_PET_DARK_MINION_ELITE:
         //necromancer
         case BOT_PET_NECROSKELETON:
+        //sea witch
+        case BOT_PET_TORNADO:
             break;
         default:
             TC_LOG_ERROR("entities.player", "bot_pet_ai::SetPetStats(): unk pet type %u, aborting", myType);
@@ -467,6 +471,7 @@ void bot_pet_ai::SetPetStats(bool force)
         case BOT_PET_DARK_MINION:
         case BOT_PET_DARK_MINION_ELITE:
         case BOT_PET_NECROSKELETON:
+        case BOT_PET_TORNADO:
             if (force == false)
                 return;
             break;
@@ -490,6 +495,7 @@ void bot_pet_ai::SetPetStats(bool force)
         case BOT_CLASS_DRUID:
         case BOT_CLASS_ARCHMAGE:
         case BOT_CLASS_DREADLORD:
+        case BOT_CLASS_SEA_WITCH:
             spdtotal = petOwner->SpellBaseDamageBonusDone(SPELL_SCHOOL_MASK_MAGIC);
             break;
         default:
@@ -663,6 +669,9 @@ void bot_pet_ai::SetPetStats(bool force)
     //Resist  x0.25 -- resistances
     //Stamina x0.8  -- stamina
     //rest is same as warlock
+    // SEA WITCH
+    //Spd     x1.0  -- spd
+    //rest is same as warlock
 
     //attack power
     if (force)
@@ -703,7 +712,7 @@ void bot_pet_ai::SetPetStats(bool force)
             me->SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float(level + (level / 4)));
         }
     }
-    float atpower = /*IAmFree() ? 1000.f :*/ 0; //+1000/+0 base pet ap
+    float atpower = /*IAmFree() ? 1000.f :*/ 0.f; //+1000/+0 base pet ap
     switch (myType)
     {
         case BOT_PET_IMP:
@@ -872,6 +881,7 @@ void bot_pet_ai::SetPetStats(bool force)
                     amount += 9;
                 break;
             case BOT_CLASS_ARCHMAGE:
+            case BOT_CLASS_SEA_WITCH:
                 amount += petOwner->GetCreatureCritChance();
                 break;
             default:
@@ -993,6 +1003,9 @@ void bot_pet_ai::SetPetStats(bool force)
                 amount += int32(spdtotal * 1.0f);
                 break;
             case BOT_CLASS_DREADLORD:
+                amount += int32(spdtotal * 1.0f);
+                break;
+            case BOT_CLASS_SEA_WITCH:
                 amount += int32(spdtotal * 1.0f);
                 break;
             default:
@@ -1179,7 +1192,7 @@ void bot_pet_ai::SetPetStats(bool force)
         float m_totalmana = intValue * intMult/* + me->GetCreatePowerValue(POWER_MANA)*/ + (IAmFree() ? level * 25.f : 0); //+2000/+0 mana at 80
         //TC_LOG_ERROR("entities.player", "SetPetStat(): mana intValue %.1f, intMult %.1f, base %u, total %.2f", intValue, intMult, botPet->GetCreatePowerValue(POWER_MANA), m_totalmana);
         bool fullmana = me->GetPower(POWER_MANA) == me->GetMaxPower(POWER_MANA);
-        float pct = fullmana ? 100.f : (float(me->GetPower(POWER_MANA)) * 100.f) / float(me->GetMaxPower(POWER_MANA));
+        pct = fullmana ? 100.f : (float(me->GetPower(POWER_MANA)) * 100.f) / float(me->GetMaxPower(POWER_MANA));
         me->SetStatFlatModifier(UNIT_MOD_MANA, BASE_VALUE, m_totalmana);
         me->UpdateMaxPower(POWER_MANA);
         me->SetPower(POWER_MANA, fullmana ? me->GetMaxPower(POWER_MANA) :
@@ -1539,6 +1552,7 @@ bool bot_pet_ai::_canRegenerate() const
         case BOT_PET_DARK_MINION:
         case BOT_PET_DARK_MINION_ELITE:
         case BOT_PET_NECROSKELETON:
+        case BOT_PET_TORNADO:
             return false;
         default:
             return true;
@@ -1881,8 +1895,8 @@ void bot_pet_ai::AdjustTankingPosition() const
     float z = me->GetPositionZ();
     float ori = me->GetOrientation();
     float const moveDist = -1.f * std::max<float>(opponent->GetCombatReach() * 0.6f, 3.f);
-    float moveX;
-    float moveY;
+    float moveX = 0.f;
+    float moveY = 0.f;
     for (uint8 i = 0; i != 3; ++i)
     {
         if (i)
@@ -1904,8 +1918,8 @@ void bot_pet_ai::AdjustTankingPosition() const
         }
     }
 
-    x+= moveX;
-    y+= moveY;
+    x += moveX;
+    y += moveY;
 
     me->UpdateAllowedPositionZ(x, y, z);
     if (me->GetPositionZ() < z)
@@ -2091,6 +2105,13 @@ void bot_pet_ai::IsSummonedBy(WorldObject* summoner)
     ASSERT(!me->GetBotPetAI());
     me->SetBotPetAI(this);
     SetPetStats(true);
+    if (petOwner->GetTransport())
+    {
+        petOwner->GetTransport()->AddPassenger(me);
+        me->m_movementInfo.transport.pos.Relocate(petOwner->GetTransOffset());
+        me->Relocate(bot_ai::GetAbsoluteTransportPosition(petOwner));
+        me->AddUnitState(UNIT_STATE_IGNORE_PATHFINDING);
+    }
 }
 //This function is called after Spell::SendSpellCooldown() and Spell::DoAllEffects...() call
 void bot_pet_ai::OnBotPetSpellGo(Spell const* spell, bool ok)
@@ -2249,6 +2270,31 @@ bool bot_pet_ai::GlobalUpdate(uint32 diff)
             //BotWhisper("Somehow we are not is same phase! Fixing that...");
             me->SetPhaseMask(petOwner->GetBotOwner()->GetPhaseMask(), true);
         }
+        if (me->GetTransport() != petOwner->GetBotOwner()->GetTransport())
+        {
+            if (petOwner->GetBotOwner()->GetTransport())
+            {
+                if (me->GetDistance2d(petOwner->GetBotOwner()) < 20.f)
+                {
+                    petOwner->GetBotOwner()->GetTransport()->AddPassenger(me);
+                    me->m_movementInfo.transport.pos.Relocate(petOwner->GetBotOwner()->GetTransOffset());
+                    me->Relocate(bot_ai::GetAbsoluteTransportPosition(petOwner->GetBotOwner()));
+                    me->AddUnitState(UNIT_STATE_IGNORE_PATHFINDING);
+                }
+            }
+            else
+            {
+                switch (me->GetEntry())
+                {
+                    case BOT_PET_TORNADO:
+                        break;
+                    default:
+                        me->ClearUnitState(UNIT_STATE_IGNORE_PATHFINDING);
+                    break;
+                }
+                me->GetTransport()->RemovePassenger(me);
+            }
+        }
         //end DEBUG
     }
 
@@ -2257,19 +2303,19 @@ bool bot_pet_ai::GlobalUpdate(uint32 diff)
     //update flags
     if (!me->IsInCombat())
     {
-        if (me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PET_IN_COMBAT))
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PET_IN_COMBAT);
+        if (me->HasUnitFlag(UNIT_FLAG_PET_IN_COMBAT))
+            me->RemoveUnitFlag(UNIT_FLAG_PET_IN_COMBAT);
     }
 
     //update movement orders if near owner, otherwise get close
     bool closeToOwner = false;
     if (!opponent && !HasBotCommandState(BOT_COMMAND_STAY) && !IsCasting())
     {
-        _calculatePos(pos);
+        _calculatePos(movepos);
         if (!petOwner->isMoving())
         {
-            if (me->GetExactDist(&pos) > 5.f)
-                SetBotCommandState(BOT_COMMAND_FOLLOW, true, &pos);
+            if (me->GetExactDist(&movepos) > 5.f)
+                SetBotCommandState(BOT_COMMAND_FOLLOW, true, &movepos);
             else
                 closeToOwner = true;
         }
@@ -2277,8 +2323,8 @@ bool bot_pet_ai::GlobalUpdate(uint32 diff)
         {
             Position destPos;
             me->GetMotionMaster()->GetDestination(destPos.m_positionX, destPos.m_positionY, destPos.m_positionZ);
-            if (destPos.GetExactDist(&pos) > 5.f)
-                SetBotCommandState(BOT_COMMAND_FOLLOW, true, &pos);
+            if (destPos.GetExactDist(&movepos) > 5.f)
+                SetBotCommandState(BOT_COMMAND_FOLLOW, true, &movepos);
             else
                 closeToOwner = true;
         }
@@ -2304,7 +2350,7 @@ bool bot_pet_ai::GlobalUpdate(uint32 diff)
         checkAurasTimer += uint32(__rand + __rand + (IAmFree() ? 1000 : 40 * (1 + petOwner->GetBotOwner()->GetNpcBotsCount())));
 
         if (!HasBotCommandState(BOT_COMMAND_MASK_UNCHASE) && victim && !CCed(me, true) &&
-            !me->isMoving() && !IsCasting())
+            !me->isMoving() && !IsCasting() && me->GetEntry() != BOT_PET_TORNADO)
         {
             if (!IAmFree() && petOwner->GetBotOwner()->GetBotMgr()->GetBotAttackRangeMode() == BOT_ATTACK_RANGE_EXACT &&
                 petOwner->GetBotOwner()->GetBotMgr()->GetBotExactAttackRange() == 0)

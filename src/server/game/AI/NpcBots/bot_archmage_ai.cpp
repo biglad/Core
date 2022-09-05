@@ -1,4 +1,5 @@
 #include "bot_ai.h"
+#include "botspell.h"
 #include "MotionMaster.h"
 #include "Player.h"
 #include "ScriptMgr.h"
@@ -51,29 +52,13 @@ class archmage_bot : public CreatureScript
 public:
     archmage_bot() : CreatureScript("archmage_bot") { }
 
-    CreatureAI* GetAI(Creature* creature) const
+    CreatureAI* GetAI(Creature* creature) const override
     {
         return new archmage_botAI(creature);
     }
 
     struct archmage_botAI : public bot_ai
     {
-/*
-        bool GossipHello(Player* player) override
-        {
-            return OnGossipHello(player, 0);
-        }
-
-        bool GossipSelect(Player* player, uint32 sender, uint32 action) override
-        {
-            return OnGossipSelect(player, me, sender, action);
-        }
-
-        bool GossipSelectCode(Player* player, uint32 sender, uint32 action, char const* code) override
-        {
-            return OnGossipSelectCode(player, me, sender, action, code);
-        }
-*/
         archmage_botAI(Creature* creature) : bot_ai(creature)
         {
             _botclass = BOT_CLASS_ARCHMAGE;
@@ -202,7 +187,7 @@ public:
             }
         }
 
-        void ApplyClassDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* spellInfo, WeaponAttackType /*attackType*/, bool crit) const override
+        void ApplyClassDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* spellInfo, WeaponAttackType /*attackType*/, bool iscrit) const override
         {
             uint32 baseId = spellInfo->GetFirstRankSpell()->Id;
             //uint8 lvl = me->GetLevel();
@@ -210,7 +195,7 @@ public:
 
             //apply bonus damage mods
             float pctbonus = 1.0f;
-            if (crit)
+            if (iscrit)
                 pctbonus *= 1.333f;
 
             if (baseId == MAIN_ATTACK_1 || baseId == BLIZZARD_1)
@@ -224,7 +209,7 @@ public:
             uint32 baseId = spellInfo->GetFirstRankSpell()->Id;
 
             if (baseId == MAIN_ATTACK_1 || baseId == BLIZZARD_1)
-                GC_Timer = me->GetAttackTime(BASE_ATTACK);
+                GC_Timer = uint32(me->GetAttackTime(BASE_ATTACK) * me->m_modAttackSpeedPct[BASE_ATTACK]);
 
             if (baseId == MAIN_ATTACK_1)
                 me->CastSpell(me, MH_ATTACK_ANIM, true);
@@ -290,7 +275,7 @@ public:
             myPet->SetFaction(master->GetFaction());
             myPet->SetControlledByPlayer(!IAmFree());
             myPet->SetPvP(me->IsPvP());
-            myPet->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
+            myPet->SetUnitFlag(UNIT_FLAG_PLAYER_CONTROLLED);
             myPet->SetByteValue(UNIT_FIELD_BYTES_2, 1, master->GetByteValue(UNIT_FIELD_BYTES_2, 1));
             myPet->SetUInt32Value(UNIT_CREATED_BY_SPELL, SUMMON_WATER_ELEMENTAL_1);
 

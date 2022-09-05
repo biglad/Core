@@ -181,24 +181,26 @@ void BotDataMgr::LoadNpcBots(bool spawn)
 
         CellCoord c = Trinity::ComputeCellCoord(pos_x, pos_y);
         GridCoord g = Trinity::ComputeGridCoord(pos_x, pos_y);
-        ASSERT(c.IsCoordValid() && "Invalid Cell coord!");
-        ASSERT(g.IsCoordValid() && "Invalid Grid coord!");
+        ASSERT(c.IsCoordValid(), "Invalid Cell coord!");
+        ASSERT(g.IsCoordValid(), "Invalid Grid coord!");
         Map* map = sMapMgr->CreateBaseMap(mapId);
         map->LoadGrid(pos_x, pos_y);
-
-        typedef std::unordered_multimap<uint32, Creature*>::iterator SpawnIter;
-        std::pair<SpawnIter, SpawnIter> creBounds = map->GetCreatureBySpawnIdStore().equal_range(tableGuid);
-        if (creBounds.first == map->GetCreatureBySpawnIdStore().end())
-        {
-            TC_LOG_ERROR("server.loading", "bot %u is not in spawns list, consider re-spawning it!", entry);
-            continue;
-        }
 
         ObjectGuid Guid(HighGuid::Unit, entry, tableGuid);
         TC_LOG_DEBUG("server.loading", "bot %u: spawnId %u, full %s", entry, tableGuid, Guid.ToString().c_str());
         Creature* bot = map->GetCreature(Guid);
         if (!bot) //not in map, use storage
+        {
+            //TC_LOG_DEBUG("server.loading", "bot %u: spawnId %u, is not in map on load", entry, tableGuid);
+            typedef Map::CreatureBySpawnIdContainer::const_iterator SpawnIter;
+            std::pair<SpawnIter, SpawnIter> creBounds = map->GetCreatureBySpawnIdStore().equal_range(tableGuid);
+            if (creBounds.first == creBounds.second)
+            {
+                TC_LOG_ERROR("server.loading", "bot %u is not in spawns list, consider re-spawning it!", entry);
+                continue;
+            }
             bot = creBounds.first->second;
+        }
         ASSERT(bot);
         if (!bot->FindMap())
             TC_LOG_ERROR("server.loading", "bot %u is not in map!", entry);
@@ -387,10 +389,10 @@ void BotDataMgr::UpdateNpcBotData(uint32 entry, NpcBotDataUpdateType updateType,
         }
         case NPCBOT_UPDATE_ERASE:
         {
-            NpcBotDataMap::iterator itr = _botsData.find(entry);
-            ASSERT(itr != _botsData.end());
-            delete itr->second;
-            _botsData.erase(itr);
+            NpcBotDataMap::iterator bitr = _botsData.find(entry);
+            ASSERT(bitr != _botsData.end());
+            delete bitr->second;
+            _botsData.erase(bitr);
             bstmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_NPCBOT);
             //"DELETE FROM characters_npcbot WHERE entry = ?", CONNECTION_ASYNC
             bstmt->setUInt32(0, entry);

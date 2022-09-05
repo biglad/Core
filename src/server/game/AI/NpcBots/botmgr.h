@@ -70,12 +70,14 @@ class BotMgr
         static bool ShowEquippedHelm();
         static bool SendEquipListItems();
         static bool IsClassEnabled(uint8 m_class);
+        static bool IsEnrageOnDimissEnabled();
         static bool IsBotStatsLimitsEnabled();
         static bool IsPvPEnabled();
         static bool IsFoodInterruptedByMovement();
         static bool FilterRaces();
         static uint8 GetMaxClassBots();
         static uint8 GetHealTargetIconFlags();
+        static uint8 GetTankTargetIconFlags();
         static uint8 GetOffTankTargetIconFlags();
         static uint8 GetDPSTargetIconFlags();
         static uint8 GetRangedDPSTargetIconFlags();
@@ -106,6 +108,7 @@ class BotMgr
         //mod hooks
         static void ApplyBotEffectMods(Unit const* caster, Unit const* target, SpellInfo const* spellInfo, uint8 effIndex, float& value);
         static void ApplyBotThreatMods(Unit const* attacker, SpellInfo const* spellInfo, float& threat);
+        static void ApplyBotEffectValueMultiplierMods(Unit const* caster, SpellInfo const* spellInfo, SpellEffIndex effIndex, float& multiplier);
         static float GetBotDamageTakenMod(Creature const* bot, bool magic);
         static float GetBotDamageModPhysical();
         static float GetBotDamageModSpell();
@@ -120,6 +123,7 @@ class BotMgr
         bool HaveBot() const { return !_bots.empty(); }
         uint8 GetNpcBotsCount() const;
         uint8 GetNpcBotsCountByRole(uint32 roles) const;
+        uint8 GetNpcBotsCountByVehicleEntry(uint32 creEntry) const;
         uint8 GetNpcBotSlot(Creature const* bot) const;
         uint8 GetNpcBotSlotByRole(uint32 roles, Creature const* bot) const;
         uint32 GetAllNpcBotsClassMask() const;
@@ -127,6 +131,7 @@ class BotMgr
         static uint8 GetNpcBotXpReduction();
         static int32 GetBotInfoPacketsLimit();
         static bool LimitBots(Map const* map);
+        static bool CanBotParryWhileCasting(Creature const* bot);
         bool RestrictBots(Creature const* bot, bool add) const;
         bool IsPartyInCombat() const;
         bool HasBotClass(uint8 botclass) const;
@@ -140,7 +145,8 @@ class BotMgr
         void OnOwnerSetGameMaster(bool on);
         void ReviveAllBots();
         void SendBotCommandState(uint8 state);
-        void RecallAllBots();
+        void SendBotCommandStateRemove(uint8 state);
+        void RecallAllBots(bool teleport = false);
         void RecallBot(Creature* bot);
         void KillAllBots();
         void KillBot(Creature* bot);
@@ -184,13 +190,13 @@ class BotMgr
 
         //TELEPORT BETWEEN MAPS
         //CONFIRMEND UNSAFE (charmer,owner)
-        static void TeleportBot(Creature* bot, Map* newMap, Position* pos);
+        static void TeleportBot(Creature* bot, Map* newMap, Position* pos, bool quick = false);
 
         AoeSpotsVec const& GetAoeSpots() const { return _aoespots; }
         AoeSpotsVec& GetAoeSpots() { return _aoespots; }
 
     private:
-        static void _teleportBot(Creature* bot, Map* newMap, float x, float y, float z, float ori = 0.f);
+        static void _teleportBot(Creature* bot, Map* newMap, float x, float y, float z, float ori = 0.f, bool quick = false);
         static void _reviveBot(Creature* bot, WorldLocation* dest = nullptr);
         void _addBotToRemoveList(ObjectGuid guid);
         void _setBotExactAttackRange(uint8 exactRange) { _exactAttackRange = exactRange; }
@@ -208,6 +214,7 @@ class BotMgr
         uint32 _npcBotEngageDelayHeal;
 
         bool _botsHidden;
+        bool _quickrecall;
 
         AoeSpotsVec _aoespots;
 };
