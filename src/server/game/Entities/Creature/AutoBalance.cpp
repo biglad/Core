@@ -300,11 +300,11 @@ uint32 GetMaxLevelInZone(uint32 zoneId)
     return zoneLevels.count(zoneId) != 0 ? zoneLevels[zoneId] : 0;
 }
 
+#if MOD_PRESENT_NPCBOTS == 1
 uint32 CountedControlledCreatures(Player const* player)
 {
     uint32 count = 0;
 
-#if MOD_PRESENT_NPCBOTS == 1
     if (CountNpcBots && player->HaveBot())
     {
         BotMap const* botmap = player->GetBotMgr()->GetBotMap();
@@ -312,6 +312,10 @@ uint32 CountedControlledCreatures(Player const* player)
             if (itr->second && itr->second->IsInMap(player))
                 count++;
     }
+#else
+uint32 CountedControlledCreatures(Player const* /*player*/)
+{
+    uint32 count = 0;
 #endif
 
     return count;
