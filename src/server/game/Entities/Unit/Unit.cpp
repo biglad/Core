@@ -3706,13 +3706,21 @@ void Unit::RemoveAura(Aura* aura, AuraRemoveMode mode)
         RemoveAura(aurApp, mode);
 }
 
-void Unit::RemoveAppliedAuras(std::function<bool(AuraApplication const*)> const& check, AuraRemoveMode removeMode /*= AURA_REMOVE_BY_DEFAULT*/)
+void Unit::RemoveAppliedAuras(std::function<bool(AuraApplication const*, bool&)> const& check, AuraRemoveMode removeMode /*= AURA_REMOVE_BY_DEFAULT*/)
 {
     for (AuraApplicationMap::iterator iter = m_appliedAuras.begin(); iter != m_appliedAuras.end();)
     {
-        if (check(iter->second))
+        bool updateTargetMap = false;
+        if (check(iter->second, updateTargetMap))
         {
             RemoveAura(iter, removeMode);
+            continue;
+        }
+        else if (updateTargetMap)
+        {
+            Aura* aura = iter->second->GetBase();
+            aura->UpdateTargetMap(aura->GetCaster());
+            iter = m_appliedAuras.begin();
             continue;
         }
         ++iter;
@@ -4074,7 +4082,7 @@ void Unit::RemoveMovementImpairingAuras(bool withRoot)
 
 void Unit::RemoveAurasWithMechanic(uint32 mechanicMaskToRemove, AuraRemoveMode removeMode, uint32 exceptSpellId, bool withEffectMechanics)
 {
-    RemoveAppliedAuras([=](AuraApplication const* aurApp)
+    RemoveAppliedAuras([=](AuraApplication const* aurApp, bool& updateTargetMap)
     {
         Aura* aura = aurApp->GetBase();
         if (exceptSpellId && aura->GetId() == exceptSpellId)
@@ -4089,7 +4097,7 @@ void Unit::RemoveAurasWithMechanic(uint32 mechanicMaskToRemove, AuraRemoveMode r
             return true;
 
         // effect mechanic matches required mask for removal - don't remove, only update targets
-        aura->UpdateTargetMap(aura->GetCaster());
+        updateTargetMap = true;
         return false;
     }, removeMode);
 }
@@ -4193,7 +4201,7 @@ void Unit::RemoveArenaAuras()
 {
     // in join, remove positive buffs, on end, remove negative
     // used to remove positive visible auras in arenas
-    RemoveAppliedAuras([](AuraApplication const* aurApp)
+    RemoveAppliedAuras([](AuraApplication const* aurApp, bool&)
     {
         Aura const* aura = aurApp->GetBase();
         return (!aura->GetSpellInfo()->HasAttribute(SPELL_ATTR4_DONT_REMOVE_IN_ARENA)                          // don't remove stances, shadowform, pally/hunter auras

@@ -472,7 +472,7 @@ inline void Battleground::_ProcessJoin(uint32 diff)
                     if (!player->IsGameMaster())
                     {
                         // remove auras with duration lower than 30s
-                        player->RemoveAppliedAuras([](AuraApplication const* aurApp)
+                        player->RemoveAppliedAuras([](AuraApplication const* aurApp, bool&)
                         {
                             Aura* aura = aurApp->GetBase();
                             return !aura->IsPermanent()

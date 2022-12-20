@@ -1343,7 +1343,7 @@ class TC_GAME_API Unit : public WorldObject
         void RemoveAura(Aura* aur, AuraRemoveMode mode = AURA_REMOVE_BY_DEFAULT);
 
         // Convenience methods removing auras by predicate
-        void RemoveAppliedAuras(std::function<bool(AuraApplication const*)> const& check, AuraRemoveMode removeMode = AURA_REMOVE_BY_DEFAULT);
+        void RemoveAppliedAuras(std::function<bool(AuraApplication const*, bool&)> const& check, AuraRemoveMode removeMode = AURA_REMOVE_BY_DEFAULT);
         void RemoveOwnedAuras(std::function<bool(Aura const*)> const& check, AuraRemoveMode removeMode = AURA_REMOVE_BY_DEFAULT);
 
         // Optimized overloads taking advantage of map key

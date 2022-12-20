@@ -2837,7 +2837,7 @@ void SpellInfo::ApplyAllSpellImmunitiesTo(Unit* target, uint8 effIndex, bool app
 
         if (apply && HasAttribute(SPELL_ATTR1_DISPEL_AURAS_ON_IMMUNITY))
         {
-            target->RemoveAppliedAuras([this, schoolImmunity](AuraApplication const* aurApp) -> bool
+            target->RemoveAppliedAuras([this, schoolImmunity](AuraApplication const* aurApp, bool&) -> bool
             {
                 SpellInfo const* auraSpellInfo = aurApp->GetBase()->GetSpellInfo();
                 return ((auraSpellInfo->GetSchoolMask() & schoolImmunity) != 0 && // Check for school mask
@@ -2861,11 +2861,10 @@ void SpellInfo::ApplyAllSpellImmunitiesTo(Unit* target, uint8 effIndex, bool app
                 target->RemoveAurasWithMechanic(mechanicImmunity, AURA_REMOVE_BY_DEFAULT, Id);
             else
             {
-                target->RemoveAppliedAuras([mechanicImmunity](AuraApplication const* aurApp)
+                target->RemoveAppliedAuras([mechanicImmunity](AuraApplication const* aurApp, bool& updateTargetMap)
                 {
-                    Aura* aura = aurApp->GetBase();
-                    if (aura->GetSpellInfo()->GetAllEffectsMechanicMask() & mechanicImmunity)
-                        aura->UpdateTargetMap(aura->GetCaster());
+                    if (aurApp->GetBase()->GetSpellInfo()->GetAllEffectsMechanicMask() & mechanicImmunity)
+                        updateTargetMap = true;
 
                     // only update targets, don't remove anything
                     return false;
@@ -2880,7 +2879,7 @@ void SpellInfo::ApplyAllSpellImmunitiesTo(Unit* target, uint8 effIndex, bool app
 
         if (apply && HasAttribute(SPELL_ATTR1_DISPEL_AURAS_ON_IMMUNITY))
         {
-            target->RemoveAppliedAuras([dispelImmunity](AuraApplication const* aurApp) -> bool
+            target->RemoveAppliedAuras([dispelImmunity](AuraApplication const* aurApp, bool&) -> bool
             {
                 SpellInfo const* spellInfo = aurApp->GetBase()->GetSpellInfo();
                 if (spellInfo->Dispel == dispelImmunity)
