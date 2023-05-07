@@ -1025,6 +1025,8 @@ void WorldObject::setActive(bool on)
             map->AddToActive(ToCreature());
         else if (GetTypeId() == TYPEID_DYNAMICOBJECT)
             map->AddToActive((DynamicObject*)this);
+		else if (GetTypeId() == TYPEID_GAMEOBJECT)
+			map->AddToActive((DynamicObject*)this);
     }
     else
     {
@@ -1032,6 +1034,8 @@ void WorldObject::setActive(bool on)
             map->RemoveFromActive(ToCreature());
         else if (GetTypeId() == TYPEID_DYNAMICOBJECT)
             map->RemoveFromActive((DynamicObject*)this);
+		else if (GetTypeId() == TYPEID_GAMEOBJECT)
+			map->RemoveFromActive((DynamicObject*)this);
     }
 }
 
