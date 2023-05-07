@@ -17,16 +17,19 @@
 
 // This is where scripts' loading functions should be declared:
 
+
 // The name of this function should match:
 // void Add${NameOfDirectory}Scripts()
 
 void AddSC_npc_voters_zone();
 void AddSC_npc_renamer();
 void AddSC_npc_vote_teleport();
+void AddSC_NPC_TransmogDisplayVendor();
 
 void AddCustomScripts()
 {
 	AddSC_npc_voters_zone();
 	AddSC_npc_renamer();
 	AddSC_npc_vote_teleport();
+    AddSC_NPC_TransmogDisplayVendor();
 }
