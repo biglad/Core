@@ -112,6 +112,7 @@ public:
             {
                 me->Say("Farewell!", LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
+				me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
                 return true;
             }
             

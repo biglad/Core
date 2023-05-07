@@ -175,6 +175,7 @@ public:
                         // DALARAN
                         AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_L2, GOSSIP_SENDER_MAIN, 1021);
                     }
+					AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Bye", GOSSIP_SENDER_MAIN, 2);
                 }
 
             }
@@ -182,6 +183,7 @@ public:
             {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TPNO, GOSSIP_SENDER_MAIN, 1050);
             }
+			me->HandleEmoteCommand(EMOTE_ONESHOT_NONE);
             player->TalkedToCreature(me->GetEntry(), me->GetGUID());
             SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
             return true;
@@ -189,14 +191,20 @@ public:
 
         bool OnGossipSelect(Player* player, uint32 /*menuId*/, uint32 gossipListId) override
         {
-            WorldSession* session = player->GetSession();
+			WorldSession* session = player->GetSession();
             uint32 const action = player->PlayerTalkClass->GetGossipOptionAction(gossipListId);
 			CloseGossipMenuFor(player);
             time_t ttseconds;
             ttseconds = time(NULL);
-
             switch (action)
             {
+            case 2:
+            {
+                CloseGossipMenuFor(player);
+                me->Say("Farewell!", LANG_UNIVERSAL);
+                me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
+            }
+			break;
             case 1001:
             {
                 CloseGossipMenuFor(player);
@@ -512,6 +520,7 @@ public:
             break;
             }
             CloseGossipMenuFor(player);
+			
             return true;
         }
     };
