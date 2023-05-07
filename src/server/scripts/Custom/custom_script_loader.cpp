@@ -26,6 +26,7 @@ void AddSC_npc_renamer();
 void AddSC_npc_vote_teleport();
 void AddSC_NPC_TransmogDisplayVendor();
 void AddSC_npc_token_shop();
+void AddSC_npc_token_exchange();
 
 void AddCustomScripts()
 {
@@ -34,4 +35,5 @@ void AddCustomScripts()
 	AddSC_npc_vote_teleport();
     AddSC_NPC_TransmogDisplayVendor();
 	AddSC_npc_token_shop();
+	AddSC_npc_token_exchange();
 }
