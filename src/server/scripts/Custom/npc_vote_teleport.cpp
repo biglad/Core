@@ -44,6 +44,10 @@
 #define GOSSIP_HELLO_ATP2  "Ironforge"
 #define GOSSIP_HELLO_ATP3  "Darnassus"
 #define GOSSIP_HELLO_ATP4  "Exodar"
+
+//GM
+#define GOSSIP_HELLO_GM1  "-----------"
+
 // START LOCS
 #define GOSSIP_HELLO_ASTP1  "Human Starting Zone"
 #define GOSSIP_HELLO_ASTP2  "Gnome Starting Zone"
@@ -125,7 +129,7 @@ public:
                 else
                 {
                     //sLog->outError("MGA: WORKED:: time from db = %d time we checking = %d", lasttptime,fiveminabusecheck);
-                    if (player->GetTeamId() == TEAM_HORDE)
+                    if (player->GetTeamId() == TEAM_HORDE || player->IsGameMaster())
                     {
                         // HORDE LOCATIONS
                         AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_HTP1, GOSSIP_SENDER_MAIN, 1011);
@@ -140,7 +144,13 @@ public:
                         //AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_HSTP6, GOSSIP_SENDER_MAIN, 10126); // worgen start zone
                         AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_HSTP7, GOSSIP_SENDER_MAIN, 1031); // troll starting zone
                     }
-                    else
+
+                    if (player->IsGameMaster())
+                    {
+                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_GM1, GOSSIP_SENDER_MAIN, 9999);
+                    }
+
+                    if (player->GetTeamId() == TEAM_ALLIANCE || player->IsGameMaster())
                     {
                         // ALLY LOCATIONS
                         AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_ATP1, GOSSIP_SENDER_MAIN, 1016);
@@ -154,12 +164,12 @@ public:
                         AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_ASTP5, GOSSIP_SENDER_MAIN, 1030); // dwarf start zone
                     }
 
-                    if (player->GetLevel() > 57)
+                    if (player->GetLevel() > 57 || player->IsGameMaster())
                     {
                         // SHAT CITY
                         AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_L1, GOSSIP_SENDER_MAIN, 1020);
                     }
-                    if (player->GetLevel() > 67)
+                    if (player->GetLevel() > 67 || player->IsGameMaster())
                     {
                         // DALARAN
                         AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_L2, GOSSIP_SENDER_MAIN, 1021);
@@ -180,7 +190,7 @@ public:
         {
             WorldSession* session = player->GetSession();
             uint32 const action = player->PlayerTalkClass->GetGossipOptionAction(gossipListId);
-
+			CloseGossipMenuFor(player);
             time_t ttseconds;
             ttseconds = time(NULL);
 
