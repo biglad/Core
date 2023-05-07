@@ -61,6 +61,7 @@ public:
 
         bool OnGossipHello(Player* player) override
         {
+            me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TSWAP1, GOSSIP_SENDER_MAIN, 1001);
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TSWAP2, GOSSIP_SENDER_MAIN, 1002);
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TSWAP3, GOSSIP_SENDER_MAIN, 1003);
@@ -218,6 +219,7 @@ public:
             case 1009:
                 CloseGossipMenuFor(player);
                 me->Yell(tokentext7, LANG_UNIVERSAL);
+                me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
                 break;
             case 1010:
                 CloseGossipMenuFor(player);

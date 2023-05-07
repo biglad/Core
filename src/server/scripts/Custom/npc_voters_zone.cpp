@@ -55,6 +55,7 @@ public:
 
         bool OnGossipHello(Player* player) override
         {
+            me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
             InitGossipMenuFor(player, NPC_GOSSIP_MENU);
 			
 			QueryResult result;

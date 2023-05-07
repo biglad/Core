@@ -58,6 +58,7 @@ public:
 
         bool OnGossipHello(Player* player) override
         {
+            me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
             AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "Level Rewards", GOSSIP_SENDER_MAIN, 1000);
             AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, "Gold Rewards", GOSSIP_SENDER_MAIN, 1300);
             //AddGossipItemFor(player,  GOSSIP_ICON_INTERACT_1, "Armor Rewards"    , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1400);
@@ -97,6 +98,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 me->Say(tokentext8, LANG_UNIVERSAL);
+                me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
             }break;
             case 1000: // Level Rewards
             {

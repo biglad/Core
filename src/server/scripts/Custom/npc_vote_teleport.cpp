@@ -98,7 +98,8 @@ public:
 
         bool OnGossipHello(Player* player) override
         {
-			WorldSession* session = player->GetSession();
+            me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
+            WorldSession* session = player->GetSession();
 			
             time_t tseconds;
             tseconds = time(NULL);
