@@ -29,7 +29,7 @@
 #define GOSSIP_HELLO_TSWAP8  "How do I earn Mini Tokens?"
 #define GOSSIP_HELLO_TSWAP10  "Exchange 5K honor for 1 Mini Token"
 #define GOSSIP_HELLO_TSWAP12  "Exchange 75K honor for 100 Arena Points."
-#define GOSSIP_HELLO_TSWAP9  "Goodbye !"
+#define GOSSIP_HELLO_TSWAP9  "Farewell!"
 #define GOSSIP_HELLO_NOTVIP  "I Can only make MGA Super VIP Emblem's for VIPs!"
 
 /*
@@ -73,7 +73,7 @@ public:
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TSWAP12, GOSSIP_SENDER_MAIN, 1012);
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TSWAP9, GOSSIP_SENDER_MAIN, 1009);
 			
-			AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Bye", GOSSIP_SENDER_MAIN, 2);
+			//AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Bye", GOSSIP_SENDER_MAIN, 1009);
             player->TalkedToCreature(me->GetEntry(), me->GetGUID());
             SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
             return true;
