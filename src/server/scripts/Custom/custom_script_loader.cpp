@@ -19,6 +19,14 @@
 
 // The name of this function should match:
 // void Add${NameOfDirectory}Scripts()
+
+void AddSC_npc_voters_zone();
+void AddSC_npc_renamer();
+void AddSC_npc_vote_teleport();
+
 void AddCustomScripts()
 {
+	AddSC_npc_voters_zone();
+	AddSC_npc_renamer();
+	AddSC_npc_vote_teleport();
 }
