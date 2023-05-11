@@ -58,6 +58,7 @@
 #define GOSSIP_HELLO_L1  "Shattrath City"
 #define GOSSIP_HELLO_L2  "City of Dalaran"
 #define GOSSIP_HELLO_L3  "Stairway to Heaven"
+#define GOSSIP_HELLO_L4  "Send Me Home!"
 
 #define GOSSIP_HELLO_TPNO  "You have not voted in the last 12 hours, if you wish to use me please go and vote"
 #define GOSSIP_HELLO_TPN01  "You used me within the last 5 mins please wait a little longer."
@@ -175,7 +176,8 @@ public:
                         // DALARAN
                         AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_L2, GOSSIP_SENDER_MAIN, 1021);
                     }
-					AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Bye", GOSSIP_SENDER_MAIN, 2);
+					AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Send Me Home!", GOSSIP_SENDER_MAIN, 1);
+					AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Bye!", GOSSIP_SENDER_MAIN, 2);
                 }
 
             }
@@ -198,6 +200,14 @@ public:
             ttseconds = time(NULL);
             switch (action)
             {
+			case 1:
+            {
+                CloseGossipMenuFor(player);
+				player->CastSpell(player, 8690, true); //https://www.wowhead.com/wotlk/spell=8690/hearthstone
+				player->SetPvP(false);
+				return true;;
+            }
+			break;	
             case 2:
             {
                 CloseGossipMenuFor(player);
