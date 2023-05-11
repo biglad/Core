@@ -14,7 +14,7 @@
 #define tokentext2 "You can't afford that!!" // Cant afford
 #define tokentext3 -1700002
 #define tokentext4 -1700003
-#define tokentext5 "How to get tokens???" // How to Get tokens..
+#define tokentext5 "Mini Tokens can be earned a few ways, you willf ind clues in the game......" // How to Get tokens..
 #define tokentext6 "UNKNOWN!" //??
 #define tokentext7 "Farewell!" // Bye
 
@@ -72,11 +72,12 @@ public:
             AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP10, GOSSIP_SENDER_MAIN, 1010);
             AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP11, GOSSIP_SENDER_MAIN, 1011);
             AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP12, GOSSIP_SENDER_MAIN, 1012);
-            AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP9, GOSSIP_SENDER_MAIN, 1009);
+            
 			
 			AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, GOSSIP_HELLO_TSWAP5, GOSSIP_SENDER_MAIN, 1005);
 			
-			//AddGossipItemFor(player, GOSSIP_ICON_VENDOR, "Bye", GOSSIP_SENDER_MAIN, 1009);
+			AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP9, GOSSIP_SENDER_MAIN, 1009);
+			
             player->TalkedToCreature(me->GetEntry(), me->GetGUID());
             SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
             return true;
@@ -167,7 +168,7 @@ public:
                 break;
             case 1005:
                 CloseGossipMenuFor(player);
-                me->Say(tokentext5, LANG_UNIVERSAL);
+                me->Yell(tokentext5, LANG_UNIVERSAL);
                 break;
             case 1006:
                 CloseGossipMenuFor(player);
