@@ -66,17 +66,17 @@ public:
             AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP2, GOSSIP_SENDER_MAIN, 1002);
             AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP3, GOSSIP_SENDER_MAIN, 1003);
             AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP4, GOSSIP_SENDER_MAIN, 1004);
-            
+            //AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP8, GOSSIP_SENDER_MAIN, 1005);
 			
-			AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP8, GOSSIP_SENDER_MAIN, 1005);
             AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP10, GOSSIP_SENDER_MAIN, 1010);
             AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP11, GOSSIP_SENDER_MAIN, 1011);
             AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP12, GOSSIP_SENDER_MAIN, 1012);
             
 			
 			AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, GOSSIP_HELLO_TSWAP5, GOSSIP_SENDER_MAIN, 1005);
+		
 			
-			AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP9, GOSSIP_SENDER_MAIN, 1009);
+			AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TSWAP9, GOSSIP_SENDER_MAIN, 1009);
 			
             player->TalkedToCreature(me->GetEntry(), me->GetGUID());
             SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
