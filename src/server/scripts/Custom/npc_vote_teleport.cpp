@@ -166,12 +166,12 @@ public:
                         AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_ASTP5, GOSSIP_SENDER_MAIN, 1030); // dwarf start zone
                     }
 
-                    if (player->GetLevel() > 57 || player->IsGameMaster())
+                    if (player->GetLevel() > 58 || player->IsGameMaster())
                     {
                         // SHAT CITY
                         AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_L1, GOSSIP_SENDER_MAIN, 1020);
                     }
-                    if (player->GetLevel() > 67 || player->IsGameMaster())
+                    if (player->GetLevel() > 68 || player->IsGameMaster())
                     {
                         // DALARAN
                         AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_L2, GOSSIP_SENDER_MAIN, 1021);
@@ -219,8 +219,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                // LOCATION NAME
-                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0); // NOT CALLED YET  
+                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0); 
                 player->SetPvP(false);
                 return false;
             }
@@ -229,8 +228,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                // LOCATION NAME
-                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);   // NOT CALLED YET  
+                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);    
                 player->SetPvP(false);
                 return false;
             }
@@ -239,8 +237,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                // LOCATION NAME
-                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);   // NOT CALLED YET  
+                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);    
                 player->SetPvP(false);
                 return false;
             }
@@ -249,8 +246,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                // LOCATION NAME
-                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);   // NOT CALLED YET  
+                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);    
                 player->SetPvP(false);
                 return false;
             }
@@ -259,8 +255,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                // LOCATION NAME
-                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);   // NOT CALLED YET  
+                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);    
                 player->SetPvP(false);
                 return false;
             }
@@ -269,8 +264,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                // LOCATION NAME
-                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);  // NOT CALLED YET   
+                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);    
                 player->SetPvP(false);
                 return false;
             }
@@ -279,8 +273,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                // LOCATION NAME
-                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);   // NOT CALLED YET  
+                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);    
                 player->SetPvP(false);
                 return false;
             }
@@ -289,8 +282,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                // LOCATION NAME
-                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);   // NOT CALLED YET  
+                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);    
                 player->SetPvP(false);
                 return false;
             }
@@ -299,8 +291,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                // LOCATION NAME
-                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);   // NOT CALLED YET  
+                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);    
                 player->SetPvP(false);
                 return false;
             }
@@ -309,8 +300,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                // LOCATION NAME
-                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);   // NOT CALLED YET  
+                player->TeleportTo(578, 987.53f, 1065.11f, 359.98f, 0);    
                 player->SetPvP(false);
                 return false;
             }
@@ -320,8 +310,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                // Orgrimmar
-                player->TeleportTo(1, 1632.38f, -4440.45f, 15.71f, 2.77f);   // Orgrimmar
+                player->TeleportTo(1, 1632.38f, -4440.45f, 15.71f, 2.77f); 
                 player->SetPvP(false);
                 return false;
             }
@@ -330,7 +319,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(0, 1630.80f, 240.08f, -43.10f, 3.09f);   // Undercity
+                player->TeleportTo(0, 1630.80f, 240.08f, -43.10f, 3.09f);  
                 player->SetPvP(false);
                 return false;
             }
@@ -339,7 +328,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(1, -1210.98f, 40.00f, 132.13f, 2.43f);   // Thunder Bluff
+                player->TeleportTo(1, -1210.98f, 40.00f, 132.13f, 2.43f);  
                 player->SetPvP(false);
                 return false;
             }
@@ -348,8 +337,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                // Orgrimmar
-                player->TeleportTo(530, 9532.57f, -7239.16f, 16.40f, 4.82f);   // Silvermoon
+                player->TeleportTo(530, 9532.57f, -7239.16f, 16.40f, 4.82f);  
                 player->SetPvP(false);
                 return false;
             }
@@ -358,7 +346,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(0, -8867.23f, 673.80f, 97.90f, 5.20f);   // stormwind
+                player->TeleportTo(0, -8867.23f, 673.80f, 97.90f, 5.20f);  
                 player->SetPvP(false);
                 return false;
             }
@@ -367,7 +355,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(0, -4850.82f, -868.45f, 501.91f, 4.94f);   // ironforge
+                player->TeleportTo(0, -4850.82f, -868.45f, 501.91f, 4.94f);  
                 player->SetPvP(false);
                 return false;
             }
@@ -376,7 +364,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(1, 9951.97f, 2280.06f, 1341.39f, 1.60f);   // darnassus
+                player->TeleportTo(1, 9951.97f, 2280.06f, 1341.39f, 1.60f);  
                 player->SetPvP(false);
                 return false;
             }
@@ -385,7 +373,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(530, -3962.08f, -11657.74f, -138.81f, -138.81f);   // exodar
+                player->TeleportTo(530, -3962.08f, -11657.74f, -138.81f, -138.81f);  
                 player->SetPvP(false);
                 return false;
             }
@@ -394,7 +382,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(530, -1838.16f, 5301.79f, -12.42f, 0);   // shat city
+                player->TeleportTo(530, -1838.16f, 5301.79f, -12.42f, 0);  
                 player->SetPvP(false);
                 return false;
             }
@@ -403,7 +391,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(571, 5804.14f, 624.77f, 647.76f, 0);   // dalaran
+                player->TeleportTo(571, 5804.14f, 624.77f, 647.76f, 0); 
                 player->SetPvP(false);
                 return false;
             }
@@ -412,7 +400,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(1, -603.57f, -4198.80f, 41.09f, 4.74f);   // orc start
+                player->TeleportTo(1, -603.57f, -4198.80f, 41.09f, 4.74f);  
                 player->SetPvP(false);
                 return false;
             }
@@ -421,7 +409,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(0, 1663.47f, 1662.78f, 141.85f, 6.10f);   // undead start
+                player->TeleportTo(0, 1663.47f, 1662.78f, 141.85f, 6.10f); 
                 player->SetPvP(false);
                 return false;
             }
@@ -430,7 +418,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(1, -2883.02f, -229.16f, 55.16f, 4.05f);   // tauren start
+                player->TeleportTo(1, -2883.02f, -229.16f, 55.16f, 4.05f); 
                 player->SetPvP(false);
                 return false;
             }
@@ -439,7 +427,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(530, 10348.84f, -6375.89f, 36.92f, 1.80f);   // belf start
+                player->TeleportTo(530, 10348.84f, -6375.89f, 36.92f, 1.80f);  
                 player->SetPvP(false);
                 return false;
             }
@@ -448,7 +436,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(0, -8911.54f, -141.84f, 82.21f, 2.07f);   // human start
+                player->TeleportTo(0, -8911.54f, -141.84f, 82.21f, 2.07f);  
                 player->SetPvP(false);
                 return false;
             }
@@ -457,8 +445,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                //player->TeleportTo(0, -4981.92f, 873.20f, 244.30f, 4.59f);   // gnome start
-                player->TeleportTo(0, -6230.41f, 330.22f, 383.10f, 6.17f);  // Drawf
+                player->TeleportTo(0, -6230.41f, 330.22f, 383.10f, 6.17f);
                 player->SetPvP(false);
                 return false;
             }
@@ -467,7 +454,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(1, 10317.47f, 821.03f, 1326.37f, 0.74f);   // nelf start
+                player->TeleportTo(1, 10317.47f, 821.03f, 1326.37f, 0.74f); 
                 player->SetPvP(false);
                 return false;
             }
@@ -476,7 +463,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(530, -3962.26f, -13930.66f, 100.56f, 2.09f);   // draenei start
+                player->TeleportTo(530, -3962.26f, -13930.66f, 100.56f, 2.09f); 
                 player->SetPvP(false);
                 return false;
             }
@@ -485,8 +472,8 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                // LOCATION NAME
-                player->TeleportTo(0, -6230.41f, 330.22f, 383.10f, 6.17f);  // Drawf
+                
+                player->TeleportTo(0, -6230.41f, 330.22f, 383.10f, 6.17f); 
                 player->SetPvP(false);
                 return false;
             }
@@ -495,8 +482,6 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                // LOCATION NAME
-                //player->TeleportTo(1, -1169.98f, -5258.24f, 0.59f, 1.37f);  // Troll
                 player->TeleportTo(1, -603.57f, -4198.80f, 41.09f, 4.74f);
                 player->SetPvP(false);
                 return false;
@@ -514,7 +499,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(648, -8242.04f, 1361.12f, 104.67f, 1.80f);   // gob start zone
+                player->TeleportTo(648, -8242.04f, 1361.12f, 104.67f, 1.80f);  
                 player->SetPvP(false);
                 return false;
             }
@@ -523,7 +508,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(638, -1436.46f, 1419.81f, 35.55f, 1.80f);   // worg start
+                player->TeleportTo(638, -1436.46f, 1419.81f, 35.55f, 1.80f);  
                 player->SetPvP(false);
                 return false;
             }
