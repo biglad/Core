@@ -374,8 +374,9 @@ bool GameObject::Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* map, u
                 m_invisibility.AddFlag(INVISIBILITY_TRAP);
                 m_invisibility.AddValue(INVISIBILITY_TRAP, 300);
             }
-			
+		
 			m_goValue.Trap.TargetSearcherCheckType = TARGET_CHECK_ENEMY;
+
             if (SpellInfo const* trapSpell = sSpellMgr->GetSpellInfo(goinfo->trap.spellId))
             {
                 // positive spells may require enemy targets

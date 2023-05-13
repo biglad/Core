@@ -156,6 +156,7 @@ public:
             if (summoned->GetEntry() == NPC_HIGHBORNE_BUNNY)
             {
 				summoned->SetDisableGravity(true);
+
                 if (Creature* target = ObjectAccessor::GetCreature(*summoned, targetGUID))
                 {
                     target->GetMotionMaster()->MovePoint(0, target->GetPositionX(), target->GetPositionY(), me->GetPositionZ() + 15.0f, false);
@@ -163,7 +164,6 @@ public:
                     summoned->CastSpell(target, SPELL_RIBBON_OF_SOULS, false);
                 }
 
-                summoned->SetDisableGravity(true);
                 targetGUID = summoned->GetGUID();
             }
         }

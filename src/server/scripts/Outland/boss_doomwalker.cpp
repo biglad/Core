@@ -91,7 +91,6 @@ struct boss_doomwalker : public ScriptedAI
     }
 
     void MoveInLineOfSight(Unit* who) override
-
     {
         if (who && who->GetTypeId() == TYPEID_PLAYER && me->IsValidAttackTarget(who))
             if (who->HasAura(SPELL_MARK_DEATH))
