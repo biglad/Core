@@ -114,7 +114,7 @@ public:
             //sLog->outError("SELECT * FROM `vote_tp` WHERE `guid`='%d' AND `time` >'%d' LIMIT 1", player->GetSession()->GetAccountId(),ttcheck);          
 
 
-            if (result)
+            if (result || player->IsGameMaster())
             {
 
                 Field* fields = result->Fetch();
