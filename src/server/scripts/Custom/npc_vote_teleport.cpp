@@ -122,6 +122,12 @@ public:
                 lasttptime = fields[2].GetUInt32();
                 if (lasttptime < 1)
                     lasttptime = (tseconds - 305); // current time - 5 mins was no entry in DB
+				
+				if (player->IsGameMaster())
+				{
+					fiveminabusecheck = 0;
+					lasttptime = 0;
+				}
 
                 if (fiveminabusecheck < lasttptime)
                 {
