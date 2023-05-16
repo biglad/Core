@@ -105,11 +105,11 @@ public:
 
                 if (lvl < 60)
                 {
-                    AddGossipItemFor(player, GOSSIP_ICON_TRAINER, "2 Levels at the cost of 1 MGA Token", GOSSIP_SENDER_MAIN, 1001);
+                    AddGossipItemFor(player, GOSSIP_ICON_TRAINER, "5 Levels at the cost of 1 MGA Token", GOSSIP_SENDER_MAIN, 1001);
                 }
                 else if (lvl >= 60 && lvl <= 79)
                 {
-                    AddGossipItemFor(player, GOSSIP_ICON_TRAINER, "1 Level at the cost of 1 MGA Token", GOSSIP_SENDER_MAIN, 1004);
+                    AddGossipItemFor(player, GOSSIP_ICON_TRAINER, "2 Level at the cost of 1 MGA Token", GOSSIP_SENDER_MAIN, 1004);
                 }
                 else if (lvl >= 80)
                 {
@@ -128,7 +128,7 @@ public:
                 if (player->HasItemCount(21140, 1))
                 {
                     player->RemoveAurasByType(SPELL_AURA_MOUNTED);
-                    player->GiveLevel(lvl + 2);
+                    player->GiveLevel(lvl + 5);
                     player->InitTalentForLevel();
                     player->InitStatsForLevel();
                     me->Say(tokentext9, LANG_UNIVERSAL);
@@ -147,7 +147,7 @@ public:
                 if (player->HasItemCount(21140, 1))
                 {
                     player->RemoveAurasByType(SPELL_AURA_MOUNTED);
-                    player->GiveLevel(lvl + 1);
+                    player->GiveLevel(lvl + 2);
                     player->InitTalentForLevel();
                     player->InitStatsForLevel();
                     me->Say(tokentext9, LANG_UNIVERSAL);
