@@ -101,7 +101,7 @@ public:
             case 2:
             {
                 CloseGossipMenuFor(player);
-                me->Say("Farewell!", LANG_UNIVERSAL);
+                me->Say("Farewell "+player->GetName(), LANG_UNIVERSAL);
                 me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
             }
             break;

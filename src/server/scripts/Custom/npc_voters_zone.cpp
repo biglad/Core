@@ -149,7 +149,7 @@ public:
 			}
 			if (action == GOSSIP_ACTION_INFO_DEF + 1001)
 			{
-				me->Say("Farewell!", LANG_UNIVERSAL);
+				me->Say("Farewell "+player->GetName(), LANG_UNIVERSAL);
 				//me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
 				CloseGossipMenuFor(player);
 				return true;
@@ -157,7 +157,7 @@ public:
 			if (action == GOSSIP_ACTION_INFO_DEF + 1002)
 			{
 				CloseGossipMenuFor(player);
-				me->Say("Farewell!", LANG_UNIVERSAL);
+				me->Say("Farewell "+player->GetName(), LANG_UNIVERSAL);
 				//me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
 				return true;
 			}

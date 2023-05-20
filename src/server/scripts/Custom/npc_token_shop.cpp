@@ -10,7 +10,7 @@
 #include <sstream>
 #include <string>
 
-#define tokentext8 "Bye Bye"
+#define tokentext8 "Bye Bye "
 #define tokentext9 "Wooahh the Power!!"
 #define tokentext10 "You need one MGA Token, go find one!"
 #define tokentext11 "Here you go 500 gold."
@@ -97,7 +97,7 @@ public:
             case 2: // Bye
             {
                 CloseGossipMenuFor(player);
-                me->Say(tokentext8, LANG_UNIVERSAL);
+                me->Say(tokentext8+player->GetName(), LANG_UNIVERSAL);
                 me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
             }break;
             case 1000: // Level Rewards

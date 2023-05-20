@@ -87,7 +87,7 @@ public:
                     player->DestroyItemCount(21140, 1, true);
                     player->SetAtLoginFlag(AT_LOGIN_RENAME);
                     //WhisperTo(player, "Logout and back in!");
-                    me->Say("Logout and back in you will be prompted to change your name.", LANG_UNIVERSAL);
+                    me->Say(player->GetName()+" Logout and back in you will be prompted to change your name.", LANG_UNIVERSAL);
 					session->SendNotification("Logout and back in you will be prompted to change your name.");
                     return true;
                 }
@@ -110,7 +110,7 @@ public:
 			}
             if (action == GOSSIP_ACTION_INFO_DEF + 1003)
             {
-                me->Say("Farewell!", LANG_UNIVERSAL);
+                me->Say("Farewell "+player->GetName(), LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
 				me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
                 return true;

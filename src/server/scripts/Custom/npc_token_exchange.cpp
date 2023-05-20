@@ -16,7 +16,7 @@
 #define tokentext4 -1700003
 #define tokentext5 "Mini Tokens can be earned a few ways, you willf ind clues in the game......" // How to Get tokens..
 #define tokentext6 "UNKNOWN!" //??
-#define tokentext7 "Farewell!" // Bye
+#define tokentext7 "Farewell! " // Bye
 
 #define GOSSIP_HELLO_TSWAP1  "Create 1 MGA Token (Requies 50 Mini Tokens)"
 #define GOSSIP_HELLO_TSWAP2  "Exchange 3 WSG Marks for 50 Honor"
@@ -221,7 +221,7 @@ public:
                 break;
             case 1009:
                 CloseGossipMenuFor(player);
-                me->Yell(tokentext7, LANG_UNIVERSAL);
+                me->Yell(tokentext7+player->GetName(), LANG_UNIVERSAL);
                 me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
                 break;
             case 1010:

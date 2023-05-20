@@ -132,6 +132,7 @@ public:
                 if (fiveminabusecheck < lasttptime)
                 {
                     AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TPN01, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1050);
+					AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Bye!", GOSSIP_SENDER_MAIN, 2);
                     //sLog->outError("MGA: FAILED:: time from db = %d time we checking = %d", lasttptime,fiveminabusecheck);
                 }
                 else
@@ -190,6 +191,7 @@ public:
             else
             {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TPNO, GOSSIP_SENDER_MAIN, 1050);
+				AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Bye!", GOSSIP_SENDER_MAIN, 2);
             }
 			me->HandleEmoteCommand(EMOTE_ONESHOT_NONE);
             player->TalkedToCreature(me->GetEntry(), me->GetGUID());
@@ -217,7 +219,7 @@ public:
             case 2:
             {
                 CloseGossipMenuFor(player);
-                me->Say("Farewell!", LANG_UNIVERSAL);
+                me->Say("Farewell "+player->GetName(), LANG_UNIVERSAL);
                 me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
             }
 			break;
