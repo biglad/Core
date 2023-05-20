@@ -1,0 +1,10 @@
+INSERT INTO `script_texts` VALUES (0, -1710001, 'Minions Assist Me Now, Kill them all!!!!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 1, 0, 0, NULL);
+INSERT INTO `script_texts` VALUES (0, -1710002, 'Die In AoE you NOOBS!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 1, 0, 0, NULL);
+INSERT INTO `script_texts` VALUES (0, -1710003, 'NAB STORM!!!!!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 1, 0, 0, NULL);
+INSERT INTO `script_texts` VALUES (0, -1710004, 'HAHAHAHA BUBBLE!!!!!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 1, 0, 0, NULL);
+INSERT INTO `script_texts` VALUES (0, -1710005, 'No No No my Bubble, Damn Cool Downs....', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 1, 0, 0, NULL);
+INSERT INTO `script_texts` VALUES (0, -1710006, 'No my time here is over, sorry Window Maker', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, NULL);
+INSERT INTO `script_texts` VALUES (0, -1710007, 'Burn in my unholy fire, burn baby burn!!!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, NULL);
+INSERT INTO `script_texts` VALUES (0, -1710008, 'Get Over Here!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, NULL);
+INSERT INTO `script_texts` VALUES (0, -1710009, 'I HAVE HAD ENOUGH!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, NULL);
+INSERT INTO `script_texts` VALUES (0, -1710010, 'Mistress i killed one for you', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, NULL);

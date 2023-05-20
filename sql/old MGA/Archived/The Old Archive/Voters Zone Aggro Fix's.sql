@@ -1,0 +1,34 @@
+UPDATE `creature_template` SET `unit_flags`='256' WHERE `entry`='11867';
+UPDATE `creature_template` SET `unit_flags`='256' WHERE `entry`='11865';
+UPDATE `creature_template` SET `unit_flags`='256' WHERE `entry`='13084';
+UPDATE `creature_template` SET `unit_flags`='4352' WHERE `entry`='2704';
+UPDATE `creature_template` SET `unit_flags`='4352' WHERE `entry`='11868';
+UPDATE `creature_template` SET `unit_flags`='4352' WHERE `entry`='11869';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='11870';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='11866';
+/*
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='34075';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='34084';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='34078';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='34038';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='34063';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='34060';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='5145';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='5117';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='23127';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='5149';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='11406';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='5166';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='5173';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='5114';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='4217';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='4568';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='16674';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='3032';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='16681';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='4606';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='4584';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='4565';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='4593';
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|256 WHERE `entry`='3034';
+*/

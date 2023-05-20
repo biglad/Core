@@ -1,0 +1,3 @@
+INSERT INTO `script_texts` VALUES (0, -1700035, 'Phase Two completed, you have been given your Hateful Gladiators Set. Please speak to me again for the next phase when you have at least 3 free slots in your bag', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 1, 'MGA Text');
+UPDATE `script_texts` SET `content_default`='Phase Two completed, you have been given your Tier 5 Set. Please speak to me again for the next phase when you have at least 3 free slots in your bag' WHERE (`entry`='-1700022')
+UPDATE `script_texts` SET `content_default`='Phase Two completed, you have been given your Furious Gladiators Set. Please speak to me again for the next phase when you have at least 3 free slots in your bag' WHERE (`npc_entry`='0') AND (`entry`='-1700035');

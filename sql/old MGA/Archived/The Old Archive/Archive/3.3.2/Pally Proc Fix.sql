@@ -1,0 +1,11 @@
+DELETE FROM `spell_proc_event` WHERE `entry` IN (31892, 53736, 20164, 20165, 21084, 53720, 31801, 20166, 20375);
+INSERT INTO `spell_proc_event` (`entry`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `procFlags`, `procEx`, `ppmRate`, `CustomChance`, `Cooldown`) VALUES
+(31892, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0), -- Seal of Blood
+(53736, 1, 0, 0, 0, 0, 0, 0, 20, 0, 0),  -- Seal of Corruption
+(20164, 1, 0, 0, 0, 0, 0, 0, 5, 0, 0),  -- Seal of Justice
+(20165, 1, 0, 0, 0, 0, 0, 0, 20, 0, 0),  -- Seal of Light
+(21084, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0),  -- Seal of Righteousness
+(53720, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0),  -- Seal of Martyr
+(31801, 1, 0, 0, 0, 0, 0, 0, 20, 0, 0),  -- Seal of Vengeance
+(20166, 1, 0, 0, 0, 0, 0, 0, 12, 0, 0),  -- Seal of Wisdom
+(20375, 1, 0, 0, 0, 0, 0, 0, 7, 0, 1);  -- Seal of Command

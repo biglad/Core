@@ -1,0 +1,2 @@
+DELETE FROM `gameobject` WHERE (`map`='35');
+INSERT INTO `gameobject` VALUES (283478, 203006, 35, 1, 1, -0.758911, 44.8732, -25.8418, 1.58927, 0, 0, 0.713609, 0.700544, 300, 0, 1);

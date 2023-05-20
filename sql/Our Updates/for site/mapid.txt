@@ -1,0 +1,59 @@
+id , name
+0 , Eastern Kingdoms
+1 , Kalimdor
+30 , Alterac Valley
+33 , Shadowfang Keep
+34 , Stormwind Stockades
+35 , Stormwind Vault
+36 , DeadMines
+43 , Wailing Caverns
+47 , Razorfen Kraul
+48 , Blackfathom Deeps
+69 , EmeraldDream
+70 , Uldaman
+90 , Gnomeregan
+109 , The Sunken Temple
+129 , Razorfen Downs
+189 , Scarlet Monastery
+209 , Zul'Farrak
+229 , Blackrock Spire
+230 , Blackrock Depths
+249 , Onyxia's Lair
+269 , The Black Morass
+289 , Scholomance
+309 , Zul'Gurub
+329 , Stratholme
+349 , Maraudon
+369 , Deeprun Tram
+389 , Ragefire Chasm
+409 , Molten Core
+429 , Dire Maul
+449 , Alliance Military Barracks
+450 , Horde Military Barracks
+469 , Blackwing Lair
+509 , Ahn'Qiraj Ruins
+530 , Outlands
+531 , Ahn'Qiraj Temple
+532 , Karazhan
+533 , Naxxramas
+534 , Hyjal Summit
+560 , Old Hillsbrad Foothills
+553 , The Botanica
+545 , Steamvault
+554 , The Mechanar
+564 , Black Temple
+565 , Gruul's Lair
+552 , The Arcatraz
+550 , Tempest Keep
+540 , Shattered Halls
+544 , Magtheridon's Lair
+543 , Hellfire Ramparts
+542 , The Blood Furnace
+557 , Mana Tombs
+555 , Shadow Labyrinth
+556 , Sethekk Halls
+558 , Auchenai Crypts
+547 , The Slave Pens
+548 , Serpentshrine Cavern
+546 , The Underbog
+568 , Zul'Aman

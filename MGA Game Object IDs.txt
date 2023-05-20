@@ -1,0 +1,41 @@
+
+878787	MGA House
+878788	MGA Church (not working)
+878789	MGA Stables
+878790	MGA Burned House
+878791	MGA Tank
+878792	MGA Bridge-Long
+878793	MGA Fence
+878794	MGA Stables
+878795	MGA Fence
+878796	MGA Alliance Airship
+878799	MGA Gunship Stairs
+878800	MGA Mini Stairs
+878801	MGAWoW Marker
+878802	MGA Wall
+878803	MGA Fortress Wall
+878804	MGA Rock Pile
+878805	MGA Great Frozen Hall (lich kings thrown)
+878806	MGA Portal Off
+878807	MGA Hologram Floorpiece
+878808	MGA Floor 1
+878809	MGA Floor Glyph
+878810	MGA PORTAL NOT LINKED!
+878811	MGA Docks
+878812	MGA Broken Blimp
+878813	MGA Tuskar house no roof
+878814	MGA Tuskar hut with root
+878815	MGA Alliance watch tower broken
+878816	MGA Grizzly Hills INN
+878817	MGA Westfal Small house
+878818	MGA Alliance Wall
+878819	MGA Alliance Side Wall(Pillar)
+878820	MGA Small house
+878821	MGA Stables 2
+878822	MGA LumberMill
+878823	MGA Farm House
+878824	MGA Farm House (old)
+878825	MGA LumberMill (old) 
+878826	MGA Stables Old
+878827	MGA Tower (needs testing)
+999001	MGA Church

@@ -1,0 +1,16 @@
+-- fix send trail horde quest
+UPDATE `quest_template` SET `Method`='0' WHERE (`entry`='9686');
+-- UPDATE `quest_template` SET `Method`='2' WHERE (`entry`='9686');
+
+
+INSERT INTO `creature_questrelation` (`id`, `quest`) VALUES ('37780', '24506');
+INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES ('37596', '24506');
+INSERT INTO `creature_questrelation` (`id`, `quest`) VALUES ('37596', '24511');
+INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES ('38161', '24511');
+INSERT INTO `creature_questrelation` (`id`, `quest`) VALUES ('38161', '24682');
+INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES ('36990', '24682');
+INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES ('37592', '24507');
+INSERT INTO `creature_questrelation` (`id`, `quest`) VALUES ('37592', '24712');
+INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES ('38189', '24712');
+INSERT INTO `creature_questrelation` (`id`, `quest`) VALUES ('38189', '24713');
+INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES ('37223', '24713');
