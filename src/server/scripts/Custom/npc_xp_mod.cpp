@@ -51,7 +51,7 @@ public:
         {
             WorldSession* session = player->GetSession();
             if (player->HasItemCount(itemId, 1) || player->HasItemCount(itemId2, 1))
-                AddGossipItemFor(player, GOSSIP_ICON_DOT, "Set XP To Normal", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1000);
+                AddGossipItemFor(player, GOSSIP_ICON_DOT, "Set XP To Normal - Deletes Item!! * WARNING *  BANK IT????", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1000);
 
             if (!player->HasItemCount(itemId, 1) && !player->HasItemCount(itemId2, 1))
                 AddGossipItemFor(player, GOSSIP_ICON_DOT, "Set XP Rates to 1x", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1001);
