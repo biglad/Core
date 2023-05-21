@@ -59,7 +59,7 @@ public:
             if (!player->HasItemCount(itemId2, 1) && !player->HasItemCount(itemId, 1))
                 AddGossipItemFor(player, GOSSIP_ICON_DOT, "BOOST XP TO 10x", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
 
-            AddGossipItemFor(player, GOSSIP_ICON_TALK, "Bye.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2000);
+            AddGossipItemFor(player, GOSSIP_ICON_DOT, "Bye.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2000);
             player->TalkedToCreature(me->GetEntry(), me->GetGUID());
             SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
             return true;
