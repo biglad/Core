@@ -150,15 +150,15 @@ public:
             AddGossipItemFor(player, GOSSIP_ICON_DOT, "Main Professions", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
             if (freeProfs < 1)
             {
-                AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_NOFREE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+                AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_NOFREE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
             }
             else
             {
                 // AD TOO MAIN PROFFS
                 if (freeProfs == 2)
-                    AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "You can learn " + proffcount + " main professions", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+                    AddGossipItemFor(player, GOSSIP_ICON_DOT, "You can learn " + proffcount + " main professions", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
                 if (freeProfs == 1)
-                    AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "You can learn " + proffcount + " main profession", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+                    AddGossipItemFor(player, GOSSIP_ICON_DOT, "You can learn " + proffcount + " main profession", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
 
                 
                 if (!player->HasSkill(BlackSmithSkill))
@@ -193,17 +193,17 @@ public:
             if (!player->HasSkill(FirstAidSkill))
                 AddGossipItemFor(player, GOSSIP_ICON_TRAINER, "Learn First Aid", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1000);  //1stAid
             else
-                AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, "<Unlearn First Aid>", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3000);  //1stAid
+                AddGossipItemFor(player, GOSSIP_ICON_DOT, "<Unlearn First Aid>", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3000);  //1stAid
 
             if (!player->HasSkill(CookingSkill))
                 AddGossipItemFor(player, GOSSIP_ICON_TRAINER, "Learn Cooking", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1001);  //cooking
             else
-                AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, "<Unlearn Cooking>", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3001);  //cooking
+                AddGossipItemFor(player, GOSSIP_ICON_DOT, "<Unlearn Cooking>", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3001);  //cooking
 
             if (!player->HasSkill(FishingSkill))
                 AddGossipItemFor(player, GOSSIP_ICON_TRAINER, "Learn Fishing", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);  //fishing
             else
-                AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, "<Unlearn Fishing>", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3002);  //fishing
+                AddGossipItemFor(player, GOSSIP_ICON_DOT, "<Unlearn Fishing>", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3002);  //fishing
 
             AddGossipItemFor(player, GOSSIP_ICON_TALK, GOSSIP_HELLO_BYE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2000);
 
