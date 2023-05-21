@@ -91,20 +91,13 @@ public:
                     me->Say("You have the XP deduction item", LANG_UNIVERSAL);
                     return true;
                 }
-
-                if (player->HasItemCount(itemId3, 1))
-                {
-                    me->Say("Missing a MGA Token", LANG_UNIVERSAL);
-                    return true;
-                }
-                
                 ItemPosCountVec dest;
                 InventoryResult msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1);
                 if (msg == EQUIP_ERR_OK)
                 {
                     Item* item = player->StoreNewItem(dest, itemId, 1, true);
                     player->SendNewItem(item, 1, true, false);
-                    me->Say("Here you go, carry this item and XP is set to 1x", LANG_UNIVERSAL);
+                    me->Say("Here you go, carry this item and XP is set to 1x. Bank the item then you're done.", LANG_UNIVERSAL);
                 }
 
 			}
@@ -118,13 +111,20 @@ public:
                     return true;
                 }
 
+                if (!player->HasItemCount(itemId3, 1))
+                {
+                    me->Say("To boost XP to 10x, I need a MGA Token as payment! Let me know when you have one.", LANG_UNIVERSAL);
+                    return true;
+                }
+                player->DestroyItemCount(itemId3, 1, true);
+
                 ItemPosCountVec dest;
                 InventoryResult msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId2, 1);
                 if (msg == EQUIP_ERR_OK)
                 {
                     Item* item = player->StoreNewItem(dest, itemId2, 1, true);
                     player->SendNewItem(item, 1, true, false);
-                    me->Say("Here you go, carry this item and XP is boosted to 10x", LANG_UNIVERSAL);
+                    me->Yell("Here you go, carry this item and XP is boosted to 10x. Bank the item then you're done.", LANG_UNIVERSAL);
                 }
 
             }
