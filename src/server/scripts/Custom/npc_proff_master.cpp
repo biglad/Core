@@ -15,7 +15,7 @@
 #include <sstream>
 #include <string>
 
-enum Spells
+enum SpellsAndItemIDsAndCost
 {
     MAINPROFF = 3,  // token cost
     SECPROFF = 2,   // token cost
@@ -237,6 +237,7 @@ public:
                     player->DestroyItemCount(ITEMCOSTID, SECPROFF, true);
                     player->SetSkill(FirstAidSkill, 1, 450, 450);
                     player->CastSpell(player, FirstAidSPell);
+                    HandleLearnSkillRecipesHelper(player, FirstAidSkill);
                     me->Say("Your First Aid skill is now at max " + player->GetName(), LANG_UNIVERSAL);
                     
                 }
@@ -258,6 +259,7 @@ public:
                     player->DestroyItemCount(ITEMCOSTID, SECPROFF, true);
                     player->SetSkill(CookingSkill, 1, 450, 450);
                     player->CastSpell(player, CookingSpell);
+                    HandleLearnSkillRecipesHelper(player, CookingSkill);
                     me->Say("Your Cooking skill is now at max " + player->GetName(), LANG_UNIVERSAL);
                     
                 }
@@ -279,6 +281,7 @@ public:
                     player->DestroyItemCount(ITEMCOSTID, SECPROFF, true);
                     player->SetSkill(FishingSkill, 1, 450, 450);
                     player->CastSpell(player, FishingSpell);
+                    HandleLearnSkillRecipesHelper(player, FishingSkill);
                     me->Say("Your Fishing skill is now at max " + player->GetName(), LANG_UNIVERSAL);
                     
                 }
