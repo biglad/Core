@@ -43,7 +43,7 @@ public:
         if (IsXPBoostActive())
         {
             
-            if (player->HasItemCount(461141, 1))
+            if (player->HasItemCount(461141, 1))  // MGA XP Modifier, item 461141 needs to be in backback to work reset XP back to normal
             {
                 amount *= 1;
             }
