@@ -10,7 +10,6 @@
 #include "WorldDatabase.h"
 #include "DatabaseEnv.h"
 #include "WorldSession.h"
-#include "world.h"
 #include "SpellInfo.h"
 #include "SpellMgr.h"
 #include <sstream>
