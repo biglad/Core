@@ -15,6 +15,7 @@ enum ItemIds
 {
     itemId = 461141,  // 1x Rates
     itemId2 = 461142, // XP BOOSTER item
+    itemId3 = 21140, // MGA TOKEN
 };
 
 /*
@@ -88,6 +89,12 @@ public:
                 if (player->HasItemCount(itemId, 1))
                 {
                     me->Say("You have the XP deduction item", LANG_UNIVERSAL);
+                    return true;
+                }
+
+                if (player->HasItemCount(itemId3, 1))
+                {
+                    me->Say("Missing a MGA Token", LANG_UNIVERSAL);
                     return true;
                 }
                 
