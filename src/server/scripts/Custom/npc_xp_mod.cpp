@@ -11,7 +11,11 @@
 #include <sstream>
 #include <string>
 
-
+enum ItemIds
+{
+    itemId = 461141,  // 1x Rates
+    itemId2 = 461142, // XP BOOSTER item
+};
 
 /*
 5 ways to notify player
@@ -45,11 +49,14 @@ public:
         bool OnGossipHello(Player* player) override
         {
             WorldSession* session = player->GetSession();
-            uint32 itemId = 461141;
-            if (player->HasItemCount(itemId, 1))
-                AddGossipItemFor(player, GOSSIP_ICON_DOT, "Set XP To Normal (400%)", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1000);
-            else 
-                AddGossipItemFor(player, GOSSIP_ICON_DOT, "Set XP Rates to 100%", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1001);
+            if (player->HasItemCount(itemId, 1) || player->HasItemCount(itemId2, 1))
+                AddGossipItemFor(player, GOSSIP_ICON_DOT, "Set XP To Normal", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1000);
+
+            if (!player->HasItemCount(itemId, 1) && !player->HasItemCount(itemId2, 1))
+                AddGossipItemFor(player, GOSSIP_ICON_DOT, "Set XP Rates to 1x", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1001);
+
+            if (!player->HasItemCount(itemId2, 1) && !player->HasItemCount(itemId, 1))
+                AddGossipItemFor(player, GOSSIP_ICON_DOT, "BOOST XP TO 10x", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
 
             AddGossipItemFor(player, GOSSIP_ICON_TALK, "Bye.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2000);
             player->TalkedToCreature(me->GetEntry(), me->GetGUID());
@@ -66,11 +73,11 @@ public:
             if (action == GOSSIP_ACTION_INFO_DEF + 1000)
             {
                 CloseGossipMenuFor(player);
-                uint32 itemId = 461141;
-                if (player->HasItemCount(itemId, 1))
+                if (player->HasItemCount(itemId, 1) || player->HasItemCount(itemId2, 1))
                 {
                     player->DestroyItemCount(itemId, 1, true);
-                    me->Say("XP Reduction Item Removed!", LANG_UNIVERSAL);
+                    player->DestroyItemCount(itemId2, 1, true);
+                    me->Say("XP Modification Item Removed! XP Rates Server Normal!", LANG_UNIVERSAL);
                     return true;
                 }
             }
@@ -78,7 +85,6 @@ public:
             if (action == GOSSIP_ACTION_INFO_DEF + 1001)
 			{
                 CloseGossipMenuFor(player);
-                uint32 itemId = 461141;
                 if (player->HasItemCount(itemId, 1))
                 {
                     me->Say("You have the XP deduction item", LANG_UNIVERSAL);
@@ -91,11 +97,30 @@ public:
                 {
                     Item* item = player->StoreNewItem(dest, itemId, 1, true);
                     player->SendNewItem(item, 1, true, false);
-                    me->Say("Here you go, carry this item and XP is reduces to 100%", LANG_UNIVERSAL);
+                    me->Say("Here you go, carry this item and XP is set to 1x", LANG_UNIVERSAL);
                 }
 
 			}
 
+            if (action == GOSSIP_ACTION_INFO_DEF + 1002)
+            {
+                CloseGossipMenuFor(player);
+                if (player->HasItemCount(itemId2, 1))
+                {
+                    me->Say("You have the XP Booster item", LANG_UNIVERSAL);
+                    return true;
+                }
+
+                ItemPosCountVec dest;
+                InventoryResult msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId2, 1);
+                if (msg == EQUIP_ERR_OK)
+                {
+                    Item* item = player->StoreNewItem(dest, itemId2, 1, true);
+                    player->SendNewItem(item, 1, true, false);
+                    me->Say("Here you go, carry this item and XP is boosted to 10x", LANG_UNIVERSAL);
+                }
+
+            }
             if (action == GOSSIP_ACTION_INFO_DEF + 2000)
             {
                 CloseGossipMenuFor(player);

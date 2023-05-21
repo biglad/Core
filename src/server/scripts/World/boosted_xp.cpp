@@ -47,6 +47,10 @@ public:
             {
                 amount *= 1;
             }
+            else if (player->HasItemCount(461142, 1))  // MGA XP Modifier, item 461141 needs to be in backback to work reset XP back to normal
+            {
+                amount *= 10;
+            }
             else
             {
                 amount *= sWorld->getRate(RATE_XP_BOOST);
