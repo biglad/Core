@@ -761,9 +761,9 @@ public:
                 me->Say("4x Mega Bags!" + player->GetName(), LANG_UNIVERSAL);
                 me->Yell("All Done! " + player->GetName()+" Enjoy MGAWoW", LANG_UNIVERSAL);
                 if (player->GetTeamId() == TEAM_HORDE)
-                    sWorld->SendWorldText(30000, "Horde", player->GetName());
+                    sWorld->SendWorldText(30000, "Horde", player->GetName().c_str());
                 else
-                    sWorld->SendWorldText(30000, "Alliance", player->GetName());
+                    sWorld->SendWorldText(30000, "Alliance", player->GetName().c_str());
                 CloseGossipMenuFor(player);
                 player->SaveToDB();
                 return true;
