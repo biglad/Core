@@ -55,7 +55,7 @@ enum SpellsAndItemIDsAndCost
     EnchanterSkill = 333,
     EnchanterSpell = 51312,
 
-    SKinningSkill = 303,
+    SKinningSkill = 393,
     SkinningSPell = 50307,
 
     JewelSKill = 773,
