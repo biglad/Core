@@ -30,6 +30,7 @@ void AddSC_npc_token_exchange();
 void AddSC_npc_faction_class_edit();
 void AddSC_npc_proff_master();
 void AddSC_npc_xp_mod();
+void AddSC_npc_insta_80();
 
 void AddCustomScripts()
 {
@@ -42,4 +43,5 @@ void AddCustomScripts()
 	AddSC_npc_faction_class_edit();
 	AddSC_npc_proff_master();
 	AddSC_npc_xp_mod();
+	AddSC_npc_insta_80();
 }
