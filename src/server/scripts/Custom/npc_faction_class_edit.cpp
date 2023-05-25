@@ -67,22 +67,22 @@ public:
                 {
                     //faction
                     //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_NEMH5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_NEMH5, GOSSIP_SENDER_MAIN, 1001);
+                    AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_NEMH5, GOSSIP_SENDER_MAIN, 1001);
                 }
                 else
                 {
                     //race
                     //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_NEMH6, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_NEMH6, GOSSIP_SENDER_MAIN, 1002);
+                    AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_NEMH6, GOSSIP_SENDER_MAIN, 1002);
                 }
             }
             else
             {
                 //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_NEMH7, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
-                AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_NEMH7, GOSSIP_SENDER_MAIN, 1003);
+                AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_NEMH7, GOSSIP_SENDER_MAIN, 1003);
             }
 			
-			AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Bye", GOSSIP_SENDER_MAIN, 2);
+			AddGossipItemFor(player, GOSSIP_ICON_TALK, "Bye", GOSSIP_SENDER_MAIN, 2);
             player->TalkedToCreature(me->GetEntry(), me->GetGUID());
             SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
             return true;
