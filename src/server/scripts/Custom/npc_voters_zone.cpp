@@ -69,8 +69,17 @@ public:
             tseconds = time(NULL);
             uint32 ttcheck;
             ttcheck = (tseconds - 43200); // 12 hours
-            QueryResult result2;
-            result2 = WorldDatabase.PQuery("SELECT * FROM `vote_tp` WHERE `guid`='%d' AND `time` >'%d' LIMIT 1", player->GetSession()->GetAccountId(), ttcheck);
+			QueryResult result2;
+			if (player->IsGameMaster())
+            {
+                result2 = WorldDatabase.PQuery("SELECT * FROM `vote_tp` WHERE `guid`='%d' LIMIT 1", player->GetSession()->GetAccountId());
+            }
+            else
+            {
+                result2 = WorldDatabase.PQuery("SELECT * FROM `vote_tp` WHERE `guid`='%d' AND `time` >'%d' LIMIT 1", player->GetSession()->GetAccountId(), ttcheck);
+            }
+            
+            //result2 = WorldDatabase.PQuery("SELECT * FROM `vote_tp` WHERE `guid`='%d' AND `time` >'%d' LIMIT 1", player->GetSession()->GetAccountId(), ttcheck);
            
             if (result2)
             {
