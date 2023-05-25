@@ -32,7 +32,7 @@ enum SpellsAndItemIDsAndCost
     MAINPROFF = 3,  // token cost
     SECPROFF = 2,   // token cost
 
-    ITEMCOSTID = 21140,  //MGA Token
+    ITEMCOSTID = 461143,  //MGA Instant Level 80 Voucher
 
     FirstAidSkill = 129,
     FirstAidSPell = 65292,
