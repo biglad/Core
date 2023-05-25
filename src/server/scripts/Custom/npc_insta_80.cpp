@@ -188,7 +188,7 @@ public:
 
             //InitGossipMenuFor(player, NPC_GOSSIP_MENU);
             WorldSession* session = player->GetSession();
-
+/*
             if (!player->IsGameMaster())
             {
                 AddGossipItemFor(player, GOSSIP_ICON_DOT, "TEST MODE GMS ONLY", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
@@ -197,7 +197,7 @@ public:
                 SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
                 return true;
             }
-
+*/
 			QueryResult result;
 
             result = WorldDatabase.PQuery("SELECT * FROM `char_Insta80` WHERE `acct_id`='%d' AND `status` = 8 LIMIT 1", player->GetSession()->GetAccountId());
