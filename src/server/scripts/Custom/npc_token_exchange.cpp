@@ -76,7 +76,7 @@ public:
 			AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, GOSSIP_HELLO_TSWAP5, GOSSIP_SENDER_MAIN, 1005);
 		
 			
-			AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TSWAP9, GOSSIP_SENDER_MAIN, 1009);
+			AddGossipItemFor(player, GOSSIP_ICON_TALK, GOSSIP_HELLO_TSWAP9, GOSSIP_SENDER_MAIN, 1009);
 			
             player->TalkedToCreature(me->GetEntry(), me->GetGUID());
             SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());

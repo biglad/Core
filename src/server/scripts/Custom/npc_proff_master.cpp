@@ -186,7 +186,7 @@ public:
 
 
             }
-            AddGossipItemFor(player, GOSSIP_ICON_DOT, "---------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+            AddGossipItemFor(player, GOSSIP_ICON_DOT, "-", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
             AddGossipItemFor(player, GOSSIP_ICON_DOT, "Secondary Professions", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
 
             // 2nd PROFFS

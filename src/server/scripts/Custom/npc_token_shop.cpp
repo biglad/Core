@@ -64,7 +64,7 @@ public:
             //AddGossipItemFor(player,  GOSSIP_ICON_INTERACT_1, "Armor Rewards"    , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1400);
             AddGossipItemFor(player, GOSSIP_ICON_VENDOR, "Reputation Rewards", GOSSIP_SENDER_MAIN, 1500);
 			
-			AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Bye", GOSSIP_SENDER_MAIN, 2);
+			AddGossipItemFor(player, GOSSIP_ICON_TALK, "Bye", GOSSIP_SENDER_MAIN, 2);
             player->TalkedToCreature(me->GetEntry(), me->GetGUID());
             SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
             return true;
