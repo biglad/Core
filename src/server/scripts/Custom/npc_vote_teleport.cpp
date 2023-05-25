@@ -99,99 +99,108 @@ public:
 
         bool OnGossipHello(Player* player) override
         {
+            me->Say("Hail " + player->GetName(), LANG_UNIVERSAL);
             me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
             WorldSession* session = player->GetSession();
-			
+            QueryResult result;
             time_t tseconds;
             tseconds = time(NULL);
             uint32 ttcheck;
             uint32 fiveminabusecheck;
             uint32 lasttptime;
+            if (player->IsGameMaster())
+            {
+                result = WorldDatabase.PQuery("SELECT * FROM `vote_tp` WHERE `guid`='%d' LIMIT 1", player->GetSession()->GetAccountId());
+            }
+            else
+            {
+                result = WorldDatabase.PQuery("SELECT * FROM `vote_tp` WHERE `guid`='%d' AND `time` >'%d' LIMIT 1", player->GetSession()->GetAccountId(), ttcheck);
+            }
             ttcheck = (tseconds - 43200); // 12 hours
+
             fiveminabusecheck = (tseconds - 300); // 5mins
-            QueryResult result;
-            result = WorldDatabase.PQuery("SELECT * FROM `vote_tp` WHERE `guid`='%d' AND `time` >'%d' LIMIT 1", player->GetSession()->GetAccountId(), ttcheck);
+            
+            //result = WorldDatabase.PQuery("SELECT * FROM `vote_tp` WHERE `guid`='%d' AND `time` >'%d' LIMIT 1", player->GetSession()->GetAccountId(), ttcheck);
             //sLog->outError("SELECT * FROM `vote_tp` WHERE `guid`='%d' AND `time` >'%d' LIMIT 1", player->GetSession()->GetAccountId(),ttcheck);          
 
-
-            if (result || player->IsGameMaster())
+            if (result)
             {
 
                 Field* fields = result->Fetch();
 
                 lasttptime = fields[2].GetUInt32();
                 if (lasttptime < 1)
-                    lasttptime = (tseconds - 305); // current time - 5 mins was no entry in DB
+                    lasttptime = (tseconds - 300); // current time - 5 mins was no entry in DB
 				
 				if (player->IsGameMaster())
 				{
-					fiveminabusecheck = 0;
-					lasttptime = 0;
+					fiveminabusecheck = tseconds;
+					lasttptime = tseconds;
 				}
-
-                if (fiveminabusecheck < lasttptime)
-                {
-                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TPN01, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1050);
-					AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Bye!", GOSSIP_SENDER_MAIN, 2);
-                    //sLog->outError("MGA: FAILED:: time from db = %d time we checking = %d", lasttptime,fiveminabusecheck);
-                }
+				
+				if (fiveminabusecheck < lasttptime)
+				{
+					AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_TPN01, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1050);
+					AddGossipItemFor(player, GOSSIP_ICON_TALK, "Bye!", GOSSIP_SENDER_MAIN, 2);
+					//sLog->outError("MGA: FAILED:: time from db = %d time we checking = %d", lasttptime,fiveminabusecheck);
+				}
                 else
                 {
                     //sLog->outError("MGA: WORKED:: time from db = %d time we checking = %d", lasttptime,fiveminabusecheck);
                     if (player->GetTeamId() == TEAM_HORDE || player->IsGameMaster())
                     {
                         // HORDE LOCATIONS
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_HTP1, GOSSIP_SENDER_MAIN, 1011);
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_HTP2, GOSSIP_SENDER_MAIN, 1012);
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_HTP3, GOSSIP_SENDER_MAIN, 1013);
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_HTP4, GOSSIP_SENDER_MAIN, 1014);
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_HSTP1, GOSSIP_SENDER_MAIN, 1022); // orc starting zone
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_HSTP2, GOSSIP_SENDER_MAIN, 1023); // undead start zone
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_HSTP3, GOSSIP_SENDER_MAIN, 1024); // tauren start zone
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_HSTP4, GOSSIP_SENDER_MAIN, 1025); // bloodelf start zone
-                        //AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_HSTP5, GOSSIP_SENDER_MAIN, 10125); // goblin start zone
-                        //AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_HSTP6, GOSSIP_SENDER_MAIN, 10126); // worgen start zone
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_HSTP7, GOSSIP_SENDER_MAIN, 1031); // troll starting zone
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_HTP1, GOSSIP_SENDER_MAIN, 1011);
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_HTP2, GOSSIP_SENDER_MAIN, 1012);
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_HTP3, GOSSIP_SENDER_MAIN, 1013);
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_HTP4, GOSSIP_SENDER_MAIN, 1014);
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_HSTP1, GOSSIP_SENDER_MAIN, 1022); // orc starting zone
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_HSTP2, GOSSIP_SENDER_MAIN, 1023); // undead start zone
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_HSTP3, GOSSIP_SENDER_MAIN, 1024); // tauren start zone
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_HSTP4, GOSSIP_SENDER_MAIN, 1025); // bloodelf start zone
+                        //AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_HSTP5, GOSSIP_SENDER_MAIN, 10125); // goblin start zone
+                        //AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_HSTP6, GOSSIP_SENDER_MAIN, 10126); // worgen start zone
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_HSTP7, GOSSIP_SENDER_MAIN, 1031); // troll starting zone
                     }
 
                     if (player->IsGameMaster())
                     {
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_GM1, GOSSIP_SENDER_MAIN, 9999);
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_GM1, GOSSIP_SENDER_MAIN, 9999);
                     }
 
                     if (player->GetTeamId() == TEAM_ALLIANCE || player->IsGameMaster())
                     {
                         // ALLY LOCATIONS
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_ATP1, GOSSIP_SENDER_MAIN, 1016);
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_ATP2, GOSSIP_SENDER_MAIN, 1017);
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_ATP3, GOSSIP_SENDER_MAIN, 1018);
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_ATP4, GOSSIP_SENDER_MAIN, 1019);
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_ASTP1, GOSSIP_SENDER_MAIN, 1026); // human start zone
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_ASTP2, GOSSIP_SENDER_MAIN, 1027); // gnome start zone
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_ASTP3, GOSSIP_SENDER_MAIN, 1028); // night elf start zone
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_ASTP4, GOSSIP_SENDER_MAIN, 1029); // draenei start zone
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_ASTP5, GOSSIP_SENDER_MAIN, 1030); // dwarf start zone
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_ATP1, GOSSIP_SENDER_MAIN, 1016);
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_ATP2, GOSSIP_SENDER_MAIN, 1017);
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_ATP3, GOSSIP_SENDER_MAIN, 1018);
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_ATP4, GOSSIP_SENDER_MAIN, 1019);
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_ASTP1, GOSSIP_SENDER_MAIN, 1026); // human start zone
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_ASTP2, GOSSIP_SENDER_MAIN, 1027); // gnome start zone
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_ASTP3, GOSSIP_SENDER_MAIN, 1028); // night elf start zone
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_ASTP4, GOSSIP_SENDER_MAIN, 1029); // draenei start zone
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_ASTP5, GOSSIP_SENDER_MAIN, 1030); // dwarf start zone
                     }
 
                     if (player->GetLevel() > 58 || player->IsGameMaster())
                     {
                         // SHAT CITY
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_L1, GOSSIP_SENDER_MAIN, 1020);
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_L1, GOSSIP_SENDER_MAIN, 1020);
                     }
                     if (player->GetLevel() > 68 || player->IsGameMaster())
                     {
                         // DALARAN
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_L2, GOSSIP_SENDER_MAIN, 1021);
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_L2, GOSSIP_SENDER_MAIN, 1021);
                     }
-					AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Send Me Home!", GOSSIP_SENDER_MAIN, 1);
-					AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Bye!", GOSSIP_SENDER_MAIN, 2);
+					AddGossipItemFor(player, GOSSIP_ICON_DOT, "Send Me Home!", GOSSIP_SENDER_MAIN, 1);
+					AddGossipItemFor(player, GOSSIP_ICON_TALK, "Bye!", GOSSIP_SENDER_MAIN, 2);
                 }
 
             }
             else
             {
-                AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TPNO, GOSSIP_SENDER_MAIN, 1050);
-				AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Bye!", GOSSIP_SENDER_MAIN, 2);
+                AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_TPNO, GOSSIP_SENDER_MAIN, 1050);
+				AddGossipItemFor(player, GOSSIP_ICON_TALK, "Bye!", GOSSIP_SENDER_MAIN, 2);
             }
 			me->HandleEmoteCommand(EMOTE_ONESHOT_NONE);
             player->TalkedToCreature(me->GetEntry(), me->GetGUID());
