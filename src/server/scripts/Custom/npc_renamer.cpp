@@ -60,13 +60,13 @@ public:
             result = WorldDatabase.PQuery("SELECT * FROM `char_rename` WHERE `charid`='%d' AND `status`='0' LIMIT 1", player->GetGUID());
             if (result)
             {
-                AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_NEMH3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1000);
+                AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_NEMH3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1000);
             }
             else
             {
-                AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_NEMH4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
+                AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_NEMH4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
             }
-			AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_NEMH5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1003);
+			AddGossipItemFor(player, GOSSIP_ICON_TALK, GOSSIP_HELLO_NEMH5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1003);
             player->TalkedToCreature(me->GetEntry(), me->GetGUID());
             SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
             return true;
