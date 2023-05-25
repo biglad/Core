@@ -179,7 +179,7 @@ public:
         }
 		bool InsertInsta80CharData(Player* player, int16 acctid, int16 status)
         {
-            WorldDatabase.PExecute("INSERT INTO `world-dev`.`char_Insta80` (`char_id`, `acct_id`, `status`) VALUES (%d, %d, %d)", player->GetGUID(), acctid, status);
+            WorldDatabase.PExecute("INSERT INTO `char_Insta80` (`char_id`, `acct_id`, `status`) VALUES (%d, %d, %d)", player->GetGUID(), acctid, status);
             return true;
         }
 
