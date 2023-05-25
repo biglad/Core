@@ -37,7 +37,7 @@
 #define GOSSIP_HELLO_HSTP4  "Blood Elf Starting Zone"
 #define GOSSIP_HELLO_HSTP5  "Goblin Starting Zone"
 #define GOSSIP_HELLO_HSTP6  "Worgen Elf Starting Zone"
-#define GOSSIP_HELLO_HSTP7  "Trol Starting Zone"
+#define GOSSIP_HELLO_HSTP7  "Troll Starting Zone"
 
 // ALLY
 #define GOSSIP_HELLO_ATP1  "Stormwind"
