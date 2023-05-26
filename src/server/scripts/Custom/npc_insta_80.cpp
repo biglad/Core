@@ -15,6 +15,8 @@
 #include "SpellMgr.h"
 #include "World.h"
 #include "AchievementMgr.h"
+#include "botmgr.h"
+#include "botdatamgr.h"
 #include <sstream>
 #include <string>
 #define nemhtext11   800013 // tell player to log out and back in
@@ -775,7 +777,17 @@ public:
                 player->SetLevel(80);
                 player->InitTalentForLevel();
                 player->InitStatsForLevel();
+                player->InitGlyphsForLevel(); // scribe only???
+                player->InitTaxiNodesForLevel();
+                player->UpdateSkillsForLevel();
                 player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
+                player->Update(1);
+                if (player->HaveBot())
+                {
+                    player->GetBotMgr()->SetBotsShouldUpdateStats();
+                }
+                if (Pet* pet = player->GetPet())
+                    pet->SynchronizeLevelWithOwner();
                 me->Say("You now level 80 " + player->GetName() + " , talk to me again to continue.", LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return true;
