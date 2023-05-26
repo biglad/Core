@@ -911,10 +911,13 @@ public:
                 }
                 
                 me->Yell("All Done! " + player->GetName() + " Welcome to the family", LANG_UNIVERSAL);
-                if (player->GetTeamId() == TEAM_HORDE)
-                    sWorld->SendWorldText(30000, "Horde", player->GetName().c_str());
-                else
-                    sWorld->SendWorldText(30000, "Alliance", player->GetName().c_str());
+                if (!player->IsGameMaster())
+                {
+                    if (player->GetTeamId() == TEAM_HORDE)
+                        sWorld->SendWorldText(30000, "Horde", player->GetName().c_str());
+                    else
+                        sWorld->SendWorldText(30000, "Alliance", player->GetName().c_str());
+                }
                 return true;
             }
 			
