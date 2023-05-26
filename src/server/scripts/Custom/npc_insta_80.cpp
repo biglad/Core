@@ -918,10 +918,6 @@ public:
                         player->SendNewItem(item, 1, true, false);
                         mySleep(5);
                     }
-                    else
-                    {
-                        me->Yell("OMG!! " + player->GetName() + " You Had no space, some items they have been lost to the ether!!!!", LANG_UNIVERSAL);
-                    }
 
                 }
                 static const unsigned short Tier0_6List[] =  // Correspond line numbers with uint8 class in enum Classes
@@ -951,11 +947,6 @@ public:
                         Item* item = player->StoreNewItem(dest, itemid, true);
                         player->SendNewItem(item, 1, true, false);
                         mySleep(5);
-                    }
-                    else
-                    {
-                        me->Yell("OMG!! " + player->GetName() + " You Had no space, some items they have been lost to the ether!!!!", LANG_UNIVERSAL);
-                        mySleep(1000);
                     }
 
                 }
