@@ -765,6 +765,9 @@ public:
             {
                 UpdateInsta80CharData(player, 6);
                 player->SetLevel(80);
+                player->InitTalentForLevel();
+                player->InitStatsForLevel();
+                player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
                 me->Say("You now level 80 " + player->GetName() + " , talk to me again to continue.", LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return true;
@@ -909,7 +912,7 @@ public:
                 //player->SetSkill(95, 1, 450, 450);  //Def
                 if (pclass2 == 4) // rouge
                 {
-                    //player->SetSkill(633, 1, 400, 400);  //lockoicking
+                    player->SetSkill(633, 1, 400, 400);  //lockoicking
                 }
                 
                 me->Yell("All Done! " + player->GetName() + " Welcome to the family", LANG_UNIVERSAL);
@@ -975,7 +978,7 @@ public:
                     Item* item = player->StoreNewItem(dest, 461143, true);
                     player->SendNewItem(item, 1, true, false);
                 }
-                WorldDatabase.PExecute("DELETE FROM `char_Insta80` WHERE `char_id` = '%d'", player->GetGUID());
+                WorldDatabase.PExecute("DELETE FROM `char_Insta80` WHERE `acct_id` = '%d'", player->GetSession()->GetAccountId());
                 me->Say("REMOVED YOU FROM SYSTEM", LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return true;
