@@ -62,18 +62,26 @@ public:
         bool OnGossipHello(Player* player) override
         {
             me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
-            AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP1, GOSSIP_SENDER_MAIN, 1001);
-            AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP2, GOSSIP_SENDER_MAIN, 1002);
-            AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP3, GOSSIP_SENDER_MAIN, 1003);
-            AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP4, GOSSIP_SENDER_MAIN, 1004);
+            AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, GOSSIP_HELLO_TSWAP1, GOSSIP_SENDER_MAIN, 1001);
+            AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+            AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, GOSSIP_HELLO_TSWAP2, GOSSIP_SENDER_MAIN, 1002);
+            AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+            AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, GOSSIP_HELLO_TSWAP3, GOSSIP_SENDER_MAIN, 1003);
+            AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+            AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, GOSSIP_HELLO_TSWAP4, GOSSIP_SENDER_MAIN, 1004);
+            AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
             //AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP8, GOSSIP_SENDER_MAIN, 1005);
 			
-            AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP10, GOSSIP_SENDER_MAIN, 1010);
-            AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP11, GOSSIP_SENDER_MAIN, 1011);
-            AddGossipItemFor(player, GOSSIP_ICON_VENDOR, GOSSIP_HELLO_TSWAP12, GOSSIP_SENDER_MAIN, 1012);
+            AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, GOSSIP_HELLO_TSWAP10, GOSSIP_SENDER_MAIN, 1010);
+            AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+            AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, GOSSIP_HELLO_TSWAP11, GOSSIP_SENDER_MAIN, 1011);
+            AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+            AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, GOSSIP_HELLO_TSWAP12, GOSSIP_SENDER_MAIN, 1012);
+            AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
             
 			
-			AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, GOSSIP_HELLO_TSWAP5, GOSSIP_SENDER_MAIN, 1005);
+			//AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, GOSSIP_HELLO_TSWAP5, GOSSIP_SENDER_MAIN, 1005);
+
 		
 			
 			AddGossipItemFor(player, GOSSIP_ICON_TALK, GOSSIP_HELLO_TSWAP9, GOSSIP_SENDER_MAIN, 1009);
@@ -267,6 +275,11 @@ public:
                     me->Yell(tokentext2, LANG_UNIVERSAL);
                 }
                 break;
+            }
+            if (action == GOSSIP_ACTION_INFO_DEF + 9999)
+            {
+                CloseGossipMenuFor(player);
+                return true;
             }
             
             CloseGossipMenuFor(player);
