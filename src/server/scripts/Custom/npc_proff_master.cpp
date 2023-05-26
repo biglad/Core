@@ -15,6 +15,8 @@
 #include <sstream>
 #include <string>
 
+
+
 enum SpellsAndItemIDsAndCost
 {
     MAINPROFF = 3,  // token cost
@@ -58,7 +60,7 @@ enum SpellsAndItemIDsAndCost
     SKinningSkill = 393,
     SkinningSPell = 50307,
 
-    JewelSKill = 773,
+    JewelSKill = 755,
     JewelSpell = 65289,
 
     InscriptSKill = 773,
@@ -78,6 +80,10 @@ enum SpellsAndItemIDsAndCost
 
 
 #define GOSSIP_HELLO_NOFREE "You already have max main professions."
+
+
+
+
 
 
 static void HandleLearnSkillRecipesHelper(Player* player, uint32 skillId)
@@ -498,7 +504,9 @@ public:
                     player->CastSpell(player, JewelSpell);
                     player->SetSkill(JewelSKill, 1, 450, 450);
                     HandleLearnSkillRecipesHelper(player, JewelSKill);
+                    player->SetSkill(MiningSKill, 0, 0, 0);  // WHY DID WE LEARN MINING???????
                     me->Say("Your Jewelcrafting skill is now at max " + player->GetName(), LANG_UNIVERSAL);
+                    
                 }
                 else
                 {
