@@ -144,6 +144,12 @@ static bool HandleLearnMySpellsCommand(Player* player)
     return true;
 }
 
+static bool HandleMaxSkillCommand(Player* player)
+{
+    player->UpdateWeaponsSkillsToMaxSkillsForLevel();
+    return true;
+}
+
 /*
 5 ways to notify player
 session->SendNotification("MESSAGE");
@@ -203,7 +209,13 @@ public:
             result = WorldDatabase.PQuery("SELECT * FROM `char_Insta80` WHERE `acct_id`='%d' AND `status` = 9 LIMIT 1", player->GetSession()->GetAccountId());
             if (result)
             {
+                AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+                if (player->IsGameMaster())
+                {
+                    AddGossipItemFor(player, GOSSIP_ICON_DOT, "REMOVE ME FROM SYSTEM-GM ONLY OPTION", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9950);
+                }
                 AddGossipItemFor(player, GOSSIP_ICON_DOT, "YOU HAVE ALL READY MADE A LEVEL 80", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+                AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
                 AddGossipItemFor(player, GOSSIP_ICON_TALK, "LOL Bye.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
                 player->TalkedToCreature(me->GetEntry(), me->GetGUID());
                 SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
@@ -222,10 +234,15 @@ public:
             result = WorldDatabase.PQuery("SELECT * FROM `char_Insta80` WHERE `char_id`='%d' LIMIT 1", player->GetGUID());
             if (!result)
             {
-                AddGossipItemFor(player, GOSSIP_ICON_DOT, "I want to make > " + player->GetName() + " < a level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1001);
-                AddGossipItemFor(player, GOSSIP_ICON_TALK, "You can only make ONE level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9998);
+                AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+                AddGossipItemFor(player, GOSSIP_ICON_TABARD, "I want to make > " + player->GetName() + " < a level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1001);
+                AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+                AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, "You can only make ONE level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9998);
+                AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+                AddGossipItemFor(player, GOSSIP_ICON_TALK, "Please Visit the Weapon Master First!.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9100);
+                AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
 
-                AddGossipItemFor(player, GOSSIP_ICON_DOT, "Nevermind.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
+                AddGossipItemFor(player, GOSSIP_ICON_TALK, "Nevermind, Bye.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
                 player->TalkedToCreature(me->GetEntry(), me->GetGUID());
                 SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
                 return true;
@@ -246,7 +263,7 @@ public:
             result = WorldDatabase.PQuery("SELECT * FROM `char_Insta80` WHERE `char_id`='%d' AND `status` = 8 LIMIT 1", player->GetGUID());
             if (result)
             {
-                AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "Gear! + Bonus", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9000);
+                AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "PvE & PvP Gear! + Bonus", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9000);
                 AddGossipItemFor(player, GOSSIP_ICON_DOT, "Nevermind.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
                 player->TalkedToCreature(me->GetEntry(), me->GetGUID());
                 SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
@@ -311,9 +328,12 @@ public:
                 uint32 freeProfs = player->GetFreePrimaryProfessionPoints();
                 if (freeProfs < 1)
                 {
+                    AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
                     AddGossipItemFor(player, GOSSIP_ICON_DOT, "YOU HAVE TOO MANY PROFFESSIONS!!!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
-                    AddGossipItemFor(player, GOSSIP_ICON_DOT, "SKIP SECOND PROFF", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9996);
-                    AddGossipItemFor(player, GOSSIP_ICON_DOT, "Nevermind.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
+                    AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+                    AddGossipItemFor(player, GOSSIP_ICON_DOT, "Skip Second Profession", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9996);
+                    AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+                    AddGossipItemFor(player, GOSSIP_ICON_TALK, "I Will Finish Laster.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
                     player->TalkedToCreature(me->GetEntry(), me->GetGUID());
                     SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
                     return true;
@@ -358,9 +378,12 @@ public:
                 uint32 freeProfs = player->GetFreePrimaryProfessionPoints();
                 if (freeProfs < 1)
                 {
+                    AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
                     AddGossipItemFor(player, GOSSIP_ICON_DOT, "YOU HAVE TOO MANY PROFFESSIONS!!!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
-                    AddGossipItemFor(player, GOSSIP_ICON_DOT, "SKIP FIRST PROFF", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9995);
-                    AddGossipItemFor(player, GOSSIP_ICON_DOT, "Nevermind.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
+                    AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+                    AddGossipItemFor(player, GOSSIP_ICON_DOT, "Skip First Profession", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9995);
+                    AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+                    AddGossipItemFor(player, GOSSIP_ICON_TALK, "I Will Finsh Later", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
                     player->TalkedToCreature(me->GetEntry(), me->GetGUID());
                     SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
                     return true;
@@ -389,7 +412,7 @@ public:
                 if (!player->HasSkill(InscriptSKill))
                     AddGossipItemFor(player, GOSSIP_ICON_TRAINER, "Inscription", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2011);  //scribe
 
-                AddGossipItemFor(player, GOSSIP_ICON_DOT, "Nevermind.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
+                AddGossipItemFor(player, GOSSIP_ICON_DOT, "I Will Finsh Later.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
                 player->TalkedToCreature(me->GetEntry(), me->GetGUID());
                 SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
                 return true;
@@ -720,8 +743,8 @@ public:
             if (action == GOSSIP_ACTION_INFO_DEF + 4000)
             {
                 UpdateInsta80CharData(player, 4);
-                player->ModifyMoney(1000000000);
-                me->Say("Here you go 100K gold! " + player->GetName() + " , talk to me again to continue.", LANG_UNIVERSAL);
+                player->ModifyMoney(500000000);
+                me->Say("Here you go 50K gold! " + player->GetName() + " , talk to me again to continue.", LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return true;
             }
@@ -769,12 +792,14 @@ public:
                     }
                 }
                 UpdateInsta80CharData(player, 8);
-                me->Say("4x Mega Bags!" + player->GetName(), LANG_UNIVERSAL);
+                me->Say("4x Mega Bags!" + player->GetName() + " , talk to me again to continue.", LANG_UNIVERSAL);
+                me->Yell("EQUIP YOUR BAGS NOW!!!!!", LANG_UNIVERSAL);
                 
             }
 
             if (action == GOSSIP_ACTION_INFO_DEF + 9000)
             {
+                HandleMaxSkillCommand(player);
                 uint32 bonusitem = 47241; // Emblem of Triumph
                 for (int i = 1; i <= 50; i++)
                 {
@@ -876,27 +901,34 @@ public:
 
                 player->DestroyItemCount(ITEMCOSTID, 1, true);
                 UpdateInsta80CharData(player, 9);
-                me->Yell("All Done! " + player->GetName() + " Enjoy MGAWoW", LANG_UNIVERSAL);
+                CloseGossipMenuFor(player);
+                player->SaveToDB();
+                //player->SetSkill(162, 1, 450, 450);  //unarmed
+                //player->SetSkill(95, 1, 450, 450);  //Def
+                if (pclass2 == 4) // rouge
+                {
+                    //player->SetSkill(633, 1, 400, 400);  //lockoicking
+                }
+                
+                me->Yell("All Done! " + player->GetName() + " Welcome to the family", LANG_UNIVERSAL);
                 if (player->GetTeamId() == TEAM_HORDE)
                     sWorld->SendWorldText(30000, "Horde", player->GetName().c_str());
                 else
                     sWorld->SendWorldText(30000, "Alliance", player->GetName().c_str());
-                CloseGossipMenuFor(player);
-                player->SaveToDB();
                 return true;
             }
 			
             if (action == GOSSIP_ACTION_INFO_DEF + 9995)
             {
                 UpdateInsta80CharData(player, 2);
-                me->Say("Skipped Prof " + player->GetName(), LANG_UNIVERSAL);
+                me->Say("Skipped First Profession, " + player->GetName(), LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return true;
             }
             if (action == GOSSIP_ACTION_INFO_DEF + 9996)
             {
                 UpdateInsta80CharData(player, 3);
-                me->Say("Skipped Prof " + player->GetName(), LANG_UNIVERSAL);
+                me->Say("Skipped Second Profession, " + player->GetName(), LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return true;
             }
@@ -918,6 +950,28 @@ public:
 			
 			if (action == GOSSIP_ACTION_INFO_DEF + 9999)
             {
+                CloseGossipMenuFor(player);
+                return true;
+            }
+
+            if (action == GOSSIP_ACTION_INFO_DEF + 9100)
+            {
+                me->Say("He's stood next to me! " + player->GetName() + ". Go learn all your weapon types for free!", LANG_UNIVERSAL);
+                CloseGossipMenuFor(player);
+                return true;
+            }
+
+            if (action == GOSSIP_ACTION_INFO_DEF + 9950)
+            {
+                ItemPosCountVec dest;
+                uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, 461143, 1);
+                if (msg == EQUIP_ERR_OK)
+                {
+                    Item* item = player->StoreNewItem(dest, 461143, true);
+                    player->SendNewItem(item, 1, true, false);
+                }
+                WorldDatabase.PExecute("DELETE FROM `char_Insta80` WHERE `char_id` = '%d'", player->GetGUID());
+                me->Say("REMOVED YOU FROM SYSTEM", LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return true;
             }
