@@ -236,10 +236,18 @@ public:
             result = WorldDatabase.PQuery("SELECT * FROM `char_Insta80` WHERE `char_id`='%d' LIMIT 1", player->GetGUID());
             if (!result)
             {
+                if (player->IsGameMaster())
+                {
+                    AddGossipItemFor(player, GOSSIP_ICON_DOT, "IF YOU CAN SEE THIS YOU MUST .GM OFF!!!!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+                    AddGossipItemFor(player, GOSSIP_ICON_TALK, "Ok.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
+                    player->TalkedToCreature(me->GetEntry(), me->GetGUID());
+                    SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
+                    return true;
+                }
                 AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
-                AddGossipItemFor(player, GOSSIP_ICON_TABARD, "I want to make > " + player->GetName() + " < a level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1001);
+                AddGossipItemFor(player, GOSSIP_ICON_TABARD, ". I want to make > " + player->GetName() + " < a level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1001);
                 AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
-                AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, "You can only make ONE level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9998);
+                AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, ". You can only make ONE level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9998);
                 AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
                 AddGossipItemFor(player, GOSSIP_ICON_TALK, "Please Visit the Weapon Master First!.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9100);
                 AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
