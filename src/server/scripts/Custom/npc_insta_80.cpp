@@ -800,7 +800,6 @@ public:
                 player->InitTaxiNodesForLevel();
                 player->UpdateSkillsForLevel();
                 player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
-                player->Update(1);
                 if (player->HaveBot())
                 {
                     player->GetBotMgr()->SetBotsShouldUpdateStats();

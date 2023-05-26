@@ -4,9 +4,20 @@
 #include "GameEventMgr.h"
 #include "Player.h"
 #include "Unit.h"
+#include "Pet.h"
+#include "Chat.h"
+#include "Item.h"
+#include "ObjectMgr.h"
+#include "DBCStores.h"
 #include "WorldDatabase.h"
 #include "DatabaseEnv.h"
 #include "WorldSession.h"
+#include "SpellInfo.h"
+#include "SpellMgr.h"
+#include "World.h"
+#include "AchievementMgr.h"
+#include "botmgr.h"
+#include "botdatamgr.h"
 #include <sstream>
 #include <string>
 
@@ -138,6 +149,16 @@ public:
                     player->GiveLevel(lvl + 5);
                     player->InitTalentForLevel();
                     player->InitStatsForLevel();
+                    player->InitGlyphsForLevel(); // scribe only???
+                    player->InitTaxiNodesForLevel();
+                    player->UpdateSkillsForLevel();
+                    player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
+                    if (player->HaveBot())
+                    {
+                        player->GetBotMgr()->SetBotsShouldUpdateStats();
+                    }
+                    if (Pet* pet = player->GetPet())
+                        pet->SynchronizeLevelWithOwner();
                     me->Say(tokentext9, LANG_UNIVERSAL);
                     player->DestroyItemCount(21140, 1, true);
                     player->SaveToDB();
@@ -157,9 +178,16 @@ public:
                     player->GiveLevel(lvl + 2);
                     player->InitTalentForLevel();
                     player->InitStatsForLevel();
-                    me->Say(tokentext9, LANG_UNIVERSAL);
-                    player->DestroyItemCount(21140, 1, true);
-                    player->SaveToDB();
+                    player->InitGlyphsForLevel(); // scribe only???
+                    player->InitTaxiNodesForLevel();
+                    player->UpdateSkillsForLevel();
+                    player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
+                    if (player->HaveBot())
+                    {
+                        player->GetBotMgr()->SetBotsShouldUpdateStats();
+                    }
+                    if (Pet* pet = player->GetPet())
+                        pet->SynchronizeLevelWithOwner();
                 }
                 else
                 {
