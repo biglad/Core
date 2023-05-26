@@ -70,7 +70,7 @@ enum SpellsAndItemIDsAndCost
     SKinningSkill = 393,
     SkinningSPell = 50307,
 
-    JewelSKill = 773,
+    JewelSKill = 755,
     JewelSpell = 65289,
 
     InscriptSKill = 773,
@@ -200,7 +200,7 @@ public:
 */
 			QueryResult result;
 
-            result = WorldDatabase.PQuery("SELECT * FROM `char_Insta80` WHERE `acct_id`='%d' AND `status` = 8 LIMIT 1", player->GetSession()->GetAccountId());
+            result = WorldDatabase.PQuery("SELECT * FROM `char_Insta80` WHERE `acct_id`='%d' AND `status` = 9 LIMIT 1", player->GetSession()->GetAccountId());
             if (result)
             {
                 AddGossipItemFor(player, GOSSIP_ICON_DOT, "YOU HAVE ALL READY MADE A LEVEL 80", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
@@ -237,6 +237,16 @@ public:
                 AddGossipItemFor(player, GOSSIP_ICON_DOT, "I want to make > " + player->GetName() + " < a level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1001);
                 AddGossipItemFor(player, GOSSIP_ICON_TALK, "You can only make ONE level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9998);
 
+                AddGossipItemFor(player, GOSSIP_ICON_DOT, "Nevermind.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
+                player->TalkedToCreature(me->GetEntry(), me->GetGUID());
+                SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
+                return true;
+            }
+
+            result = WorldDatabase.PQuery("SELECT * FROM `char_Insta80` WHERE `char_id`='%d' AND `status` = 8 LIMIT 1", player->GetGUID());
+            if (result)
+            {
+                AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "Gear! + Bonus", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9000);
                 AddGossipItemFor(player, GOSSIP_ICON_DOT, "Nevermind.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
                 player->TalkedToCreature(me->GetEntry(), me->GetGUID());
                 SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
@@ -548,6 +558,7 @@ public:
                 player->CastSpell(player, JewelSpell);
                 player->SetSkill(JewelSKill, 1, 450, 450);
                 HandleLearnSkillRecipesHelper(player, JewelSKill);
+                player->SetSkill(MiningSKill, 0, 0, 0);  // WHY DID WE LEARN MINING???????
                 me->Say("Your Jewelcrafting skill is now at max " + player->GetName() + " , talk to me again to continue.", LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return false;
@@ -685,6 +696,7 @@ public:
                 player->CastSpell(player, JewelSpell);
                 player->SetSkill(JewelSKill, 1, 450, 450);
                 HandleLearnSkillRecipesHelper(player, JewelSKill);
+                player->SetSkill(MiningSKill, 0, 0, 0);  // WHY DID WE LEARN MINING???????
                 me->Say("Your Jewelcrafting skill is now at max " + player->GetName() + " , talk to me again to continue.", LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return false;
@@ -757,9 +769,114 @@ public:
                     }
                 }
                 UpdateInsta80CharData(player, 8);
-                player->DestroyItemCount(ITEMCOSTID, 1, true);
                 me->Say("4x Mega Bags!" + player->GetName(), LANG_UNIVERSAL);
-                me->Yell("All Done! " + player->GetName()+" Enjoy MGAWoW", LANG_UNIVERSAL);
+                
+            }
+
+            if (action == GOSSIP_ACTION_INFO_DEF + 9000)
+            {
+                uint32 bonusitem = 47241; // Emblem of Triumph
+                for (int i = 1; i <= 50; i++)
+                {
+                    ItemPosCountVec dest;
+                    uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, bonusitem, 1);
+                    if (msg == EQUIP_ERR_OK)
+                    {
+
+                        Item* item = player->StoreNewItem(dest, bonusitem, 1, true);
+                        player->SendNewItem(item, 1, true, false);
+                    }
+                }
+                /*static const unsigned short Tier0_5List[] =  // Correspond line numbers with uint8 class in enum Classes
+                {
+                40783, 40801, 40819, 40840, 40859, 0, 0, 0, // Warrior 1
+                40782, 40802, 40821, 40842, 40861, 0, 0, 0, // Paladin 2
+                41085, 41141, 41155, 41203, 41215, 0, 0, 0, // Hunter 3
+                41648, 41653, 41670, 41681, 41765, 0, 0, 0, // Rogue 4
+                41913, 41919, 41925, 41931, 41938, 0, 0, 0, // Priest 5
+                0, 0, 0, 0, 0, 0, 0, 0, // DK 6 - no set available
+                40989, 41005, 41017, 41031, 41042, 0, 0, 0, // Shaman 7
+                41944, 41950, 41957, 41963, 41969, 0, 0, 0, // Mage 8
+                41991, 42001, 42003, 42009, 42015, 0, 0, 0, // Warlock 9
+                0, 0, 0, 0, 0, 0, 0, 0, // Unused 10
+                41279, 41291, 41302, 41314, 41325, 0, 0, 0, // Druid 11
+                };*/ //HATEFULL!!!!
+                /*static const unsigned short Tier0_5List[] =  // Correspond line numbers with uint8 class in enum Classes
+                {
+                40786, 40804, 40823, 40844, 40862, 0, 0, 0, // Warrior 1
+                40785, 40805, 40825, 40846, 40864, 0, 0, 0, // Paladin 2
+                41086, 41142, 41156, 41204, 41216, 0, 0, 0, // Hunter 3
+                41649, 41654, 41671, 41682, 41766, 0, 0, 0, // Rogue 4
+                41914, 41920, 41926, 41933, 41939, 0, 0, 0, // Priest 5
+                40863, 40784, 40806, 40824, 40845, 0, 0, 0, // DK 6 - no set available
+                40990, 41000, 41012, 41026, 41037, 0, 0, 0, // Shaman 7
+                41945, 41951, 41958, 41964, 41970, 0, 0, 0, // Mage 8
+                41992, 41997, 42004, 42010, 42016, 0, 0, 0, // Warlock 9
+                0, 0, 0, 0, 0, 0, 0, 0, // Unused 10
+                41280, 41292, 41303, 41315, 41326, 0, 0, 0, // Druid 11
+                }; // DEADLY SET*/
+                static const unsigned short Tier0_5List[] =  // Correspond line numbers with uint8 class in enum Classes
+                {
+                    40847, 40789, 40807, 40826, 40866, 0, 0, 0, // Warrior 1 / done
+                    40933, 40907, 40927, 40939, 40963, 0, 0, 0, // Paladin 2 / done				
+                    41087, 41143, 41157, 41205, 41217, 0, 0, 0, // Hunter 3	/ done			
+                    41650, 41655, 41672, 41683, 41767, 0, 0, 0, // Rogue 4	/ done			
+                    41915, 41921, 41927, 41934, 41940, 0, 0, 0, // Priest 5 / done				
+                    40787, 40809, 40827, 40848, 40868, 0, 0, 0, // DK 6 - / done		
+                    41019, 40993, 41007, 41033, 41044, 0, 0, 0, // Shaman 7 / done				
+                    41971, 41946, 41953, 41959, 41965, 0, 0, 0, // Mage 8 / done
+                    42017, 41993, 41998, 42005, 42011, 0, 0, 0, // Warlock 9 / done
+                    0, 0, 0, 0, 0, 0, 0, 0, // Unused 10
+                    41281, 41293, 41304, 41316, 41327, 0, 0, 0, // Druid 11 / done
+                }; // Furious SET*/
+                int8 pclass = player->GetClass();
+                int loop = ((pclass * 8) - 8);
+                //for (unsigned long i = loop; i < (loop + 8); i++)
+                for (unsigned long i = loop; i < (loop + 8lu); i++)
+                {
+                    uint32 itemid = Tier0_5List[i];
+                    ItemPosCountVec dest;
+                    uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemid, 1);
+                    if (msg == EQUIP_ERR_OK)
+                    {
+                        Item* item = player->StoreNewItem(dest, itemid, true);
+                        player->SendNewItem(item, 1, true, false);
+                    }
+
+                }
+                static const unsigned short Tier0_6List[] =  // Correspond line numbers with uint8 class in enum Classes
+                {
+                    30120, 30118, 30119, 30121, 30122, 0, 0, 0, // Warrior 1
+                    30129, 30130, 30132, 30133, 30131, 0, 0, 0, // Paladin 2
+                    30139, 30140, 30141, 30142, 30143, 0, 0, 0, // Hunter 3
+                    30144, 30145, 30146, 30148, 30149, 0, 0, 0, // Rogue 4
+                    30160, 30161, 30162, 30159, 30163, 0, 0, 0, // Priest 5
+                    0, 0, 0, 0, 0, 0, 0, 0, // DK 6 - no set available
+                    30169, 30170, 30171, 30172, 30173, 0, 0, 0, // Shaman 7
+                    30206, 30205, 30207, 30210, 30196, 0, 0, 0, // Mage 8
+                    30211, 30212, 30213, 30215, 30214, 0, 0, 0, // Warlock 9
+                    0, 0, 0, 0, 0, 0, 0, 0, // Unused 10
+                    30231, 30232, 30233, 30234, 30235, 0, 0, 0 // Druid 11
+                }; // Armor Sets 70+
+                int8 pclass2 = player->GetClass();
+                int loop2 = ((pclass2 * 8) - 8);
+                //for (unsigned long i = loop; i < (loop + 8); i++)
+                for (unsigned long i = loop2; i < (loop2 + 8lu); i++)
+                {
+                    uint32 itemid = Tier0_6List[i];
+                    ItemPosCountVec dest;
+                    uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemid, 1);
+                    if (msg == EQUIP_ERR_OK)
+                    {
+                        Item* item = player->StoreNewItem(dest, itemid, true);
+                        player->SendNewItem(item, 1, true, false);
+                    }
+
+                }
+
+                player->DestroyItemCount(ITEMCOSTID, 1, true);
+                UpdateInsta80CharData(player, 9);
+                me->Yell("All Done! " + player->GetName() + " Enjoy MGAWoW", LANG_UNIVERSAL);
                 if (player->GetTeamId() == TEAM_HORDE)
                     sWorld->SendWorldText(30000, "Horde", player->GetName().c_str());
                 else
@@ -772,14 +889,14 @@ public:
             if (action == GOSSIP_ACTION_INFO_DEF + 9995)
             {
                 UpdateInsta80CharData(player, 2);
-                me->Say("Skipped Proff" + player->GetName(), LANG_UNIVERSAL);
+                me->Say("Skipped Prof " + player->GetName(), LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return true;
             }
             if (action == GOSSIP_ACTION_INFO_DEF + 9996)
             {
                 UpdateInsta80CharData(player, 3);
-                me->Say("Skipped Proff" + player->GetName(), LANG_UNIVERSAL);
+                me->Say("Skipped Prof " + player->GetName(), LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return true;
             }
