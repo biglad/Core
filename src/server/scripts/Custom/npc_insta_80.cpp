@@ -6,6 +6,7 @@
 #include "Unit.h"
 #include "Pet.h"
 #include "Chat.h"
+#include "Item.h"
 #include "ObjectMgr.h"
 #include "DBCStores.h"
 #include "WorldDatabase.h"
@@ -19,6 +20,7 @@
 #include "botdatamgr.h"
 #include <sstream>
 #include <string>
+//#include <unistd.h> //nix
 #define nemhtext11   800013 // tell player to log out and back in
 #define nemhtext21   800014 // tell player they not entilied
 #define nemhtext31   800012 // no mga token
@@ -815,9 +817,15 @@ public:
                         Item* item = player->StoreNewItem(dest, bag_id, 1, true);
                         player->SendNewItem(item, 1, true, false);
                     }
+                    else
+                    {
+                        me->Yell("OMG!! " + player->GetName() + " You Had no space, some items they have been lost to the ether!!!!", LANG_UNIVERSAL);
+                        Sleep(5);
+                    }
                 }
                 UpdateInsta80CharData(player, 8);
                 me->Say("4x Mega Bags!" + player->GetName() + " , talk to me again to continue.", LANG_UNIVERSAL);
+                Sleep(1000);
                 me->Yell("EQUIP YOUR BAGS NOW!!!!!", LANG_UNIVERSAL);
                 
             }
@@ -835,6 +843,7 @@ public:
 
                         Item* item = player->StoreNewItem(dest, bonusitem, 1, true);
                         player->SendNewItem(item, 1, true, false);
+                        Sleep(5);
                     }
                 }
                 /*static const unsigned short Tier0_5List[] =  // Correspond line numbers with uint8 class in enum Classes
@@ -891,6 +900,11 @@ public:
                     {
                         Item* item = player->StoreNewItem(dest, itemid, true);
                         player->SendNewItem(item, 1, true, false);
+                        Sleep(5);
+                    }
+                    else
+                    {
+                        me->Yell("OMG!! " + player->GetName() + " You Had no space, some items they have been lost to the ether!!!!", LANG_UNIVERSAL);
                     }
 
                 }
@@ -920,6 +934,12 @@ public:
                     {
                         Item* item = player->StoreNewItem(dest, itemid, true);
                         player->SendNewItem(item, 1, true, false);
+                        Sleep(5);
+                    }
+                    else
+                    {
+                        me->Yell("OMG!! " + player->GetName() + " You Had no space, some items they have been lost to the ether!!!!", LANG_UNIVERSAL);
+                        Sleep(50);
                     }
 
                 }
@@ -928,14 +948,16 @@ public:
                 UpdateInsta80CharData(player, 9);
                 CloseGossipMenuFor(player);
                 player->SaveToDB();
+                Sleep(5);
                 //player->SetSkill(162, 1, 450, 450);  //unarmed
                 //player->SetSkill(95, 1, 450, 450);  //Def
                 if (pclass2 == 4) // rouge
                 {
                     player->SetSkill(633, 1, 400, 400);  //lockoicking
                 }
-                
+                Sleep(5);
                 me->Yell("All Done! " + player->GetName() + " Welcome to the family", LANG_UNIVERSAL);
+                Sleep(5);
                 if (!player->IsGameMaster())
                 {
                     if (player->GetTeamId() == TEAM_HORDE)
