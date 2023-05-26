@@ -51,13 +51,23 @@ public:
         {
             WorldSession* session = player->GetSession();
             if (player->HasItemCount(itemId, 1) || player->HasItemCount(itemId2, 1))
-                AddGossipItemFor(player, GOSSIP_ICON_DOT, "Set XP To Normal - Deletes Item!! * WARNING *  BANK IT????", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1000);
+            
+            {
+            AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "Set XP To Normal - Deletes Item!! * WARNING *  BANK IT????", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1000);
+            AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+            }
 
             if (!player->HasItemCount(itemId, 1) && !player->HasItemCount(itemId2, 1))
-                AddGossipItemFor(player, GOSSIP_ICON_DOT, "Set XP Rates to 1x", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1001);
+            {
+                AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "Set XP Rates to 1x", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1001);
+                AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+            }
 
             if (!player->HasItemCount(itemId2, 1) && !player->HasItemCount(itemId, 1))
-                AddGossipItemFor(player, GOSSIP_ICON_DOT, "BOOST XP TO 10x", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
+            {
+                AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "BOOST XP TO 10x", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
+                AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+            }
 
             AddGossipItemFor(player, GOSSIP_ICON_TALK, "Bye.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2000);
             player->TalkedToCreature(me->GetEntry(), me->GetGUID());
@@ -129,6 +139,13 @@ public:
 
             }
             if (action == GOSSIP_ACTION_INFO_DEF + 2000)
+            {
+                me->Say(player->GetName() + " Bye.", LANG_UNIVERSAL);
+                CloseGossipMenuFor(player);
+                return true;
+            }
+
+            if (action == GOSSIP_ACTION_INFO_DEF + 9999)
             {
                 CloseGossipMenuFor(player);
                 return true;
