@@ -732,7 +732,7 @@ public:
                 player->CastSpell(player, InscriptSpell);
                 player->SetSkill(InscriptSKill, 1, 450, 450);
                 HandleLearnSkillRecipesHelper(player, InscriptSKill);
-                me->Say("Your Jewelcrafting skill is now at max " + player->GetName() + " , talk to me again to continue.", LANG_UNIVERSAL);
+                me->Say("Your scribe skill is now at max " + player->GetName() + " , talk to me again to continue.", LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return false;
 
@@ -938,7 +938,7 @@ public:
 
             if (action == GOSSIP_ACTION_INFO_DEF + 9997)
             {
-                me->Say("Everyone gets one free level 80, if you want more see website" + player->GetName(), LANG_UNIVERSAL);
+                me->Say("On website, online shop mgawow.online/shop" + player->GetName(), LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return true;
             }
