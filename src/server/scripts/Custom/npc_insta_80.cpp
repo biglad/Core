@@ -283,7 +283,7 @@ public:
             result = WorldDatabase.PQuery("SELECT * FROM `char_Insta80` WHERE `char_id`='%d' AND `status` = 6 LIMIT 1", player->GetGUID());
             if (result)
             {
-                AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "Learn ALL spell.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7000);
+                AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "Learn ALL my spell.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7000);
                 AddGossipItemFor(player, GOSSIP_ICON_DOT, "Nevermind.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
                 player->TalkedToCreature(me->GetEntry(), me->GetGUID());
                 SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
