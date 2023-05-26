@@ -225,7 +225,9 @@ public:
             if (!player->HasItemCount(ITEMCOSTID, 1))
             {
                 AddGossipItemFor(player, GOSSIP_ICON_DOT, "You dont have a instant level voucher!!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9997);
-                AddGossipItemFor(player, GOSSIP_ICON_TALK, "LOL Bye.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
+                AddGossipItemFor(player, GOSSIP_ICON_TALK, "How do i get one?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9997);
+                AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+                AddGossipItemFor(player, GOSSIP_ICON_TALK, "Bye.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
                 player->TalkedToCreature(me->GetEntry(), me->GetGUID());
                 SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
                 return true;
@@ -938,7 +940,7 @@ public:
 
             if (action == GOSSIP_ACTION_INFO_DEF + 9997)
             {
-                me->Say("On website, online shop mgawow.online/shop" + player->GetName(), LANG_UNIVERSAL);
+                me->Say(player->GetName()+" Via the website, online shop mgawow.online/shop", LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return true;
             }
