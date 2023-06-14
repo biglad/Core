@@ -53,6 +53,12 @@
 #include "SystemPackets.h"
 #include "QueryHolder.h"
 #include "World.h"
+#include "Channel.h"
+#include "ChannelAppenders.h"
+#include "StringConvert.h"
+#include "World.h"
+#include "AccountMgr.h"
+#include "ChannelMgr.h"
 
 class LoginQueryHolder : public CharacterDatabaseQueryHolder
 {
@@ -1015,6 +1021,21 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
     sScriptMgr->OnPlayerLogin(pCurrChar, firstLogin);
 
     TC_METRIC_EVENT("player_events", "Login", pCurrChar->GetName());
+    // say something as player logs in
+    //if (pCurrChar->IsAlive())
+    //{
+    //    pCurrChar->Say("boo", LANG_UNIVERSAL);  
+    //}
+    //MGAWoW Auto Invite to world channel
+    // TODO ONLY ASK IF NOT IN CHANNEL
+    std::string m_name = "world";  // in game channel name
+    data.Initialize(SMSG_CHANNEL_NOTIFY, 1 + m_name.size() + 1);
+    data << uint8(CHAT_INVITE_NOTICE);
+    data << m_name.c_str();
+    data << uint64(pCurrChar->GetGUID());
+
+    pCurrChar->GetSession()->SendPacket(&data);
+
 }
 
 void WorldSession::SendFeatureSystemStatus()
