@@ -199,6 +199,12 @@ public:
         }
 
 		
+		bool DeleteInsta80CharData(Player* player)
+        {
+            WorldDatabase.PExecute("DELETE FROM `char_Insta80` WHERE `acct_id` = '%d'", player->GetSession()->GetAccountId());
+			//WorldDatabase.PExecute("UPDATE `char_Insta80` SET `status`='%d' WHERE `char_id`='%d'", status, player->GetGUID());
+            return true;
+        }
 		bool UpdateInsta80CharData(Player* player, int16 status)
         {
             WorldDatabase.PExecute("UPDATE `char_Insta80` SET `status`='%d' WHERE `char_id`='%d'", status, player->GetGUID());
@@ -956,6 +962,7 @@ public:
                 CloseGossipMenuFor(player);
                 player->SaveToDB();
                 mySleep(5);
+				DeleteInsta80CharData(player);
                 //player->SetSkill(162, 1, 450, 450);  //unarmed
                 //player->SetSkill(95, 1, 450, 450);  //Def
                 if (pclass2 == 4) // rouge
