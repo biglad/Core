@@ -1024,7 +1024,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
     // say something as player logs in
     //if (pCurrChar->IsAlive())
     //{
-    //    pCurrChar->Say("boo", LANG_UNIVERSAL);  
+    //    pCurrChar->Say("MGAWoW", LANG_UNIVERSAL);  
     //}
     //MGAWoW Auto Invite to world channel
     // TODO ONLY ASK IF NOT IN CHANNEL
