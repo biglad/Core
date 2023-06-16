@@ -48,7 +48,7 @@ enum ChickenCluck1
     EMOTE_HELLO_H       = 1,  // horde hello
     EMOTE_CLUCK1_TEXT    = 2,  // TEXT to say.
 
-    QUEST_CLUCK1        = 3861  //quest id
+    QUEST_CLUCK1        = 3861999  //quest id
 };
 
 class npc_chicken_cluck1 : public CreatureScript
