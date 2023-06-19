@@ -290,7 +290,7 @@ public:
             if (result)
             {
                 AddGossipItemFor(player, GOSSIP_ICON_DOT, "I want to make > " + player->GetName() + " < a level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1001);
-                AddGossipItemFor(player, GOSSIP_ICON_TALK, "You can only make ONE level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9998);
+                //AddGossipItemFor(player, GOSSIP_ICON_TALK, "You can only make ONE level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9998);
 
                 AddGossipItemFor(player, GOSSIP_ICON_DOT, "Nevermind.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1002);
                 player->TalkedToCreature(me->GetEntry(), me->GetGUID());
@@ -782,7 +782,7 @@ public:
             {
                 UpdateInsta80CharData(player, 4);
                 player->ModifyMoney(25000000);
-                me->Say("Here you go 25K gold! " + player->GetName() + " , talk to me again to continue.", LANG_UNIVERSAL);
+                me->Say("Here you go 5K gold! " + player->GetName() + " , talk to me again to continue.", LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return true;
             }
