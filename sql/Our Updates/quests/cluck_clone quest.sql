@@ -62,3 +62,55 @@ UPDATE `gameobject_template` SET `Data0` = 57, `Data1` = 200000 WHERE `entry` = 
 
 INSERT INTO `gameobject_template` (`entry`, `type`, `displayId`, `name`, `IconName`, `castBarCaption`, `unk1`, `size`, `Data0`, `Data1`, `Data2`, `Data3`, `Data4`, `Data5`, `Data6`, `Data7`, `Data8`, `Data9`, `Data10`, `Data11`, `Data12`, `Data13`, `Data14`, `Data15`, `Data16`, `Data17`, `Data18`, `Data19`, `Data20`, `Data21`, `Data22`, `Data23`, `AIName`, `ScriptName`, `VerifiedBuild`) VALUES (284311, 3, 259, 'MGA Chest', '', '', '', 1, 57, 2265, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, '', '', 12340);
 UPDATE `gameobject_template` SET `Data1` = 200000 WHERE `entry` = 284311;
+
+
+UPDATE `gameobject_loot_template` SET `QuestRequired` = 3861999 WHERE `Entry` = 200000 AND `Item` = 18154;
+
+
+
+UPDATE `gameobject_template` SET `Data3` = 0, `Data8` = 3861999 WHERE `entry` = 284311;
+UPDATE `gameobject_template` SET `Data10` = 0, `Data12` = 0, `Data15` = 0 WHERE `entry` = 284311;
+
+
+
+INSERT INTO `gameobject_loot_template` (`Entry`, `Item`, `MaxCount`) VALUES (200000, 2589, 20);
+
+DELETE FROM `gameobject_loot_template` WHERE `Entry` = 200000 AND `Item` = 18154;
+
+UPDATE `gameobject_template` SET `Data8` = 0 WHERE `entry` = 284311;
+UPDATE `gameobject_template` SET `Data2` = 300 WHERE `entry` = 284311;
+
+
+UPDATE `gameobject_template` SET `name` = 'High Captain Bob\'s Chest' WHERE `entry` = 284311;
+
+
+INSERT INTO `item_template` (`entry`, `name`, `displayid`, `Quality`, `maxcount`, `delay`) VALUES (98989, 'High Captain Bob\'s Drink', 64140, 1, 1, 0);
+
+INSERT INTO`gameobject_loot_template` (`Entry`, `Item`, `QuestRequired`, `GroupId`) VALUES (200000, 98989, 3861999, 1);
+UPDATE `gameobject_loot_template` SET `QuestRequired` = 0 WHERE `Entry` = 200000 AND `Item` = 2589;
+UPDATE `item_template` SET `name` = 'High Captain Bob\'s Mega Power Potion' WHERE `entry` = 98989;
+UPDATE `item_template` SET `subclass` = 1 WHERE `entry` = 98989;
+
+
+UPDATE `creature_template` SET `subname` = '' WHERE `entry` = 996209;
+UPDATE `quest_template` SET `LogDescription` = 'High Captain Bob is in need of on of my Mega Power Potion!. Get one and return to High Captain Bob and bow.' WHERE `ID` = 3861999;
+UPDATE `quest_template` SET `RequiredItemId1` = 98989 WHERE `ID` = 3861999;
+UPDATE `item_template` SET `class` = 12 WHERE `entry` = 98989;
+UPDATE `creature_text` SET `Text` = '%s eyes glaze over as he sees his potion.' WHERE `CreatureID` = 996209 AND `GroupID` = 2 AND `ID` = 0;
+UPDATE `quest_template` SET `LogDescription` = 'High Captain Bob is in need of on of my Mega Power Potion!. Get one and return to High Captain Bob and bow. My chest is located in a vault' WHERE `ID` = 3861999;
+UPDATE `quest_template` SET `QuestDescription` = 'I have left my Mega Power Potion in the vault, can you go collect it for me please.' WHERE `ID` = 3861999;
+UPDATE `quest_template` SET `LogDescription` = 'High Captain Bob is in need of one of his Mega Power Potion!. Get one and return to High Captain Bob and bow before him. My secret chest is located in a vault.' WHERE `ID` = 3861999;
+UPDATE `item_template` SET `subclass` = 0 WHERE `entry` = 461143;
+UPDATE `quest_request_items` SET `CompletionText` = 'High Captain Bob is excited, Do you have it?$B$B\"Woohoo!$B$BThank You\"' WHERE `ID` = 3861999;
+UPDATE `item_template` SET `class` = 4, `subclass` = 1 WHERE `entry` = 98989;
+UPDATE `item_template` SET `description` = 'Mega Power Potion!' WHERE `entry` = 98989;
+UPDATE `item_template` SET `Material` = 7 WHERE `entry` = 98989;
+UPDATE `item_template` SET `class` = 12, `subclass` = 0 WHERE `entry` = 98989;
+UPDATE `quest_request_items` SET `CompletionText` = 'High Captain Bob is excited, Do you have it?$B$BWoohoo!$B$BThank You' WHERE `ID` = 3861999;
+UPDATE `gameobject_loot_template` SET `GroupId` = 0 WHERE `Entry` = 200000 AND `Item` = 98989;
+UPDATE `gameobject_template` SET `Data8` = 3861999 WHERE `entry` = 284311;
+DELETE FROM `gameobject_loot_template` WHERE `Entry` = 200000 AND `Item` = 2589;
+
+
+
+

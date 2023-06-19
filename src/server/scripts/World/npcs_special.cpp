@@ -2449,6 +2449,129 @@ private:
     TaskScheduler _scheduler;
 };
 
+
+
+
+enum bobCluck
+{
+    EMOTE1_HELLO_A = 0,
+    EMOTE1_HELLO_H = 1,
+    EMOTE1_CLUCK_TEXT = 2,
+
+    QUEST1_CLUCK = 3861999
+};
+
+class npc_bob_cluck : public CreatureScript
+{
+public:
+    npc_bob_cluck() : CreatureScript("npc_bob_cluck") { }
+
+    struct npc_bob_cluckAI : public ScriptedAI
+    {
+        npc_bob_cluckAI(Creature* creature) : ScriptedAI(creature)
+        {
+            Initialize();
+        }
+
+        void Initialize()
+        {
+            ResetFlagTimer = 120000;
+        }
+
+        uint32 ResetFlagTimer;
+
+        void Reset() override
+        {
+            Initialize();
+            //me->SetFaction(FACTION_PREY);
+            me->RemoveNpcFlag(UNIT_NPC_FLAG_QUESTGIVER);
+            
+        }
+
+        void JustEngagedWith(Unit* /*who*/) override { }
+
+        void UpdateAI(uint32 diff) override
+        {
+            // Reset flags after a certain time has passed so that the next player has to start the 'event' again
+            if (me->HasNpcFlag(UNIT_NPC_FLAG_QUESTGIVER))
+            {
+                if (ResetFlagTimer <= diff)
+                {
+                    EnterEvadeMode();
+                    return;
+                }
+                else
+                    ResetFlagTimer -= diff;
+            }
+
+            if (UpdateVictim())
+                DoMeleeAttackIfReady();
+        }
+
+        void ReceiveEmote(Player* player, uint32 emote) override
+        {
+            
+            switch (emote)
+            {
+            case TEXT_EMOTE_SALUTE:
+                if (player->GetQuestStatus(QUEST1_CLUCK) == QUEST_STATUS_NONE && rand32() % 10 == 1)
+                {
+                    if (!me->HasNpcFlag(UNIT_NPC_FLAG_QUESTGIVER))
+                    {
+                        me->SetNpcFlag(UNIT_NPC_FLAG_QUESTGIVER);
+                        //me->SetFaction(FACTION_FRIENDLY);
+                        Talk(EMOTE1_HELLO_A);
+                        me->HandleEmoteCommand(EMOTE_ONESHOT_BOW);
+                        me->Yell("OK. OK. OK. What!, " + player->GetName(), LANG_UNIVERSAL);
+                    }
+                }
+                else
+                {
+                    me->Say("Oi I'm busy!", LANG_UNIVERSAL);
+                }
+
+                break;
+            case TEXT_EMOTE_BOW:
+                if (player->GetQuestStatus(QUEST1_CLUCK) == QUEST_STATUS_COMPLETE)
+                {
+                    me->Say("Hi again " + player->GetName()+", did you get one?", LANG_UNIVERSAL);
+                    me->SetNpcFlag(UNIT_NPC_FLAG_QUESTGIVER);
+                    //me->SetFaction(FACTION_FRIENDLY);
+                    me->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE);
+                    Talk(EMOTE1_CLUCK_TEXT);
+                }
+                else
+                {
+                    me->Say("Go Away! " + player->GetName(), LANG_UNIVERSAL);
+                }
+                break;
+            default:
+                {
+                me->Say("Go Away! " + player->GetName(), LANG_UNIVERSAL);
+                }
+                break;
+            }
+        }
+
+        void OnQuestAccept(Player* /*player*/, Quest const* quest) override
+        {
+            if (quest->GetQuestId() == QUEST1_CLUCK)
+                Reset();
+        }
+
+        void OnQuestReward(Player* /*player*/, Quest const* quest, uint32 /*opt*/) override
+        {
+            if (quest->GetQuestId() == QUEST1_CLUCK)
+                Reset();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* creature) const override
+    {
+        return new npc_bob_cluckAI(creature);
+    }
+};
+
 void AddSC_npcs_special()
 {
     new npc_air_force_bots();
@@ -2475,4 +2598,5 @@ void AddSC_npcs_special()
     new npc_argent_squire_gruntling();
     new npc_bountiful_table();
     RegisterCreatureAI(npc_gen_void_zone);
+    new npc_bob_cluck();
 }
