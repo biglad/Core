@@ -72,7 +72,7 @@ public:
 			QueryResult result2;
 			if (player->IsGameMaster())
             {
-                result2 = WorldDatabase.PQuery("SELECT * FROM `vote_tp` WHERE `guid`='%d' LIMIT 1", player->GetSession()->GetAccountId());
+                result2 = WorldDatabase.PQuery("SELECT * FROM `vote_tp` LIMIT 1";
             }
             else
             {

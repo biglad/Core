@@ -110,7 +110,7 @@ public:
             uint32 lasttptime;
             if (player->IsGameMaster())
             {
-                result = WorldDatabase.PQuery("SELECT * FROM `vote_tp` WHERE `guid`='%d' LIMIT 1", player->GetSession()->GetAccountId());
+                result = WorldDatabase.PQuery("SELECT * FROM `vote_tp` LIMIT 1");
             }
             else
             {
@@ -191,6 +191,10 @@ public:
                     {
                         // DALARAN
                         AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_L2, GOSSIP_SENDER_MAIN, 1021);
+                    }
+                    if (player->GetQuestStatus(3861999) == QUEST_STATUS_INCOMPLETE)
+                    {
+                        AddGossipItemFor(player, GOSSIP_ICON_DOT, "To Stormwind Valt!", GOSSIP_SENDER_MAIN, 3000);
                     }
 					AddGossipItemFor(player, GOSSIP_ICON_DOT, "Send Me Home!", GOSSIP_SENDER_MAIN, 1);
 					AddGossipItemFor(player, GOSSIP_ICON_TALK, "Bye!", GOSSIP_SENDER_MAIN, 2);
@@ -530,7 +534,17 @@ public:
                 return false;
             }
             break;
+            case 3000:
+            {
+                CloseGossipMenuFor(player);
+                UpdateVoteTPData(player, ttseconds);
+                player->TeleportTo(0, -8644.293945f, 596.179504f, 95.702751f, 2.198276f);
+                player->SetPvP(false);
+                return false;
             }
+            break;
+            }
+
             CloseGossipMenuFor(player);
 			
             return true;
