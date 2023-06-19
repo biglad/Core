@@ -108,16 +108,17 @@ public:
             uint32 ttcheck;
             uint32 fiveminabusecheck;
             uint32 lasttptime;
+            
+            ttcheck = (tseconds - 43200); // 12 hours
+
             if (player->IsGameMaster())
-            {
-                result = WorldDatabase.PQuery("SELECT * FROM `vote_tp` LIMIT 1");
+            { 
+                result = WorldDatabase.PQuery("SELECT * FROM `vote_tp`  LIMIT 1");
             }
             else
             {
                 result = WorldDatabase.PQuery("SELECT * FROM `vote_tp` WHERE `guid`='%d' AND `time` >'%d' LIMIT 1", player->GetSession()->GetAccountId(), ttcheck);
             }
-            ttcheck = (tseconds - 43200); // 12 hours
-
             fiveminabusecheck = (tseconds - 300); // 5mins
             
             //result = WorldDatabase.PQuery("SELECT * FROM `vote_tp` WHERE `guid`='%d' AND `time` >'%d' LIMIT 1", player->GetSession()->GetAccountId(), ttcheck);
@@ -192,9 +193,9 @@ public:
                         // DALARAN
                         AddGossipItemFor(player, GOSSIP_ICON_DOT, GOSSIP_HELLO_L2, GOSSIP_SENDER_MAIN, 1021);
                     }
-                    if (player->GetQuestStatus(3861999) == QUEST_STATUS_INCOMPLETE)
+                    if (player->GetQuestStatus(3861999) == QUEST_STATUS_INCOMPLETE || player->IsGameMaster())
                     {
-                        AddGossipItemFor(player, GOSSIP_ICON_DOT, "To Stormwind Valt!", GOSSIP_SENDER_MAIN, 3000);
+                        AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "To Stormwind Vault!", GOSSIP_SENDER_MAIN, 3000);
                     }
 					AddGossipItemFor(player, GOSSIP_ICON_DOT, "Send Me Home!", GOSSIP_SENDER_MAIN, 1);
 					AddGossipItemFor(player, GOSSIP_ICON_TALK, "Bye!", GOSSIP_SENDER_MAIN, 2);
@@ -538,7 +539,7 @@ public:
             {
                 CloseGossipMenuFor(player);
                 UpdateVoteTPData(player, ttseconds);
-                player->TeleportTo(0, -8644.293945f, 596.179504f, 95.702751f, 2.198276f);
+                player->TeleportTo(0, -8633.600586f, 594.303101f, 95.690689f, 1.487484f);
                 player->SetPvP(false);
                 return false;
             }

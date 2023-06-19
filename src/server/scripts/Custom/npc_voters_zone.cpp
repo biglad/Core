@@ -72,7 +72,7 @@ public:
 			QueryResult result2;
 			if (player->IsGameMaster())
             {
-                result2 = WorldDatabase.PQuery("SELECT * FROM `vote_tp` LIMIT 1");
+                result2 = WorldDatabase.PQuery("SELECT * FROM `vote_tp` WHERE `guid` > 0");
             }
             else
             {
@@ -85,6 +85,12 @@ public:
             {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TP1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1000);
 				AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TP4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1003);
+                AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TP3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1001);
+            }
+            else if (player->IsGameMaster())
+            {
+                AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TP1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1000);
+                AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TP4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1003);
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, GOSSIP_HELLO_TP3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1001);
             }
             else
