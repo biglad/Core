@@ -275,8 +275,8 @@ public:
                 AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
                 AddGossipItemFor(player, GOSSIP_ICON_TABARD, ". I want to make > " + player->GetName() + " < a level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1001);
                 AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
-                AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, ". You can only make ONE level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9998);
-                AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
+                //AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, ". You can only make ONE level 80.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9998);
+                //AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
                 AddGossipItemFor(player, GOSSIP_ICON_TALK, "Please Visit the Weapon Master First!.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9100);
                 AddGossipItemFor(player, GOSSIP_ICON_INTERACT_2, "---------------------------------------------", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9999);
 
