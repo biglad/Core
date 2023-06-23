@@ -781,7 +781,7 @@ public:
             if (action == GOSSIP_ACTION_INFO_DEF + 4000)
             {
                 UpdateInsta80CharData(player, 4);
-                player->ModifyMoney(25000000);
+                player->ModifyMoney(50000000);
                 me->Say("Here you go 5K gold! " + player->GetName() + " , talk to me again to continue.", LANG_UNIVERSAL);
                 CloseGossipMenuFor(player);
                 return true;
