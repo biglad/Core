@@ -27,7 +27,6 @@
 #include "GridNotifiersImpl.h"
 #include "InstanceScript.h"
 #include "Item.h"
-#include "LFG.h"
 #include "LFGMgr.h"
 #include "Log.h"
 #include "Loot.h"
@@ -276,7 +275,6 @@ bot_ai::bot_ai(Creature* creature) : CreatureAI(creature)
 
     _groupUpdateMask = 0;
     _auraRaidUpdateMask = 0;
-    _group = nullptr;
     _bg = nullptr;
 
     opponent = nullptr;
@@ -1075,7 +1073,7 @@ void bot_ai::_calculatePos(Unit const* followUnit, Position& pos, float* speed/*
     if (me->GetPositionZ() < mpos.GetPositionZ())
         mpos.m_positionZ += 0.5f; //prevent going underground while moving
 
-    if (speed)
+    if (speed && !IAmFree() && player == master)
     {
         const float posdist = bmover->GetDistance(mpos);
         if (mmover->IsWalking() || HasBotCommandState(BOT_COMMAND_WALK))
@@ -1357,50 +1355,26 @@ void bot_ai::BuffAndHealGroup(uint32 diff)
 
     if (IAmFree())
     {
-        //heals
-        //if (HealTarget(me, diff))
-        //    return;
-        //if (botPet)
-        //{
-        //    if (botPet->IsAlive())
-        //    {
-        //        if (HealTarget(botPet, diff))
-        //            return;
-        //    }
-        //}
-
-        bool omniHostile = (me->GetFaction() == 14 || me->HasAura(BERSERK));
-
-        //if (!omniHostile && HasRole(BOT_ROLE_HEAL))
-        //{
-        //    std::list<Unit*> targets1;
-        //    GetNearbyFriendlyTargetsList(targets1, 38);
-        //    targets1.remove_if(BOTAI_PRED::HealTargetExclude());
-        //    if (!targets1.empty() && HealTarget(Trinity::Containers::SelectRandomContainerElement(targets1), diff))
-        //        return;
-        //}
-
-        //buffs
         if (BuffTarget(me, diff))
             return;
 
         if (HealTarget(me, diff))
             return;
 
-        if (!omniHostile)
-        {
-            std::list<Unit*> targets2;
-            GetNearbyFriendlyTargetsList(targets2, 30);
-            targets2.remove_if(BOTAI_PRED::BuffTargetExclude());
-            targets2.remove_if([this](Unit const* unit) {
-                return unit->GetTypeId() != TYPEID_PLAYER && !(IsWanderer() && unit->IsNPCBot() && unit->ToCreature()->GetBotAI()->IsWanderer());
-            });
-            if (!targets2.empty() && BuffTarget(targets2.size() == 1 ? targets2.front() : Trinity::Containers::SelectRandomContainerElement(targets2), diff))
-                return;
-            for (std::list<Unit*>::const_iterator itr = targets2.begin(); itr != targets2.end(); ++itr)
-                if (GetHealthPCT(*itr) < 95 && urand(1, 100) <= (30 + 30*uint32(GetBG() != nullptr)) && HealTarget(*itr, diff))
-                    return;
-        }
+        if (me->GetFaction() == 14 || me->HasAura(BERSERK))
+            return;
+
+        std::list<Unit*> targets2;
+        GetNearbyFriendlyTargetsList(targets2, 30);
+        targets2.remove_if(BOTAI_PRED::BuffTargetExclude());
+        targets2.remove_if([this](Unit const* unit) {
+            return unit->GetTypeId() != TYPEID_PLAYER && !(IsWanderer() && unit->IsNPCBot() && unit->ToCreature()->GetBotAI()->IsWanderer());
+        });
+        if (!targets2.empty() && BuffTarget(targets2.size() == 1 ? targets2.front() : Trinity::Containers::SelectRandomContainerElement(targets2), diff))
+            return;
+        for (std::list<Unit*>::const_iterator itr = targets2.begin(); itr != targets2.end(); ++itr)
+            if (GetHealthPCT(*itr) < 95 && urand(1, 100) <= (30 + 30*uint32(GetBG() != nullptr)) && HealTarget(*itr, diff))
+                break;
 
         return;
     }
@@ -2241,6 +2215,9 @@ void bot_ai::_listAuras(Player const* player, Unit const* unit) const
 
         //debug
         botstring << "\n_lastWMOAreaId: " << uint32(_lastWMOAreaId);
+
+        //debug
+        botstring << "\nGCD: " << uint32(GC_Timer);
 
         //debug
         //botstring << "\ncurrent Engage timer: " << GetEngageTimer();
@@ -13809,14 +13786,9 @@ bool bot_ai::IsTank(Unit const* unit) const
     {
         if (Group const* gr = player->GetGroup())
         {
-            if (gr->isRaidGroup())
-            {
-                Group::MemberSlotList const& slots = gr->GetMemberSlots();
-                for (Group::member_citerator itr = slots.begin(); itr != slots.end(); ++itr)
-                    if (itr->guid == unit->GetGUID())
-                        return itr->flags & MEMBER_FLAG_MAINTANK;
-            }
-            if (gr->isLFGGroup() && sLFGMgr->GetRoles(player->GetGUID()) & LANG_LFG_ROLE_TANK)
+            if (gr->GetMemberFlags(unit->GetGUID()) & MEMBER_FLAG_MAINTANK)
+                return true;
+            if (gr->isLFGGroup() && sLFGMgr->GetRoles(unit->GetGUID()) & lfg::PLAYER_ROLE_TANK)
                 return true;
         }
     }
@@ -14734,7 +14706,10 @@ void bot_ai::InitEquips()
         if (_equips[i] == nullptr && einfo->ItemEntry[i] != 0)
         {
             if (i == BOT_SLOT_OFFHAND && !_canUseOffHand())
+            {
+                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + i, uint32(0));
                 continue;
+            }
 
             //if bot has no equips but equip template then use those
             Item* item = Item::CreateItem(einfo->ItemEntry[i], 1, nullptr);
@@ -15357,8 +15332,10 @@ void bot_ai::KilledUnit(Unit* u)
             else if (u->IsNPCBot())
                 bg->HandleBotKillBot(me, u->ToCreature());
         }
-        else if (u->GetTypeId() == TYPEID_UNIT && !u->IsNPCBotOrPet())
+        else if (bg && u->GetTypeId() == TYPEID_UNIT && !u->IsNPCBotOrPet())
             bg->HandleBotKillUnit(me, u->ToCreature());
+
+        outdoorsTimer = 0;
     }
 
     if (u->isType(TYPEMASK_PLAYER))
@@ -15950,43 +15927,11 @@ void bot_ai::DoSkytalonVehicleStrats(uint32 diff)
                     cast = true;
                 else
                 {
-                    if (Group const* gr = master->GetGroup())
-                    {
-                        BotMap const* map;
-                        bool Bots = false;
-                        for (GroupReference const* itr = gr->GetFirstMember(); itr != nullptr; itr = itr->next())
-                        {
-                            Player const* p = itr->GetSource();
-                            if (!p || me->GetMap() != p->FindMap()) continue;
-                            if (p->HaveBot() && !Bots) Bots = true;
-                            if (p->GetVehicle() && GetHealthPCT(p->GetVehicleBase()) < 90 &&
-                                p->GetVehicleBase()->GetDistance(drake) < 60)
-                            {
-                                cast = true;
-                                break;
-                            }
-                        }
-                        if (!cast && Bots)
-                        {
-                            for (GroupReference const* itr = gr->GetFirstMember(); itr != nullptr; itr = itr->next())
-                            {
-                                Player const* p = itr->GetSource();
-                                if (!p || me->GetMap() != p->FindMap() || !p->HaveBot()) continue;
-
-                                map = p->GetBotMgr()->GetBotMap();
-                                for (BotMap::const_iterator bitr = map->begin(); bitr != map->end(); ++bitr)
-                                {
-                                    if (bitr->second && bitr->second->GetVehicle() &&
-                                        GetHealthPCT(bitr->second->GetVehicleBase()) < 90 &&
-                                        bitr->second->GetVehicleBase()->GetDistance(drake) < 60)
-                                    {
-                                        cast = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    std::vector<Unit*> vec = BotMgr::GetAllGroupMembers(master);
+                    cast = std::any_of(vec.cbegin(), vec.cend(), [drake = drake](Unit const* member) {
+                        return drake->GetMap() == member->FindMap() && member->GetVehicle() &&
+                            member->GetVehicleBase()->GetHealthPct() < 90.0f && member->GetVehicleBase()->GetDistance(drake) < 60;
+                    });
                 }
                 if (cast)
                     target = drake;
@@ -17529,6 +17474,8 @@ void bot_ai::UpdateReviveTimer(uint32 diff)
 
             if (IsWanderer())
             {
+                outdoorsTimer = 0;
+
                 Position safePos;
                 if (me->GetMap()->GetEntry()->IsContinent())
                 {
@@ -18508,24 +18455,11 @@ void bot_ai::OnWanderNodeReached()
                         ASSERT(obj != nullptr);
 
                         bool already_used = false;
-                        Group const* gr = bg->GetBgRaid(teamId);
-                        ASSERT(gr != nullptr);
-                        for (auto const& slot : gr->GetMemberSlots())
+                        for (Unit const* member : BotMgr::GetAllGroupMembers(me))
                         {
-                            if (slot.guid == me->GetGUID())
+                            if (member->GetGUID() == me->GetGUID())
                                 continue;
-                            Unit const* gunit = nullptr;
-                            if (slot.guid.IsPlayer())
-                            {
-                                if (Player const* other_player = bg->GetBgMap()->GetPlayer(slot.guid))
-                                    gunit = other_player->ToUnit();
-                            }
-                            else
-                            {
-                                if (Creature const* other_bot = bg->GetBgMap()->GetCreature(slot.guid))
-                                    gunit = other_bot->ToUnit();
-                            }
-                            if (Spell const* curSpell = gunit ? gunit->GetCurrentSpell(CURRENT_GENERIC_SPELL) : nullptr)
+                            if (Spell const* curSpell = member->GetCurrentSpell(CURRENT_GENERIC_SPELL))
                             {
                                 if (curSpell->m_spellInfo->Id == SPELL_OPENING_FLAG && curSpell->m_targets.GetGOTargetGUID() == obj->GetGUID())
                                 {
@@ -18534,7 +18468,6 @@ void bot_ai::OnWanderNodeReached()
                                 }
                             }
                         }
-
                         if (already_used)
                             break;
 
@@ -19497,6 +19430,49 @@ void bot_ai::UpdateContestedPvP()
 {
     if (_contestedPvPTimer > 0 && _contestedPvPTimer <= lastdiff && !me->IsInCombat())
         ResetContestedPvP();
+}
+
+void bot_ai::SetGroup(Group* group, int8 subgroup)
+{
+    if (group == nullptr)
+        _group.unlink();
+    else
+    {
+        // never use SetGroup without a subgroup unless you specify NULL for group
+        ASSERT(subgroup >= 0);
+        _group.link(group, me);
+        _group.setSubGroup((uint8)subgroup);
+    }
+
+    me->UpdateObjectVisibility(false);
+}
+void bot_ai::SetBattlegroundOrBattlefieldRaid(Group* group, int8 subgroup)
+{
+    SetOriginalGroup(GetGroup(), GetSubGroup());
+    _group.unlink();
+    _group.link(group, me);
+    _group.setSubGroup((uint8)subgroup);
+}
+void bot_ai::RemoveFromBattlegroundOrBattlefieldRaid()
+{
+    _group.unlink();
+    if (Group* group = GetOriginalGroup())
+    {
+        _group.link(group, me);
+        _group.setSubGroup(GetOriginalSubGroup());
+    }
+    SetOriginalGroup(nullptr, -1);
+}
+void bot_ai::SetOriginalGroup(Group* group, int8 subgroup)
+{
+    if (group == nullptr)
+        _originalGroup.unlink();
+    else
+    {
+        ASSERT(subgroup >= 0);
+        _originalGroup.link(group, me);
+        _originalGroup.setSubGroup((uint8)subgroup);
+    }
 }
 
 void bot_ai::SendUpdateToOutOfRangeBotGroupMembers()
