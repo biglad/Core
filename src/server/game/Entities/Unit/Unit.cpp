@@ -9210,6 +9210,12 @@ void Unit::AtExitCombat()
     RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_LEAVE_COMBAT);
 }
 
+void Unit::AtEngage(Unit* /*target*/)
+{
+    if (HasUnitState(UNIT_STATE_DISTRACTED))
+        GetMotionMaster()->Remove(DISTRACT_MOTION_TYPE);
+}
+
 void Unit::AtTargetAttacked(Unit* target, bool canInitialAggro)
 {
     if (!target->IsEngaged() && !canInitialAggro)
@@ -14579,6 +14585,11 @@ void Unit::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player const* t
                 if (creature)
                     if (!target->CanSeeSpellClickOn(creature))
                         appendValue &= ~UNIT_NPC_FLAG_SPELLCLICK;
+
+                //npcbot: make wandering bots non-interactive for non-GM players
+                if ((appendValue & UNIT_NPC_FLAG_GOSSIP) && !target->IsGameMaster() && IsNPCBotOrPet() && creature->IsWandererBot())
+                    appendValue &= ~UNIT_NPC_FLAG_GOSSIP;
+                //end npcbot
 
                 fieldBuffer << uint32(appendValue);
             }
