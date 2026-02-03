@@ -251,7 +251,7 @@ public:
         if (!player)
             return false;
 
-        uint32 guid = player->GetGUIDLow();
+        uint32 guid = player->GetGUID();
 
         // Check if a code already exists in DB for this player
         QueryResult result = WorldDatabase.PQuery(
