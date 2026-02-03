@@ -251,7 +251,7 @@ public:
         if (!player)
             return false;
 
-        ObjectGuid guid = player->GetGUID();
+        ObjectGuid guid = player->GetGUIDLow();
 
         // Check if a code already exists in DB for this player
         QueryResult result = WorldDatabase.PQuery(
