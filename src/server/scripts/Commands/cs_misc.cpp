@@ -251,11 +251,12 @@ public:
         if (!player)
             return false;
 
-        ObjectGuid guid = player->GetGUIDLow();
+        ObjectGuid guid = player->GetGUID();
+        uint32 lowGuid = guid.GetCounter(); // ✅ TC 3.3.5a correct
 
         // Check if a code already exists in DB for this player
         QueryResult result = WorldDatabase.PQuery(
-            "SELECT code FROM discord_verification WHERE player_guid = {}", guid);
+            "SELECT code FROM discord_verification WHERE player_guid = {}", lowGuid);
 
         if (result)
         {
