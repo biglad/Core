@@ -160,7 +160,8 @@ public:
 				if (player->GetClass() == CLASS_DEATH_KNIGHT && player->GetLevel() < 80)
 					player->SetPhaseMask(PHASEMASK_NORMAL, false);
                 if (realmId == 3)
-                    player->TeleportTo(0, -7352.24f, -642.621f, 294.55f, 0.43f);        // Blackchar Cave
+                    //player->TeleportTo(0, -7352.24f, -642.621f, 294.55f, 0.43f);        // Blackchar Cave
+                    player->TeleportTo(571, 5817.41f, 601.99f, 570.55f, 3.13f);        // dala sewer arena (visual copy)
                 else
                     player->TeleportTo(571, 5817.41f, 601.99f, 570.55f, 3.13f);        // dala sewer arena (visual copy)
 				player->SetPvP(false);
