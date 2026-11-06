@@ -273,7 +273,7 @@ public:
 
         // Insert or update the DB
         WorldDatabase.PExecute(
-            "REPLACE INTO discord_verification (player_guid, code, verified) VALUES({}, '{}', 0)", guid, code);
+            "REPLACE INTO discord_verification (player_guid, code, verified) VALUES({}, '{}', 0)", lowGuid, code);
 
         handler->PSendSysMessage("Join our |cFFFF4747D|cFFFFE547i|cFF7CFF47s|cFF47FFB0c|cFF47B0FFo|cFF7C47FFr|cFFFF47E5d|r Server (|cff00ff00 https://mgawow.online/discord |r)and DM '|cFFFF4747MGAWoW Verify Bot|r' with this code: |cff00ff00%s|r", code.c_str());
         return true;
