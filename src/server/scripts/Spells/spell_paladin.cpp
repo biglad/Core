@@ -1715,14 +1715,15 @@ class spell_pal_sacred_shield_dummy : public AuraScript
     TimePoint _cooldownEnd = std::chrono::steady_clock::time_point::min();
 };
 
-// 20154, 21084 - Seal of Righteousness - melee proc dummy (addition ${$MWS*(0.022*$AP+0.044*$SPH)} damage)
+// 20154, 21084 - Seal of Righteousness - melee proc dummy
 class spell_pal_seal_of_righteousness : public AuraScript
 {
     PrepareAuraScript(spell_pal_seal_of_righteousness);
 
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_PALADIN_SEAL_OF_RIGHTEOUSNESS });
+        // Validate the damage spell, not the seal itself
+        return ValidateSpellInfo({ SPELL_PALADIN_SEAL_OF_RIGHTEOUSNESS_DAMAGE });
     }
 
     void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
@@ -1730,6 +1731,8 @@ class spell_pal_seal_of_righteousness : public AuraScript
         PreventDefaultAction();
 
         Unit* victim = eventInfo.GetActionTarget();
+        if (!victim)
+            return;
 
         float ap = GetTarget()->GetTotalAttackPowerValue(BASE_ATTACK);
         ap += victim->GetTotalAuraModifier(SPELL_AURA_MELEE_ATTACK_POWER_ATTACKER_BONUS);
@@ -1741,9 +1744,11 @@ class spell_pal_seal_of_righteousness : public AuraScript
         mws /= 1000.0f;
 
         int32 bp = std::lroundf(mws * (0.022f * ap + 0.044f * sph));
+
         CastSpellExtraArgs args(aurEff);
         args.AddSpellBP0(bp);
-        eventInfo.GetActor()->CastSpell(victim, SPELL_PALADIN_SEAL_OF_RIGHTEOUSNESS, args);
+        // Key fix: cast the damage spell, not the seal aura
+        eventInfo.GetActor()->CastSpell(victim, SPELL_PALADIN_SEAL_OF_RIGHTEOUSNESS_DAMAGE, args);
     }
 
     void Register() override
