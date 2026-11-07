@@ -39,10 +39,11 @@ public:
 
         void Register() override
         {
-            // Cleave is typically a cone target type; filter EFFECT_0's cone targets
-            // If the spell has multiple effects, you may need to register multiple times or use a different target type
-            OnUnitTargetSelect += SpellUnitTargetFn(spell_felguard_cleave_filter_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_CONE_ENEMY_24);
-            // If the DBC target type is not 24, you may need to adjust or try other TARGET_UNIT_CONE_ENEMY_XX
+            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(
+                spell_felguard_cleave_filter_SpellScript::FilterTargets,
+                EFFECT_0,
+                TARGET_UNIT_CONE_ENEMY_24
+            );
         }
     };
 
