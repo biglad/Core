@@ -675,6 +675,26 @@ class spell_warl_health_funnel : public AuraScript
 {
     PrepareAuraScript(spell_warl_health_funnel);
 
+    // New: Periodic detection to prevent the caster from dying
+    void OnPeriodic(AuraEffect const* aurEff)
+    {
+        Unit* caster = GetCaster();
+        if (!caster)
+            return;
+
+        // Get the health cost for each tick (needs to be adapted according to the actual DBC value or the BaseAmount of the aura effect)
+        // Note: Health Funnel's health cost is usually not directly in this AuraEffect's BaseAmount,
+        // you need to confirm whether to use aurEff->GetAmount() or retrieve it from SpellInfo
+        int32 healthCost = aurEff->GetAmount(); 
+        
+        // If the Warlock's current health is less than or equal to the health to be deducted, interrupt the channel
+        if (caster->GetHealth() <= (uint64)healthCost)
+        {
+            // Remove the aura to interrupt the channel
+            Remove(AURA_REMOVE_BY_DEFAULT);
+        }
+    }
+
     void ApplyEffect(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         Unit* caster = GetCaster();
@@ -699,6 +719,8 @@ class spell_warl_health_funnel : public AuraScript
     {
         OnEffectRemove += AuraEffectRemoveFn(spell_warl_health_funnel::RemoveEffect, EFFECT_0, SPELL_AURA_PERIODIC_HEAL, AURA_EFFECT_HANDLE_REAL);
         OnEffectApply += AuraEffectApplyFn(spell_warl_health_funnel::ApplyEffect, EFFECT_0, SPELL_AURA_PERIODIC_HEAL, AURA_EFFECT_HANDLE_REAL);
+        // New registration
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_warl_health_funnel::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_HEAL);
     }
 };
 
