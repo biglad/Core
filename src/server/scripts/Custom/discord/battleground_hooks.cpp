@@ -6,6 +6,8 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <cerrno>
@@ -14,7 +16,6 @@
 #include <string>
 #include <sstream>
 #include <map>
-#include <memory>
 
 #include "ScriptMgr.h"
 #include "Battleground.h"
