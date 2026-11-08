@@ -27,11 +27,7 @@
 #include "DatabaseEnv.h"
 #include "../../scripts/Custom/discord/DiscordWebhookMgr.h"
 
-
-// NOTE: serverShuttingDown is defined in battleground_hooks.cpp (or wherever
-// it previously lived). If that file was removed, uncomment the line below.
-// bool serverShuttingDown = false;
-
+bool serverShuttingDown = false;
 
 namespace
 {
