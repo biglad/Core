@@ -8,14 +8,14 @@ class PetDeathAggroScript : public PlayerScript
 public:
     PetDeathAggroScript() : PlayerScript("PetDeathAggroScript") {}
 
-    void OnPetDied(Player* owner, Pet* pet) override
+    void OnPetDied(Player* owner, Pet* pet) /*override*/
     {
         if (!owner || !pet)
             return;
 
         // Iterate through creatures near the pet
         std::list<Creature*> creatures;
-        pet->GetCreatureListWithEntryInGrid(creatures, 0, 30.0f); // radius 30 yards
+        pet->GetCreatureListWithEntryInGrid(creatures, 0, 100.0f); // radius 100 yards
 
         for (Creature* creature : creatures)
         {
