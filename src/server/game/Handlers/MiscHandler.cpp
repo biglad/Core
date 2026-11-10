@@ -50,6 +50,7 @@
 #include "World.h"
 #include "WorldPacket.h"
 #include "botmgr.h"
+#include "botdatamgr.h"
 #include <cstdarg>
 #include <zlib.h>
 
@@ -334,7 +335,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
     {
         // ADAPT THIS: replace with whatever BotDataMgr exposes for its wandering bot list.
         // Likely something like BotDataMgr::GetWanderingBots() returning a container of Creature*.
-        for (Creature* bot : BotMgr::GetWanderingBots())
+        for (Creature* bot : BotDataMgr::GetWanderingBots())
         {
             if (displayCount >= maxWho)
                 break;
