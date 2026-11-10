@@ -48,7 +48,7 @@ void AddSC_npc_megaboss_starter();
 void AddSC_instance_stormwind_vault();
 void AddSC_spell_xp_boost_aura();
 void AddSC_spell_felguard_cleave();
-void AddSC_pet_death_aggro();
+//void AddSC_pet_death_aggro();
 
 void AddCustomScripts()
 {
@@ -79,5 +79,5 @@ void AddCustomScripts()
     AddSC_instance_stormwind_vault();
     AddSC_spell_xp_boost_aura();
     AddSC_spell_felguard_cleave();
-    AddSC_pet_death_aggro();
+    //AddSC_pet_death_aggro();
 }
