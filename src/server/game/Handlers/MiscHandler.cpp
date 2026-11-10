@@ -330,12 +330,9 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
     }
 
     // --- Wandering bots into the who list ---
-    // Only bother if the display cap hasn't already been filled by real players.
     if (displayCount < maxWho)
     {
-        // ADAPT THIS: replace with whatever BotDataMgr exposes for its wandering bot list.
-        // Likely something like BotDataMgr::GetWanderingBots() returning a container of Creature*.
-        for (Creature* bot : BotDataMgr::GetWanderingBots())
+        for (Creature const* bot : BotDataMgr::GetWanderingBotsSnapshot())
         {
             if (displayCount >= maxWho)
                 break;
@@ -348,7 +345,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
             if (lvl < levelMin || lvl > levelMax)
                 continue;
 
-            // class — map custom bot classes to their base player class for the classmask check
+            // class — map custom bot classes to their base player class
             uint8 playerClass = BotMgr::GetBotPlayerClass(bot->GetBotClass());
             if (!(classmask & (1 << playerClass)))
                 continue;
@@ -358,7 +355,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
             if (!(racemask & (1 << race)))
                 continue;
 
-            // zone (same loop as players)
+            // zone
             uint32 playerZoneId = bot->GetZoneId();
             bool showZones = true;
             for (uint32 i = 0; i < zonesCount; ++i)
@@ -382,7 +379,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
             if (!(wpacketPlayerName.empty() || wideplayername.find(wpacketPlayerName) != std::wstring::npos))
                 continue;
 
-            // guild — wandering bots have none, so any guild search excludes them
+            // guild — wandering bots have none
             if (!wpacketGuildName.empty())
                 continue;
 
@@ -408,8 +405,6 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
             if (!s_show)
                 continue;
 
-            // cap check — same semantics as players: count the match,
-            // but only write the entry if we're still under the display cap
             if ((matchCount++) >= maxWho)
                 continue;
 
@@ -432,6 +427,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
     SendPacket(&data);
     TC_LOG_DEBUG("network", "WORLD: Send SMSG_WHO Message");
 }
+
 
 void WorldSession::HandleLogoutRequestOpcode(WorldPackets::Character::LogoutRequest& /*logoutRequest*/)
 {
