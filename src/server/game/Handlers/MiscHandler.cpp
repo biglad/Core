@@ -334,7 +334,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
     {
         // ADAPT THIS: replace with whatever BotDataMgr exposes for its wandering bot list.
         // Likely something like BotDataMgr::GetWanderingBots() returning a container of Creature*.
-        for (Creature* bot : BotDataMgr::GetWanderingBots())
+        for (Creature* bot : BotMgr::GetWanderingBots())
         {
             if (displayCount >= maxWho)
                 break;
