@@ -436,6 +436,8 @@ enum BotTexts : uint32
     BOT_TEXT_SHARED_WITH                    = 70699, //"Shared with"
     BOT_TEXT_OWNER                          = 70700, //"Owner"
     //70701-71000 reserved for custom localization strings
+    BOT_TEXT_BOTGIVER_PREVIOUS              = 70701,
+    BOT_TEXT_BOTGIVER_NEXT                  = 70702,
 };
 
 #endif //BOTTEXT_H

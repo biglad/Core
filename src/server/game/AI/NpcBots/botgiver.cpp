@@ -11,6 +11,9 @@
 #include "Player.h"
 #include "ScriptedGossip.h"
 #include "ScriptMgr.h"
+#include <algorithm>
+#include <sstream>
+#include <vector>
 /*
 NPCbot giver NPC by Trickerer (<https://github.com/Trickerer/> <onlysuffering@gmail.com>)
 Complete - 100%
@@ -19,6 +22,10 @@ Complete - 100%
 #define HIRE GOSSIP_SENDER_BOTGIVER_HIRE
 #define HIRE_CLASS GOSSIP_SENDER_BOTGIVER_HIRE_CLASS
 #define HIRE_ENTRY GOSSIP_SENDER_BOTGIVER_HIRE_ENTRY
+
+// Number of gossip slots reserved at the bottom of the hire-class menu
+// for the [Previous] [Next] [Back] navigation items
+#define BOTGIVER_NAV_RESERVED 3
 
 class script_bot_giver : public CreatureScript
 {
@@ -176,7 +183,11 @@ public:
                 {
                     gossipTextId = GOSSIP_BOTGIVER_HIRE_CLASS;
 
-                    uint8 botclass = action - GOSSIP_ACTION_INFO_DEF;
+                    // Action encodes both the class and the page number:
+                    //   packed = (page << 8) | botclass
+                    uint32 packed   = action - GOSSIP_ACTION_INFO_DEF;
+                    uint8  botclass = uint8(packed & 0xFF);
+                    uint32 page     = packed >> 8;
 
                     uint32 cost = BotMgr::GetNpcBotCostHire(player->GetLevel(), botclass);
                     if (!player->HasEnoughMoney(cost))
@@ -187,56 +198,108 @@ public:
 
                     subMenu = true;
 
-                    uint8 availCount = 0;
+                    // Collect the full filtered list of candidate bots for this class
+                    std::vector<Creature const*> candidates;
+                    candidates.reserve(64);
 
-                    //go through bots map to find what bots are available
-                    std::unique_lock<std::shared_mutex> lock(*BotDataMgr::GetLock());
-                    NpcBotRegistry const& allBots = BotDataMgr::GetExistingNPCBots();
-                    for (NpcBotRegistry::const_iterator ci = allBots.begin(); ci != allBots.end(); ++ci)
                     {
-                        Creature const* bot = *ci;
-                        bot_ai const* ai = bot->GetBotAI();
-                        if (bot->GetBotClass() != botclass || !bot->IsAlive() || ai->IsTempBot() || bot->IsWandererBot() || ai->GetBotOwnerGuid() || bot->HasAura(BERSERK))
-                            continue;
-                        if (BotMgr::FilterRaces() && botclass < BOT_CLASS_EX_START && (bot->GetRaceMask() & RACEMASK_ALL_PLAYABLE) &&
-                            !(bot->GetRaceMask() & ((player->GetRaceMask() & RACEMASK_ALLIANCE) ? RACEMASK_ALLIANCE : RACEMASK_HORDE)))
-                            continue;
+                        std::unique_lock<std::shared_mutex> lock(*BotDataMgr::GetLock());
+                        NpcBotRegistry const& allBots = BotDataMgr::GetExistingNPCBots();
+                        for (Creature const* bot : allBots)
+                        {
+                            bot_ai const* ai = bot->GetBotAI();
+                            if (bot->GetBotClass() != botclass || !bot->IsAlive() || ai->IsTempBot() ||
+                                bot->IsWandererBot() || ai->GetBotOwnerGuid() || bot->HasAura(BERSERK))
+                                continue;
+                            if (BotMgr::FilterRaces() && botclass < BOT_CLASS_EX_START &&
+                                (bot->GetRaceMask() & RACEMASK_ALL_PLAYABLE) &&
+                                !(bot->GetRaceMask() & ((player->GetRaceMask() & RACEMASK_ALLIANCE)
+                                                            ? RACEMASK_ALLIANCE : RACEMASK_HORDE)))
+                                continue;
+
+                            candidates.push_back(bot);
+                        }
+                    }
+
+                    const uint32 total    = uint32(candidates.size());
+                    const uint32 perPage  = (BOT_GOSSIP_MAX_ITEMS > BOTGIVER_NAV_RESERVED)
+                                                ? (BOT_GOSSIP_MAX_ITEMS - BOTGIVER_NAV_RESERVED)
+                                                : 1;
+                    const uint32 maxPages = total ? ((total + perPage - 1) / perPage) : 0;
+
+                    // Clamp page into valid range
+                    if (maxPages == 0)
+                        page = 0;
+                    else if (page >= maxPages)
+                        page = maxPages - 1;
+
+                    const uint32 start = page * perPage;
+                    const uint32 end   = std::min(start + perPage, total);
+
+                    for (uint32 i = start; i < end; ++i)
+                    {
+                        Creature const* bot = candidates[i];
 
                         std::ostringstream message1;
-                        message1 << bot_ai::LocalizedNpcText(player, BOT_TEXT_BOTGIVER_WISH_TO_HIRE_) << bot->GetName() << '?';
+                        message1 << bot_ai::LocalizedNpcText(player, BOT_TEXT_BOTGIVER_WISH_TO_HIRE_)
+                                 << bot->GetName() << '?';
 
-                        std::ostringstream info_ostr;
                         uint32 raceTextId;
                         switch (bot->GetRace())
                         {
-                            case RACE_HUMAN:        raceTextId = BOT_TEXT_RACE_HUMAN;   break;
-                            case RACE_ORC:          raceTextId = BOT_TEXT_RACE_ORC;     break;
-                            case RACE_DWARF:        raceTextId = BOT_TEXT_RACE_DWARF;   break;
-                            case RACE_NIGHTELF:     raceTextId = BOT_TEXT_RACE_NELF;    break;
-                            case RACE_UNDEAD_PLAYER:raceTextId = BOT_TEXT_RACE_UNDEAD;  break;
-                            case RACE_TAUREN:       raceTextId = BOT_TEXT_RACE_TAUREN;  break;
-                            case RACE_GNOME:        raceTextId = BOT_TEXT_RACE_GNOME;   break;
-                            case RACE_TROLL:        raceTextId = BOT_TEXT_RACE_TROLL;   break;
-                            case RACE_BLOODELF:     raceTextId = BOT_TEXT_RACE_BELF;    break;
-                            case RACE_DRAENEI:      raceTextId = BOT_TEXT_RACE_DRAENEI; break;
-                            default:                raceTextId = BOT_TEXT_RACE_UNKNOWN; break;
+                            case RACE_HUMAN:         raceTextId = BOT_TEXT_RACE_HUMAN;   break;
+                            case RACE_ORC:           raceTextId = BOT_TEXT_RACE_ORC;     break;
+                            case RACE_DWARF:         raceTextId = BOT_TEXT_RACE_DWARF;   break;
+                            case RACE_NIGHTELF:      raceTextId = BOT_TEXT_RACE_NELF;    break;
+                            case RACE_UNDEAD_PLAYER: raceTextId = BOT_TEXT_RACE_UNDEAD;  break;
+                            case RACE_TAUREN:        raceTextId = BOT_TEXT_RACE_TAUREN;  break;
+                            case RACE_GNOME:         raceTextId = BOT_TEXT_RACE_GNOME;   break;
+                            case RACE_TROLL:         raceTextId = BOT_TEXT_RACE_TROLL;   break;
+                            case RACE_BLOODELF:      raceTextId = BOT_TEXT_RACE_BELF;    break;
+                            case RACE_DRAENEI:       raceTextId = BOT_TEXT_RACE_DRAENEI; break;
+                            default:                 raceTextId = BOT_TEXT_RACE_UNKNOWN; break;
                         }
-                        info_ostr << bot->GetName() << " (" << (
-                            bot->GetGender() == GENDER_MALE ? bot_ai::LocalizedNpcText(player, BOT_TEXT_GENDER_MALE) + ' ' :
-                            bot->GetGender() == GENDER_FEMALE ? bot_ai::LocalizedNpcText(player, BOT_TEXT_GENDER_FEMALE) + ' ' :
-                            "") << bot_ai::LocalizedNpcText(player, raceTextId) << ')';
 
-                        player->PlayerTalkClass->GetGossipMenu().AddMenuItem(-1, GOSSIP_ICON_TALK, info_ostr.str(),
-                            HIRE_ENTRY, GOSSIP_ACTION_INFO_DEF + bot->GetEntry(), message1.str(), cost, false);
+                        std::ostringstream info_ostr;
+                        info_ostr << bot->GetName() << " ("
+                                  << (bot->GetGender() == GENDER_MALE
+                                          ? bot_ai::LocalizedNpcText(player, BOT_TEXT_GENDER_MALE) + ' '
+                                          : bot->GetGender() == GENDER_FEMALE
+                                                ? bot_ai::LocalizedNpcText(player, BOT_TEXT_GENDER_FEMALE) + ' '
+                                                : "")
+                                  << bot_ai::LocalizedNpcText(player, raceTextId) << ')';
 
-                        if (++availCount >= BOT_GOSSIP_MAX_ITEMS - 1) //back
-                            break;
+                        player->PlayerTalkClass->GetGossipMenu().AddMenuItem(
+                            -1, GOSSIP_ICON_TALK, info_ostr.str(),
+                            HIRE_ENTRY, GOSSIP_ACTION_INFO_DEF + bot->GetEntry(),
+                            message1.str(), cost, false);
                     }
 
-                    if (availCount == 0)
+                    if (total == 0)
                         gossipTextId = GOSSIP_BOTGIVER_HIRE_EMPTY;
 
-                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, bot_ai::LocalizedNpcText(player, BOT_TEXT_BACK), HIRE, GOSSIP_ACTION_INFO_DEF + 1);
+                    // Navigation: Previous page
+                    if (page > 0)
+                    {
+                        uint32 prevPacked = ((page - 1) << 8) | botclass;
+                        AddGossipItemFor(player, GOSSIP_ICON_CHAT,
+                            bot_ai::LocalizedNpcText(player, BOT_TEXT_BOTGIVER_PREVIOUS),
+                            HIRE_CLASS, GOSSIP_ACTION_INFO_DEF + prevPacked);
+                    }
+
+                    // Navigation: Next page
+                    if (maxPages > 0 && page + 1 < maxPages)
+                    {
+                        uint32 nextPacked = ((page + 1) << 8) | botclass;
+                        AddGossipItemFor(player, GOSSIP_ICON_CHAT,
+                            bot_ai::LocalizedNpcText(player, BOT_TEXT_BOTGIVER_NEXT),
+                            HIRE_CLASS, GOSSIP_ACTION_INFO_DEF + nextPacked);
+                    }
+
+                    // Back to class list
+                    AddGossipItemFor(player, GOSSIP_ICON_CHAT,
+                        bot_ai::LocalizedNpcText(player, BOT_TEXT_BACK),
+                        HIRE, GOSSIP_ACTION_INFO_DEF + 1);
 
                     break;
                 }
