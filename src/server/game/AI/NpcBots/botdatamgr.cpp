@@ -50,6 +50,15 @@ NpcBotExtrasMap _botsExtras;
 NpcBotTransmogDataMap _botsTransmogData;
 NpcBotRegistry _existingBots;
 
+std::vector<Creature const*> BotDataMgr::GetWanderingBotsSnapshot()
+{
+    std::vector<Creature const*> result;
+    for (Creature const* bot : _existingBots)
+        if (bot && bot->IsInWorld() && bot->IsWandererBot())
+            result.push_back(bot);
+    return result;
+}
+
 std::map<uint32, uint8> _wpMinSpawnLevelPerMapId;
 std::map<uint32, uint8> _wpMaxSpawnLevelPerMapId;
 std::map<uint8, std::set<uint32>> _spareBotIdsPerClassMap;

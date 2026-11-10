@@ -46,6 +46,8 @@ public:
     inline void SetFlag(uint32 flags_) { flags |= flags_; }
     inline void RemoveFlag(uint32 flags_) { flags &= ~flags_; }
     inline bool HasFlag(uint32 flags_) const { return !!(flags & flags_); }
+    
+    static std::vector<Creature const*> GetWanderingBotsSnapshot();
 
 private:
     NpcBotMgrData(uint8 idist_follow, uint8 idist_attack, uint8 iattack_range_mode, uint8 iattack_angle_mode, uint32 iengage_delay_dps, uint32 iengage_delay_heal, uint32 iflags) :
