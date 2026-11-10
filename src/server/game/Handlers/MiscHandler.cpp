@@ -49,6 +49,7 @@
 #include "WhoListStorage.h"
 #include "World.h"
 #include "WorldPacket.h"
+#include "botmgr.h"
 #include <cstdarg>
 #include <zlib.h>
 
