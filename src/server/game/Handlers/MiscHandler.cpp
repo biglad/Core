@@ -183,39 +183,37 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
     uint32 zoneids[10];                                     // 10 is client limit
     std::string packetPlayerName, packetGuildName;
 
-    recvData >> levelMin;                                   // maximal player level, default 0
-    recvData >> levelMax;                                   // minimal player level, default 100 (MAX_LEVEL)
-    recvData >> packetPlayerName;                           // player name, case sensitive...
-
-    recvData >> packetGuildName;                            // guild name, case sensitive...
-
-    recvData >> racemask;                                   // race mask
-    recvData >> classmask;                                  // class mask
-    recvData >> zonesCount;                                 // zones count, client limit = 10 (2.0.10)
+    recvData >> levelMin;
+    recvData >> levelMax;
+    recvData >> packetPlayerName;
+    recvData >> packetGuildName;
+    recvData >> racemask;
+    recvData >> classmask;
+    recvData >> zonesCount;
 
     if (zonesCount > 10)
-        return;                                             // can't be received from real client or broken packet
+        return;
 
     for (uint32 i = 0; i < zonesCount; ++i)
     {
         uint32 temp;
-        recvData >> temp;                                   // zone id, 0 if zone is unknown...
+        recvData >> temp;
         zoneids[i] = temp;
         TC_LOG_DEBUG("network", "Zone {}: {}", i, zoneids[i]);
     }
 
-    recvData >> strCount;                                   // user entered strings count, client limit=4 (checked on 2.0.10)
+    recvData >> strCount;
 
     if (strCount > 4)
-        return;                                             // can't be received from real client or broken packet
+        return;
 
     TC_LOG_DEBUG("network", "Minlvl {}, maxlvl {}, name {}, guild {}, racemask {}, classmask {}, zones {}, strings {}", levelMin, levelMax, packetPlayerName, packetGuildName, racemask, classmask, zonesCount, strCount);
 
-    std::wstring str[4];                                    // 4 is client limit
+    std::wstring str[4];
     for (uint32 i = 0; i < strCount; ++i)
     {
         std::string temp;
-        recvData >> temp;                                   // user entered string, it used as universal search pattern(guild+player name)?
+        recvData >> temp;
 
         if (!Utf8toWStr(temp, str[i]))
             continue;
@@ -233,8 +231,6 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
     wstrToLower(wpacketPlayerName);
     wstrToLower(wpacketGuildName);
 
-    // client send in case not set max level value 100 but Trinity supports 255 max level,
-    // update it to show GMs with characters after 100 level
     if (levelMax >= MAX_LEVEL)
         levelMax = STRONG_MAX_LEVEL;
 
@@ -242,38 +238,30 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
 
     uint32 gmLevelInWhoList  = sWorld->getIntConfig(CONFIG_GM_LEVEL_IN_WHO_LIST);
     uint32 displayCount = 0;
+    uint32 maxWho = sWorld->getIntConfig(CONFIG_MAX_WHO);
 
-    WorldPacket data(SMSG_WHO, 500);                      // guess size
-    data << uint32(matchCount);                           // placeholder, count of players matching criteria
-    data << uint32(displayCount);                         // placeholder, count of players displayed
+    WorldPacket data(SMSG_WHO, 500);
+    data << uint32(matchCount);                           // placeholder
+    data << uint32(displayCount);                         // placeholder
 
     WhoListInfoVector const& whoList = sWhoListStorageMgr->GetWhoList();
     for (WhoListPlayerInfo const& target : whoList)
     {
-        // player can see member of other team only if CONFIG_ALLOW_TWO_SIDE_WHO_LIST
-        //if (target.GetTeam() != team && !HasPermission(rbac::RBAC_PERM_TWO_SIDE_WHO_LIST))
-        //    continue;
-
-        // player can see MODERATOR, GAME MASTER, ADMINISTRATOR only if CONFIG_GM_IN_WHO_LIST
         if (!HasPermission(rbac::RBAC_PERM_WHO_SEE_ALL_SEC_LEVELS) && target.GetSecurity() > AccountTypes(gmLevelInWhoList))
             continue;
 
-        // check if target is globally visible for player
         if (_player->GetGUID() != target.GetGuid() && !target.IsVisible())
             if (AccountMgr::IsPlayerAccount(_player->GetSession()->GetSecurity()) || target.GetSecurity() > _player->GetSession()->GetSecurity())
                 continue;
 
-        // check if target's level is in level range
         uint8 lvl = target.GetLevel();
         if (lvl < levelMin || lvl > levelMax)
             continue;
 
-        // check if class matches classmask
         uint8 class_ = target.GetClass();
         if (!(classmask & (1 << class_)))
             continue;
 
-        // check if race matches racemask
         uint32 race = target.GetRace();
         if (!(racemask & (1 << race)))
             continue;
@@ -325,9 +313,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
         if (!s_show)
             continue;
 
-        // 49 is maximum player count sent to client - can be overridden
-        // through config, but is unstable
-        if ((matchCount++) >= sWorld->getIntConfig(CONFIG_MAX_WHO))
+        if ((matchCount++) >= maxWho)
             continue;
 
         data << target.GetPlayerName();                   // player name
@@ -340,6 +326,103 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
 
         ++displayCount;
     }
+
+    // --- Wandering bots into the who list ---
+    // Only bother if the display cap hasn't already been filled by real players.
+    if (displayCount < maxWho)
+    {
+        // ADAPT THIS: replace with whatever BotDataMgr exposes for its wandering bot list.
+        // Likely something like BotDataMgr::GetWanderingBots() returning a container of Creature*.
+        for (Creature* bot : BotDataMgr::GetWanderingBots())
+        {
+            if (displayCount >= maxWho)
+                break;
+
+            if (!bot || !bot->IsInWorld() || !bot->IsWandererBot())
+                continue;
+
+            // level
+            uint8 lvl = bot->GetLevel();
+            if (lvl < levelMin || lvl > levelMax)
+                continue;
+
+            // class — map custom bot classes to their base player class for the classmask check
+            uint8 playerClass = BotMgr::GetBotPlayerClass(bot->GetBotClass());
+            if (!(classmask & (1 << playerClass)))
+                continue;
+
+            // race
+            uint32 race = bot->GetRace();
+            if (!(racemask & (1 << race)))
+                continue;
+
+            // zone (same loop as players)
+            uint32 playerZoneId = bot->GetZoneId();
+            bool showZones = true;
+            for (uint32 i = 0; i < zonesCount; ++i)
+            {
+                if (zoneids[i] == playerZoneId)
+                {
+                    showZones = true;
+                    break;
+                }
+                showZones = false;
+            }
+            if (!showZones)
+                continue;
+
+            // name
+            std::wstring wideplayername;
+            if (!Utf8toWStr(bot->GetName(), wideplayername))
+                continue;
+            wstrToLower(wideplayername);
+
+            if (!(wpacketPlayerName.empty() || wideplayername.find(wpacketPlayerName) != std::wstring::npos))
+                continue;
+
+            // guild — wandering bots have none, so any guild search excludes them
+            if (!wpacketGuildName.empty())
+                continue;
+
+            // universal string search
+            std::string aname;
+            if (AreaTableEntry const* areaEntry = sAreaTableStore.LookupEntry(playerZoneId))
+                aname = areaEntry->AreaName[GetSessionDbcLocale()];
+
+            bool s_show = true;
+            for (uint32 i = 0; i < strCount; ++i)
+            {
+                if (!str[i].empty())
+                {
+                    if (wideplayername.find(str[i]) != std::wstring::npos ||
+                        Utf8FitTo(aname, str[i]))
+                    {
+                        s_show = true;
+                        break;
+                    }
+                    s_show = false;
+                }
+            }
+            if (!s_show)
+                continue;
+
+            // cap check — same semantics as players: count the match,
+            // but only write the entry if we're still under the display cap
+            if ((matchCount++) >= maxWho)
+                continue;
+
+            data << bot->GetName();                       // player name
+            data << "";                                   // guild name (empty)
+            data << uint32(lvl);                          // level
+            data << uint32(playerClass);                  // player class
+            data << uint32(race);                         // race
+            data << uint8(bot->GetGender());              // gender
+            data << uint32(playerZoneId);                 // zone id
+
+            ++displayCount;
+        }
+    }
+    // --- end wandering bots ---
 
     data.put(0, displayCount);                            // insert right count, count displayed
     data.put(4, matchCount);                              // insert right count, count of matches
