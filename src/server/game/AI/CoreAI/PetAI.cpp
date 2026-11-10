@@ -270,6 +270,12 @@ void PetAI::_AttackStart(Unit* target)
 
     // Only chase if not commanded to stay or if stay but commanded to attack
     DoAttack(target, (!me->GetCharmInfo()->HasCommandState(COMMAND_STAY) || me->GetCharmInfo()->IsCommandAttack()));
+    
+    if (Player* owner = me->GetCharmerOrOwnerPlayerOrPlayerItself())
+    {
+        if (owner->IsAlive() && !owner->IsInCombat())
+            owner->SetInCombatWith(target);
+    }
 }
 
 void PetAI::OwnerAttackedBy(Unit* attacker)
