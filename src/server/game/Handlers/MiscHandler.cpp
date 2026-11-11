@@ -340,6 +340,12 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
             if (!bot || !bot->IsInWorld() || !bot->IsWandererBot())
                 continue;
 
+            // --- FACTION CHECK ---
+            // Prevent players from seeing the opposite faction's wandering bots
+            // unless they have the RBAC permission for a two-sided who list.
+            if (!HasPermission(rbac::RBAC_PERM_TWO_SIDE_WHO_LIST) && BotDataMgr::GetTeamIdForFaction(bot->GetFaction()) != team)
+                continue;
+
             // level
             uint8 lvl = bot->GetLevel();
             if (lvl < levelMin || lvl > levelMax)
