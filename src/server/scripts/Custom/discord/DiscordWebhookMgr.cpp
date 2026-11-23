@@ -316,3 +316,13 @@ void SendDiscordMessageWorld(const std::string& message)
 
     DiscordWebhookQueue::Instance().Push(webhookUrl, BuildPayload(message, avatarUrl));
 }
+
+void EnqueueDiscordWebhook(std::string url, std::string body)
+{
+    DiscordWebhookQueue::Instance().Push(std::move(url), std::move(body));
+}
+
+void StopDiscordWebhookQueue()
+{
+    DiscordWebhookQueue::Instance().Stop();
+}
