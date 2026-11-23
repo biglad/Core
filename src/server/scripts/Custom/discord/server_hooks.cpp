@@ -4,8 +4,8 @@
 // NOTE: supports http:// only. Front it with a local TLS relay for Discord.
 //
 // THREADING MODEL:
-//   - All webhook work runs on ONE persistent worker thread (DiscordWebhookQueue),
-//     shared process-wide with DiscordWebhookMgr.cpp.
+//   - All webhook work runs on ONE persistent worker thread, shared process-wide
+//     with DiscordWebhookMgr.cpp via the EnqueueDiscordWebhook() helper.
 //   - Callers enqueue (url, body) pairs; they never touch sockets.
 //   - Queue is bounded; oldest jobs are dropped under flood.
 //   - Worker is joined on shutdown so queued messages flush and no logging
@@ -408,7 +408,7 @@ private:
     // Enqueue only — never blocks on the network, never spawns a thread.
     static void SendDiscordWebhookAsync(const std::string& url, const std::string& message)
     {
-        DiscordWebhookQueue::Instance().Push(url, BuildPayload(message));
+        EnqueueDiscordWebhook(url, BuildPayload(message));
     }
 };
 
@@ -421,9 +421,6 @@ private:
 // order — so whatever you register LAST runs FIRST, and vice versa. To
 // make Stop() run LAST, register this script FIRST (i.e. call its AddSC
 // before any other AddSC that registers OnShutdown work).
-//
-// If you already have a DiscordWebhookWorldScript doing Stop() elsewhere,
-// REMOVE this class and rely on that one — just make sure it runs last.
 // -------------------------------------------------------------------------
 class DiscordWebhookShutdownFlusher : public WorldScript
 {
@@ -435,7 +432,7 @@ public:
         // Join the worker; queued messages flush before we return.
         // Logging is still valid here because script shutdown happens
         // before Log teardown.
-        DiscordWebhookQueue::Instance().Stop();
+        StopDiscordWebhookQueue();
     }
 };
 
