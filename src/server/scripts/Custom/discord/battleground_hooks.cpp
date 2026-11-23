@@ -3,6 +3,15 @@
 // NOTE: This implementation supports http:// URLs only. Discord requires https://,
 //       so you must front it with a local TLS relay (nginx/caddy/stunnel/socat) if
 //       you want to talk to Discord directly. See notes at the bottom of the file.
+//
+// THREADING MODEL:
+//   - All webhook work runs on ONE persistent worker thread, shared process-wide.
+//   - Callers enqueue (url, body) pairs; they never touch sockets.
+//   - Queue is bounded; oldest jobs are dropped under flood.
+//   - Worker is joined on shutdown so queued messages flush and no logging
+//     happens after the Log singleton is torn down.
+//   - Exposed via DiscordWebhookQueue::Instance() so other translation units
+//     (e.g. the player-activity script) reuse the same worker.
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -10,12 +19,19 @@
 #include <netinet/tcp.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
 #include <string>
 #include <sstream>
 #include <map>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <queue>
+#include <atomic>
+#include <utility>
 
 #include "ScriptMgr.h"
 #include "Battleground.h"
@@ -117,7 +133,67 @@ namespace
     }
 
     // ---------------------------------------------------------------------
-    // Minimal blocking HTTP/1.1 POST using raw sockets.
+    // Non-blocking connect with timeout.
+    // Returns connected fd on success, -1 on failure.
+    // ---------------------------------------------------------------------
+    int ConnectWithTimeout(const addrinfo* p, int timeoutSec)
+    {
+        int sock = ::socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+        if (sock < 0)
+            return -1;
+
+        int flags = ::fcntl(sock, F_GETFL, 0);
+        if (flags < 0) { ::close(sock); return -1; }
+        if (::fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0)
+        {
+            ::close(sock);
+            return -1;
+        }
+
+        int r = ::connect(sock, p->ai_addr, p->ai_addrlen);
+        if (r < 0 && errno != EINPROGRESS)
+        {
+            ::close(sock);
+            return -1;
+        }
+
+        if (r < 0)
+        {
+            fd_set wfds;
+            FD_ZERO(&wfds);
+            FD_SET(sock, &wfds);
+            struct timeval tv{};
+            tv.tv_sec  = timeoutSec;
+            tv.tv_usec = 0;
+
+            int sel = ::select(sock + 1, nullptr, &wfds, nullptr, &tv);
+            if (sel <= 0)
+            {
+                ::close(sock);
+                return -1;
+            }
+
+            int err = 0;
+            socklen_t len = sizeof(err);
+            if (::getsockopt(sock, SOL_SOCKET, SO_ERROR, &err, &len) < 0 || err != 0)
+            {
+                ::close(sock);
+                return -1;
+            }
+        }
+
+        // Restore blocking mode; we use SO_SNDTIMEO/SO_RCVTIMEO for I/O timeouts.
+        if (::fcntl(sock, F_SETFL, flags) < 0)
+        {
+            ::close(sock);
+            return -1;
+        }
+
+        return sock;
+    }
+
+    // ---------------------------------------------------------------------
+    // Minimal blocking HTTP/1.1 POST using raw sockets, with timeouts.
     // Returns true if we received any response at all. Status code (if any)
     // is placed in `statusOut`.
     // ---------------------------------------------------------------------
@@ -138,18 +214,21 @@ namespace
         int sock = -1;
         for (addrinfo* p = res; p; p = p->ai_next)
         {
-            sock = ::socket(p->ai_family, p->ai_socktype, p->ai_protocol);
-            if (sock < 0)
-                continue;
-            if (::connect(sock, p->ai_addr, p->ai_addrlen) == 0)
+            sock = ConnectWithTimeout(p, 5);
+            if (sock >= 0)
                 break;
-            ::close(sock);
-            sock = -1;
         }
         freeaddrinfo(res);
 
         if (sock < 0)
             return false;
+
+        // I/O timeouts (connect timeout handled above).
+        struct timeval tv{};
+        tv.tv_sec  = 10;
+        tv.tv_usec = 0;
+        ::setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+        ::setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
 
         // Disable Nagle so small payloads go out immediately.
         int one = 1;
@@ -191,7 +270,6 @@ namespace
         }
 
         // Read just enough of the response to grab the status line.
-        // We don't need the body; Discord replies with 204/2xx on success.
         std::string head;
         head.reserve(512);
         char buf[512];
@@ -209,7 +287,12 @@ namespace
         }
 
         // Drain the rest so the kernel frees the connection cleanly.
-        while (::recv(sock, buf, sizeof(buf), 0) > 0) {}
+        while (true)
+        {
+            ssize_t n = ::recv(sock, buf, sizeof(buf), 0);
+            if (n < 0 && errno == EINTR) continue;
+            if (n <= 0) break;
+        }
 
         ::close(sock);
 
@@ -217,7 +300,7 @@ namespace
         if (head.compare(0, 5, "HTTP/") == 0)
         {
             auto sp = head.find(' ');
-            if (sp != std::string::npos)
+            if (sp != std::string::npos && sp + 3 < head.size())
             {
                 try { statusOut = std::stoi(head.substr(sp + 1, 3)); }
                 catch (...) { statusOut = 0; }
@@ -230,8 +313,155 @@ namespace
 } // namespace
 
 
+// =========================================================================
+// Shared webhook queue (declared in DiscordWebhookMgr.h).
+//
+//   class DiscordWebhookQueue
+//   {
+//   public:
+//       static DiscordWebhookQueue& Instance();
+//       void Push(std::string url, std::string body);
+//       void Stop();
+//   };
+//
+// Exposing it in the header lets the player-activity script enqueue on the
+// SAME worker instead of spawning its own thread. If you'd rather keep the
+// class private, drop this to an anonymous-namespace class and give the
+// header only a free `EnqueueDiscordWebhook(url, body)` function.
+// =========================================================================
+class DiscordWebhookQueue
+{
+public:
+    static constexpr size_t kMaxQueue = 1000;
+
+    static DiscordWebhookQueue& Instance()
+    {
+        // Intentionally leaked: avoids static-destruction-order issues with
+        // the worker thread during process teardown. Stop() is called
+        // explicitly from the shutdown hook.
+        static DiscordWebhookQueue* inst = new DiscordWebhookQueue();
+        return *inst;
+    }
+
+    void Push(std::string url, std::string body)
+    {
+        bool dropped = false;
+        {
+            std::lock_guard<std::mutex> lk(_mtx);
+            if (_stopped)
+                return; // ignore late pushes during/after shutdown
+            if (_queue.size() >= kMaxQueue)
+            {
+                _queue.pop();
+                dropped = true;
+            }
+            _queue.emplace(std::move(url), std::move(body));
+        }
+        _cv.notify_one();
+
+        if (dropped)
+        {
+            // Log from the caller's thread; queue lock is not held here.
+            TC_LOG_ERROR("bg.hooks",
+                "Discord webhook queue full; dropped oldest job.");
+        }
+    }
+
+    void Stop()
+    {
+        {
+            std::lock_guard<std::mutex> lk(_mtx);
+            if (_stopped)
+                return;
+            _stopped = true;
+        }
+        _cv.notify_all();
+        if (_worker.joinable())
+            _worker.join();
+    }
+
+private:
+    DiscordWebhookQueue()
+    {
+        _worker = std::thread([this]{ Run(); });
+    }
+
+    ~DiscordWebhookQueue()
+    {
+        Stop();
+    }
+
+    void Run()
+    {
+        while (true)
+        {
+            std::pair<std::string, std::string> job;
+            {
+                std::unique_lock<std::mutex> lk(_mtx);
+                _cv.wait(lk, [this]{
+                    return _stopped || !_queue.empty();
+                });
+                if (_queue.empty())
+                {
+                    if (_stopped)
+                        return;
+                    continue;
+                }
+                job = std::move(_queue.front());
+                _queue.pop();
+            }
+
+            try
+            {
+                ParsedUrl url;
+                if (!ParseHttpUrl(job.first, url))
+                {
+                    TC_LOG_ERROR("bg.hooks",
+                        "Discord webhook: URL must be http:// (build has no TLS). "
+                        "Use a local relay for https://discord.com/... Got: %s",
+                        job.first.c_str());
+                    continue;
+                }
+
+                int status = 0;
+                if (!HttpPost(url, job.second, status))
+                {
+                    TC_LOG_ERROR("bg.hooks",
+                        "Failed to send Discord webhook to %s",
+                        job.first.c_str());
+                    continue;
+                }
+
+                if (status < 200 || status >= 300)
+                {
+                    TC_LOG_ERROR("bg.hooks",
+                        "Discord webhook returned HTTP %d", status);
+                }
+            }
+            catch (const std::exception& e)
+            {
+                TC_LOG_ERROR("bg.hooks",
+                    "Exception in Discord webhook worker: %s", e.what());
+            }
+            catch (...)
+            {
+                TC_LOG_ERROR("bg.hooks",
+                    "Unknown exception in Discord webhook worker");
+            }
+        }
+    }
+
+    std::queue<std::pair<std::string, std::string>> _queue;
+    std::mutex                                       _mtx;
+    std::condition_variable                          _cv;
+    std::thread                                      _worker;
+    bool                                             _stopped = false;
+};
+
+
 // -------------------------------------------------------------------------
 // Public entry point – signature matches the original Poco version.
+// Now builds the JSON on the caller's thread (cheap) and enqueues only.
 // -------------------------------------------------------------------------
 void SendBattlegroundDiscordWebhook(const std::string& webhookUrl,
                                    const std::string& battlegroundName,
@@ -275,31 +505,8 @@ void SendBattlegroundDiscordWebhook(const std::string& webhookUrl,
         payload << ",\"avatar_url\":\"" << JsonEscape(avatarUrl) << '"';
     payload << '}';
 
-    const std::string body = payload.str();
-
-    ParsedUrl url;
-    if (!ParseHttpUrl(webhookUrl, url))
-    {
-        TC_LOG_ERROR("bg.hooks",
-            "Discord webhook: URL must be http:// (build has no TLS). Use a "
-            "local relay for https://discord.com/... Got: %s",
-            webhookUrl.c_str());
-        return;
-    }
-
-    int status = 0;
-    if (!HttpPost(url, body, status))
-    {
-        TC_LOG_ERROR("bg.hooks",
-            "Failed to send Discord webhook to %s", webhookUrl.c_str());
-        return;
-    }
-
-    if (status < 200 || status >= 300)
-    {
-        TC_LOG_ERROR("bg.hooks",
-            "Discord webhook returned HTTP %d", status);
-    }
+    // Enqueue only — never blocks on the network.
+    DiscordWebhookQueue::Instance().Push(webhookUrl, payload.str());
 }
 
 

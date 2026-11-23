@@ -2,6 +2,15 @@
 // Discord server-lifecycle webhook – zero external dependencies.
 // Requires: C++ standard library + POSIX sockets.
 // NOTE: supports http:// only. Front it with a local TLS relay for Discord.
+//
+// THREADING MODEL:
+//   - All webhook work runs on ONE persistent worker thread (DiscordWebhookQueue),
+//     shared process-wide with DiscordWebhookMgr.cpp.
+//   - Callers enqueue (url, body) pairs; they never touch sockets.
+//   - Queue is bounded; oldest jobs are dropped under flood.
+//   - Worker is joined on shutdown so queued messages flush and no logging
+//     happens after the Log singleton is torn down.
+//   - No detached threads. No `this` capture.
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -9,6 +18,7 @@
 #include <netinet/tcp.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
@@ -16,6 +26,11 @@
 #include <sstream>
 #include <memory>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <queue>
+#include <atomic>
+#include <utility>
 
 #include "ScriptMgr.h"
 #include "Config.h"
@@ -117,7 +132,65 @@ namespace
     }
 
     // ---------------------------------------------------------------------
-    // Minimal blocking HTTP/1.1 POST.
+    // Non-blocking connect with timeout.
+    // ---------------------------------------------------------------------
+    int ConnectWithTimeout(const addrinfo* p, int timeoutSec)
+    {
+        int sock = ::socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+        if (sock < 0)
+            return -1;
+
+        int flags = ::fcntl(sock, F_GETFL, 0);
+        if (flags < 0) { ::close(sock); return -1; }
+        if (::fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0)
+        {
+            ::close(sock);
+            return -1;
+        }
+
+        int r = ::connect(sock, p->ai_addr, p->ai_addrlen);
+        if (r < 0 && errno != EINPROGRESS)
+        {
+            ::close(sock);
+            return -1;
+        }
+
+        if (r < 0)
+        {
+            fd_set wfds;
+            FD_ZERO(&wfds);
+            FD_SET(sock, &wfds);
+            struct timeval tv{};
+            tv.tv_sec  = timeoutSec;
+            tv.tv_usec = 0;
+
+            int sel = ::select(sock + 1, nullptr, &wfds, nullptr, &tv);
+            if (sel <= 0)
+            {
+                ::close(sock);
+                return -1;
+            }
+
+            int err = 0;
+            socklen_t len = sizeof(err);
+            if (::getsockopt(sock, SOL_SOCKET, SO_ERROR, &err, &len) < 0 || err != 0)
+            {
+                ::close(sock);
+                return -1;
+            }
+        }
+
+        if (::fcntl(sock, F_SETFL, flags) < 0)
+        {
+            ::close(sock);
+            return -1;
+        }
+
+        return sock;
+    }
+
+    // ---------------------------------------------------------------------
+    // Minimal blocking HTTP/1.1 POST with timeouts.
     // ---------------------------------------------------------------------
     bool HttpPost(const ParsedUrl& url,
                   const std::string& body,
@@ -136,18 +209,20 @@ namespace
         int sock = -1;
         for (addrinfo* p = res; p; p = p->ai_next)
         {
-            sock = ::socket(p->ai_family, p->ai_socktype, p->ai_protocol);
-            if (sock < 0)
-                continue;
-            if (::connect(sock, p->ai_addr, p->ai_addrlen) == 0)
+            sock = ConnectWithTimeout(p, 5);
+            if (sock >= 0)
                 break;
-            ::close(sock);
-            sock = -1;
         }
         freeaddrinfo(res);
 
         if (sock < 0)
             return false;
+
+        struct timeval tv{};
+        tv.tv_sec  = 10;
+        tv.tv_usec = 0;
+        ::setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+        ::setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
 
         int one = 1;
         ::setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one));
@@ -202,14 +277,19 @@ namespace
             if (head.size() > 4096) break;
         }
 
-        while (::recv(sock, buf, sizeof(buf), 0) > 0) {}
+        while (true)
+        {
+            ssize_t n = ::recv(sock, buf, sizeof(buf), 0);
+            if (n < 0 && errno == EINTR) continue;
+            if (n <= 0) break;
+        }
 
         ::close(sock);
 
         if (head.compare(0, 5, "HTTP/") == 0)
         {
             auto sp = head.find(' ');
-            if (sp != std::string::npos)
+            if (sp != std::string::npos && sp + 3 < head.size())
             {
                 try { statusOut = std::stoi(head.substr(sp + 1, 3)); }
                 catch (...) { statusOut = 0; }
@@ -242,8 +322,11 @@ public:
         std::stringstream messageStream;
         messageStream << "✅ **Realm is online**";
 
+        // Enqueue only; never blocks on the network.
         SendDiscordWebhookAsync(webhookUrl, messageStream.str());
-        // SEND TO WORLD CHAT
+
+        // Also push to the "world chat" webhook (Webhook2.URL) — that helper
+        // already enqueues on the same worker inside DiscordWebhookMgr.cpp.
         SendDiscordMessageWorld(messageStream.str());
     }
 
@@ -264,8 +347,9 @@ public:
         std::stringstream messageStream;
         messageStream << "🛑 **Realm is restarting, 2 mins downtime..**";
 
+        // Enqueue the shutdown notice. This MUST NOT call Stop() — the worker
+        // still needs to be alive to deliver this and any other pending jobs.
         SendDiscordWebhookAsync(webhookUrl, messageStream.str());
-        // SEND TO WORLD CHAT
         SendDiscordMessageWorld(messageStream.str());
     }
 
@@ -295,7 +379,7 @@ public:
         messageStream << gmTag << realmName << status << " `" << name << "`";
 
         SendDiscordWebhookAsync(webhookUrl, messageStream.str());
-        // SEND TO WORLD CHAT
+
         uint32 guid = player->GetGUID().GetCounter();
         QueryResult result = CharacterDatabase.PQuery(
             "SELECT in_world_channel FROM world_channel_flags WHERE guid = {}", guid);
@@ -304,70 +388,61 @@ public:
     }
 
 private:
-    void SendDiscordWebhook(const std::string& url, const std::string& message)
+    // Build JSON payload on the caller's thread (cheap, no I/O).
+    static std::string BuildPayload(const std::string& message)
     {
-        if (!sConfigMgr->GetBoolDefault("Webhook.Enabled", false))
-            return;
-
-        // Original code prefixes an empty realmName string — keep behaviour identical.
-        const std::string realmName = "";
         const std::string avatarUrl = sConfigMgr->GetStringDefault("Webhook.AvatarURL", "");
+
+        // Original behaviour: prepend an empty realmName. Kept identical.
+        const std::string realmName = "";
 
         std::ostringstream payload;
         payload << '{'
-                << "\"content\":\"" << JsonEscape("" + realmName + " " + message) << '"';
+                << "\"content\":\"" << JsonEscape(realmName + " " + message) << '"';
         if (!avatarUrl.empty())
             payload << ",\"avatar_url\":\"" << JsonEscape(avatarUrl) << '"';
         payload << '}';
-
-        const std::string body = payload.str();
-
-        ParsedUrl parsed;
-        if (!ParseHttpUrl(url, parsed))
-        {
-            TC_LOG_ERROR("server.hooks",
-                "Webhook URL must be http:// (build has no TLS). "
-                "Front Discord with a local relay. Got: %s", url.c_str());
-            return;
-        }
-
-        int status = 0;
-        if (!HttpPost(parsed, body, status))
-        {
-            TC_LOG_ERROR("server.hooks",
-                "Discord webhook failed to %s", url.c_str());
-            return;
-        }
-
-        if (status < 200 || status >= 300)
-            TC_LOG_ERROR("server.hooks",
-                "Discord webhook returned HTTP %d", status);
+        return payload.str();
     }
 
-    void SendDiscordWebhookAsync(const std::string& url, const std::string& message)
+    // Enqueue only — never blocks on the network, never spawns a thread.
+    static void SendDiscordWebhookAsync(const std::string& url, const std::string& message)
     {
-        std::thread([this, url, message]()
-        {
-            try
-            {
-                SendDiscordWebhook(url, message);
-            }
-            catch (const std::exception& e)
-            {
-                TC_LOG_ERROR("server.hooks",
-                    "Exception in webhook thread: %s", e.what());
-            }
-            catch (...)
-            {
-                TC_LOG_ERROR("server.hooks",
-                    "Unknown exception in webhook thread");
-            }
-        }).detach();
+        DiscordWebhookQueue::Instance().Push(url, BuildPayload(message));
+    }
+};
+
+
+// -------------------------------------------------------------------------
+// Shutdown flusher: MUST be the LAST world script to run OnShutdown so
+// every other hook has already enqueued its goodbye messages.
+//
+// In TrinityCore, world scripts' OnShutdown run in REVERSE registration
+// order — so whatever you register LAST runs FIRST, and vice versa. To
+// make Stop() run LAST, register this script FIRST (i.e. call its AddSC
+// before any other AddSC that registers OnShutdown work).
+//
+// If you already have a DiscordWebhookWorldScript doing Stop() elsewhere,
+// REMOVE this class and rely on that one — just make sure it runs last.
+// -------------------------------------------------------------------------
+class DiscordWebhookShutdownFlusher : public WorldScript
+{
+public:
+    DiscordWebhookShutdownFlusher() : WorldScript("DiscordWebhookShutdownFlusher") {}
+
+    void OnShutdown() override
+    {
+        // Join the worker; queued messages flush before we return.
+        // Logging is still valid here because script shutdown happens
+        // before Log teardown.
+        DiscordWebhookQueue::Instance().Stop();
     }
 };
 
 // Register the script
 void AddDiscordWebhookServerHookScripts()
 {
+    // Register the flusher FIRST so its OnShutdown runs LAST.
+    new DiscordWebhookShutdownFlusher();
     new DiscordWebhookServerHook();
 }
