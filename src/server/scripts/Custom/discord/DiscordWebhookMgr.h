@@ -2,13 +2,6 @@
 #define DISCORD_WEBHOOK_MGR_H
 
 #include <string>
-#include <queue>
-#include <mutex>
-#include <condition_variable>
-#include <thread>
-#include <atomic>
-#include <utility>
-#include <cstddef>
 
 void SendDiscordMessage(const std::string& message);
 void SendDiscordMessageWorld(const std::string& message);
@@ -18,30 +11,14 @@ void SendBattlegroundDiscordWebhook(const std::string& webhookUrl,
                                     uint32 hordePlayers,
                                     const std::string& bracket);
 
-class DiscordWebhookQueue
-{
-public:
-    static DiscordWebhookQueue& Instance();
+// Enqueue a raw webhook POST on the shared worker thread. Non-blocking.
+// The worker lives in DiscordWebhookMgr.cpp — one per process, shared by
+// every Discord sender (BG hooks, player activity, server hooks).
+void EnqueueDiscordWebhook(std::string url, std::string body);
 
-    void Push(std::string url, std::string body);
-    void Stop();
-
-private:
-    DiscordWebhookQueue();
-    ~DiscordWebhookQueue();
-    DiscordWebhookQueue(const DiscordWebhookQueue&) = delete;
-    DiscordWebhookQueue& operator=(const DiscordWebhookQueue&) = delete;
-
-    void Run();
-    bool PerformPost(struct CURL* curl, const std::string& url, const std::string& body);
-
-    static constexpr size_t kMaxQueue = 1000;
-
-    std::queue<std::pair<std::string, std::string>> _queue;
-    std::mutex                                       _mtx;
-    std::condition_variable                          _cv;
-    std::thread                                      _worker;
-    bool                                             _stopped = false;
-};
+// Flush and join the shared worker. Call LAST during shutdown, before Log
+// teardown, after every other script has enqueued its goodbye messages.
+// Idempotent: safe to call more than once.
+void StopDiscordWebhookQueue();
 
 #endif // DISCORD_WEBHOOK_MGR_H
