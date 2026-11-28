@@ -21,7 +21,7 @@
 enum Insta10Config
 {
     TARGET_LEVEL        = 10,
-    ITEMCOSTID_10       = 461144,  
+    ITEMCOSTID_10       = 461190,  
     SOUND_NO_VOUCHER    = 11965,
 
     ACTION_DO_LEVEL     = GOSSIP_ACTION_INFO_DEF + 1001,
